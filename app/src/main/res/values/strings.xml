@@ -1,0 +1,56 @@
+<resources>
+    <!-- App Name -->
+    <string name="app_name">CakeStock</string>
+
+    <!-- Tela de Login -->
+    <string name="Entrar">Entrar</string>
+    <string name="text_cadastro">Cadastre-se</string>
+    <string name="esqueceu_senha">Esqueceu sua senha?</string>
+    <string name="title_cadastro">Cadastre-se</string>
+
+    <!-- Tela Principal -->
+    <string name="tv_saldo">Saldo</string>
+    <string name="tv_gasto">Gastos</string>
+    <string name="tv_ganho">Ganhos</string>
+    <string name="btn_gastos">Gastos</string>
+    <string name="btn_ganhos">Ganhos</string>
+
+    <!-- Telas Ganho e Gasto -->
+    <string name="novo_gasto">Novo Gasto</string>
+    <string name="novo_ganho">Novo Ganho</string>
+    <string name="data">Data</string>
+    <string name="data_hint">Selecione a data</string>
+    <string name="valor">Valor</string>
+    <string name="valor_hint">Insira o valor</string>
+    <string name="categoria">Categoria</string>
+    <string name="descricao">Descrição</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="selecionar">Selecionar</string>
+
+    <!-- Editar Transação -->
+    <string name="editar_transacao">Editar Transação</string>
+    <string name="excluir_transacao">Excluir</string>
+
+    <string-array name="tipo_medida_array">
+        <item>Unidade</item>
+        <item>Gramas</item>
+        <item>Mililitros</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cadastrar_produto">Cadastrar Produto</string>
+    <string name="nome_produto">Nome</string>
+    <string name="nome_produto_hint">insira o nome</string>
+    <string name="quantidade">Quantidade</string>
+    <string name="quantidade_hint">insira a quantidade</string>
+    <string name="novo_registro_venda">Registrar Venda</string>
+    <string name="descricao_hint">insira a descrição</string>
+    <string name="cliente">selecione o cliente</string>
+    <string name="valor_total">Valor total</string>
+    <string name="valor_total_hint">insira o valor</string>
+    <string name="produto">Produto</string>
+    <string name="novo_registro_despesa">Registrar Despesa</string>
+    <string name="adicionar">Adicionar</string>
+
+
+</resources>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CadastroIngrediente">
+
+    <!-- Layout para o título e botão de voltar -->
+    <LinearLayout
+        android:id="@+id/layout_voltar_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_voltar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_before"
+            android:contentDescription="Voltar"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cadastro de Ingredientes"
+            android:textColor="#2F8E85"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+    <!-- Conteúdo com ScrollView -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/layout_voltar_titulo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Nome do Ingrediente -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nome do Ingrediente"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/editNomeIngrediente"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="Ex: Farinha"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <!-- Tipo de Medida -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tipo de Medida"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <Spinner
+                    android:id="@+id/spinnerTipoMedida"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="2" />
+            </LinearLayout>
+
+            <!-- Unidade de Medida (TextView + EditText lado a lado) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <EditText
+                    android:id="@+id/editUnidadeMedida"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="Insira a medida (por unidade)"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <!-- Quantidade -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/textQuantidadeIngrediente"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Quantidade"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/editQuantidadeIngrediente"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="Ex: 10"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <!-- Valor Unitário -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/textValorUnitario"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Valor Unitário"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/editValorUnitario"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="Ex: 5.00"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
+
+            <!-- Valor Total -->
+            <TextView
+                android:id="@+id/textValorTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Valor Total: R$ 0,00"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <!-- Botões -->
+            <Button
+                android:id="@+id/btnSalvarIngrediente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#2F8E85"
+                android:text="Salvar"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btnCancelarCadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#B00020"
+                android:text="Cancelar"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

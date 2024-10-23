@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Campo para inserir nova categoria -->
+    <EditText
+        android:id="@+id/editTextNovaCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Nova Categoria" />
+
+    <!-- Botão para adicionar nova categoria -->
+    <ImageButton
+        android:id="@+id/btnAdicionarCategoria"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignEnd="@+id/editTextNovaCategoria"
+        android:layout_alignBottom="@+id/editTextNovaCategoria"
+        android:layout_marginBottom="2dp"
+        android:background="@color/cardview_shadow_end_color"
+        android:contentDescription="Adicionar Categoria"
+        android:src="@drawable/ic_add" />
+
+    <!-- ListView para listar categorias -->
+    <ListView
+        android:id="@+id/listViewCategorias"
+        android:layout_width="wrap_content"
+        android:layout_height="549dp"
+        android:layout_below="@+id/editTextNovaCategoria"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        android:paddingTop="16dp" />
+</RelativeLayout>

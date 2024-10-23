@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/txtNomeReceita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/listViewIngredientes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtNomeReceita" />
+
+    <Button
+        android:id="@+id/btnAdicionarIngrediente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listViewIngredientes"
+        android:text="Adicionar Ingrediente" />
+
+    <Button
+        android:id="@+id/btnSalvarIngredientes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listViewIngredientes"
+        android:layout_alignParentEnd="true"
+        android:text="Prosseguir" />
+</RelativeLayout>

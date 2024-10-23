@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "139053014038",
+    "project_id": "cakestock-92429",
+    "storage_bucket": "cakestock-92429.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139053014038:android:60d0836d57682f69ea2937",
+        "android_client_info": {
+          "package_name": "com.example.cakestock"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvmiAXW2tc4AUJ1fg7045p-HxPo2KbiuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

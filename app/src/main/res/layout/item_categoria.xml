@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="8dp"
+    android:background="?attr/selectableItemBackground">
+
+    <!-- Nome da Categoria -->
+    <TextView
+        android:id="@+id/textNomeCategoria"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:hint="Categoria"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <!-- Botão de Excluir -->
+    <ImageButton
+        android:id="@+id/btnExcluir"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_delete"
+        android:contentDescription="Excluir Categoria"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp" />
+</LinearLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="8dp"
+    android:background="?attr/selectableItemBackground">
+
+    <!-- Nome do Ingrediente -->
+    <TextView
+        android:id="@+id/textNome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:hint="Nome ingrediente"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <!-- Quantidade Utilizada -->
+    <TextView
+        android:id="@+id/textQuantidade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="10 uni"
+        android:paddingStart="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <!-- Botão de Editar -->
+    <ImageButton
+        android:id="@+id/btnEditar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="Editar"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp" />
+
+    <!-- Botão de Excluir -->
+    <ImageButton
+        android:id="@+id/btnExcluir"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_delete"
+        android:contentDescription="Excluir"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginStart="8dp" />
+</LinearLayout>
