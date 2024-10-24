@@ -106,12 +106,20 @@
                 android:orientation="horizontal"
                 android:layout_marginTop="16dp">
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Medida"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
                 <EditText
                     android:id="@+id/editUnidadeMedida"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:hint="Insira a medida (por unidade)"
+                    android:hint="(por unidade)"
                     android:inputType="numberDecimal" />
             </LinearLayout>
 
