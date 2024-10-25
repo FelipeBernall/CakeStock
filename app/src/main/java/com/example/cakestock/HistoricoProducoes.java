@@ -17,7 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class HistoricoProducoesActivity extends AppCompatActivity {
+public class HistoricoProducoes extends AppCompatActivity {
 
     private ListView lvHistoricoProducoes;
     private FloatingActionButton fabAdicionarProducao;
@@ -43,7 +43,7 @@ public class HistoricoProducoesActivity extends AppCompatActivity {
             userId = currentUser.getUid();
         } else {
             // Se o usuário não estiver logado, redireciona para a tela de login
-            Intent intent = new Intent(HistoricoProducoesActivity.this, FormLogin.class);
+            Intent intent = new Intent(HistoricoProducoes.this, FormLogin.class);
             startActivity(intent);
             finish();
             return;
@@ -63,7 +63,7 @@ public class HistoricoProducoesActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("HistoricoProducoesActivity", "FAB Adicionar Produção clicado");
                 // Abre a tela de ListaReceitas com a flag para controle de estoque
-                Intent intent = new Intent(HistoricoProducoesActivity.this, ListaReceitas.class);
+                Intent intent = new Intent(HistoricoProducoes.this, ListaReceitas.class);
                 intent.putExtra("controle_estoque", true); // Passa a flag indicando que é para controle de estoque
                 startActivity(intent);
             }
@@ -87,7 +87,7 @@ public class HistoricoProducoesActivity extends AppCompatActivity {
                         adapterHistorico.notifyDataSetChanged(); // Atualiza o adapter
                     } else {
                         Log.d("HistoricoProducoesActivity", "Erro ao carregar histórico: " + task.getException());
-                        Toast.makeText(HistoricoProducoesActivity.this, "Erro ao carregar histórico de produções.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HistoricoProducoes.this, "Erro ao carregar histórico de produções.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

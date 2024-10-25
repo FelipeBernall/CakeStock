@@ -2,6 +2,7 @@ package com.example.cakestock;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;  // Alterado de Button para ImageButton
 import android.widget.Toast;
@@ -132,16 +133,23 @@ public class EstoqueIngrediente extends AppCompatActivity {
                             Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
                             double novaQuantidade = estoqueIngrediente.getQuantidade() - usado.getQuantidade();
 
+                            Log.d("ControleEstoque", "Ingrediente: " + estoqueIngrediente.getNome());
+                            Log.d("ControleEstoque", "Quantidade usada: " + usado.getQuantidade());
+                            Log.d("ControleEstoque", "Quantidade atual: " + estoqueIngrediente.getQuantidade());
+                            Log.d("ControleEstoque", "Nova quantidade: " + novaQuantidade);
+
+                            // Verifica se a nova quantidade é negativa
                             if (novaQuantidade < 0) {
                                 Toast.makeText(this, "Estoque insuficiente para o ingrediente: " + usado.getNome(), Toast.LENGTH_SHORT).show();
-                                continue;
+                                return; // Para evitar atualizar o estoque
                             }
 
+                            // Atualiza o estoque somente se a nova quantidade for válida
                             db.collection("Usuarios").document(user.getUid()).collection("Ingredientes")
                                     .document(doc.getId())
                                     .update("quantidade", novaQuantidade)
                                     .addOnSuccessListener(aVoid -> {
-                                        // Atualização bem-sucedida
+                                        Toast.makeText(this, "Estoque atualizado para o ingrediente: " + usado.getNome(), Toast.LENGTH_SHORT).show();
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(this, "Erro ao atualizar o estoque do ingrediente: " + usado.getNome(), Toast.LENGTH_SHORT).show();
@@ -153,4 +161,6 @@ public class EstoqueIngrediente extends AppCompatActivity {
                     });
         }
     }
+
+
 }

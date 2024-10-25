@@ -32,10 +32,13 @@
     <string name="excluir_transacao">Excluir</string>
 
     <string-array name="tipo_medida_array">
-        <item>Unidade</item>
+        <item>Unidades</item>
         <item>Gramas</item>
         <item>Mililitros</item>
+        <item>Litros</item>
+        <item>Quilogramas</item>
     </string-array>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="cadastrar_produto">Cadastrar Produto</string>

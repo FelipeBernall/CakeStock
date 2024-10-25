@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ControleEstoque {
 
@@ -79,9 +80,26 @@ public class ControleEstoque {
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                                 Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
 
+                                // Aqui fazemos a conversão correta
                                 double quantidadeUsadaConvertida = calcularQuantidadeConvertida(usado, estoqueIngrediente);
 
-                                if (estoqueIngrediente.getQuantidade() < quantidadeUsadaConvertida) {
+                                double quantidadeEstoqueConvertida;
+                                // Converte o estoque para a mesma unidade
+                                if (estoqueIngrediente.getTipoMedida().equalsIgnoreCase("unidade")) {
+                                    quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade() * estoqueIngrediente.getUnidadeMedida(); // Conversão correta para mililitros/gramas
+                                } else if (estoqueIngrediente.getTipoMedida().equalsIgnoreCase("mililitros")) {
+                                    quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade() * 1000;  // Converte litros para mililitros
+                                } else if (estoqueIngrediente.getTipoMedida().equalsIgnoreCase("gramas")) {
+                                    quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade() * 1000;  // Converte quilos para gramas
+                                } else {
+                                    quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade();  // Caso padrão, sem conversão
+                                }
+
+                                Log.d("ControleEstoque", "Quantidade de estoque após conversão: " + quantidadeEstoqueConvertida);
+                                Log.d("ControleEstoque", "Quantidade usada convertida: " + quantidadeUsadaConvertida);
+
+                                // Comparação correta agora que ambos estão na mesma unidade (mililitros, gramas, ou unidades)
+                                if (quantidadeEstoqueConvertida < quantidadeUsadaConvertida) {
                                     ingredientesInsuficientes.add(usado.getNome());
                                     Log.e("ControleEstoque", "Estoque insuficiente para o ingrediente: " + usado.getNome());
                                 } else {
@@ -117,10 +135,17 @@ public class ControleEstoque {
                                 Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
 
                                 double quantidadeUsadaConvertida = calcularQuantidadeConvertida(ingredienteUsar, estoqueIngrediente);
-                                double novaQuantidade = estoqueIngrediente.getQuantidade() - quantidadeUsadaConvertida;
+                                double novaQuantidade = estoqueIngrediente.getQuantidade() * estoqueIngrediente.getUnidadeMedida() - quantidadeUsadaConvertida;
 
+                                // Verificação de valor negativo
+                                if (novaQuantidade < 0) {
+                                    Log.e("ControleEstoque", "Erro: Tentativa de atualizar o estoque com valor negativo para o ingrediente: " + ingredienteUsar.getNome());
+                                    return;  // Impede a atualização se a quantidade for negativa
+                                }
+
+                                // Atualiza o estoque se for maior ou igual a zero
                                 ingredientesRef.document(doc.getId())
-                                        .update("quantidade", novaQuantidade)
+                                        .update("quantidade", novaQuantidade / estoqueIngrediente.getUnidadeMedida())  // Certifique-se de atualizar na unidade correta
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d("ControleEstoque", "Estoque atualizado para o ingrediente: " + ingredienteUsar.getNome());
                                         })
@@ -132,21 +157,44 @@ public class ControleEstoque {
         }
     }
 
+
     // Conversão da unidade de medida
     private double calcularQuantidadeConvertida(Ingrediente usado, Ingrediente estoqueIngrediente) {
-        double quantidadeUsada = usado.getQuantidade();
-        double unidadeMedidaEstoque = estoqueIngrediente.getUnidadeMedida();
+        double quantidadeUsada = usado.getQuantidade();  // Quantidade usada por receita
+        double unidadeMedidaEstoque = estoqueIngrediente.getUnidadeMedida();  // Ex: 1000 ml por unidade (no caso de unidade)
+        double estoqueAtual = estoqueIngrediente.getQuantidade();  // Quantidade atual no estoque (em litros, unidades, etc.)
 
-        switch (estoqueIngrediente.getTipoMedida().toLowerCase()) {
-            case "Mililitros":
-                return quantidadeUsada;  // Retorno para mililitros, sem necessidade de conversão
-            case "Gramas":
-                return quantidadeUsada;  // Também já está na mesma unidade
-            case "Unidade":
-                return quantidadeUsada * unidadeMedidaEstoque;  // Multiplicação para converter por unidade
+        String tipoMedidaEstoque = estoqueIngrediente.getTipoMedida().toLowerCase(Locale.ROOT);  // Tipo de medida (unidade, gramas, ml, etc.)
+
+        Log.d("ControleEstoque", "Ingrediente: " + estoqueIngrediente.getNome());
+        Log.d("ControleEstoque", "Quantidade usada: " + quantidadeUsada);
+        Log.d("ControleEstoque", "Estoque atual: " + estoqueAtual);
+        Log.d("ControleEstoque", "Unidade de medida do estoque: " + unidadeMedidaEstoque);
+
+        switch (tipoMedidaEstoque) {
+            case "mililitros":
+                // O estoque está em litros, precisamos converter para mililitros
+                double estoqueEmMl = estoqueAtual * 1000;  // Converte litros para mililitros
+                Log.d("ControleEstoque", "Estoque convertido para mililitros: " + estoqueEmMl);
+                return quantidadeUsada;  // Subtrai diretamente a quantidade usada em mililitros
+
+            case "gramas":
+                // O estoque está em quilos, precisamos converter para gramas
+                double estoqueEmGramas = estoqueAtual * 1000;  // Converte quilos para gramas
+                Log.d("ControleEstoque", "Estoque convertido para gramas: " + estoqueEmGramas);
+                return quantidadeUsada;  // Subtrai diretamente a quantidade usada em gramas
+
+            case "unidade":
+                // O estoque está em unidades, então convertemos a quantidade usada para a unidade apropriada
+                // Exemplo: 12 caixas * 1000 ml por unidade = 12000 ml no estoque
+                double quantidadeEmMl = estoqueAtual * unidadeMedidaEstoque;  // Converte as unidades para mililitros ou gramas se necessário
+                Log.d("ControleEstoque", "Estoque convertido para mililitros/gramas: " + quantidadeEmMl);
+                return quantidadeUsada * unidadeMedidaEstoque;  // Certifique-se de multiplicar corretamente pela unidade medida
+
             default:
                 Log.e("ControleEstoque", "Tipo de medida desconhecida: " + estoqueIngrediente.getTipoMedida());
-                return quantidadeUsada;  // Retorna a quantidade usada sem conversão
+                return quantidadeUsada;  // Retorna a quantidade usada sem conversão se o tipo de medida for desconhecido
         }
     }
+
 }

@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         btnListaProdutos.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, EstoqueProdutos.class)));
         btnCadastroReceitas.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, t1_NomeReceita.class)));
         btnListaReceitas.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaReceitas.class)));
-        btnHistoricoProducao.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoricoProducoesActivity.class)));
+        btnHistoricoProducao.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoricoProducoes.class)));
         btnCadastroCliente.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CadastroCliente.class)));
         btnListaClientes.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaClientes.class)));
         btnControleFinanceiro.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Transacoes.class)));
