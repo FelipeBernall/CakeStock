@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:padding="16dp"
     tools:context=".CadastroCliente">
 
     <!-- Layout para Título e Botão de Voltar -->
@@ -14,7 +13,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -59,8 +57,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -77,7 +74,7 @@
                     android:layout_weight="2"
                     android:hint="Nome do Cliente"
                     android:inputType="textPersonName"
-                    android:padding="12dp" />
+                    android:minHeight="48dp" />
             </LinearLayout>
 
             <!-- Campo: Telefone -->
@@ -85,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:layout_width="0dp"
@@ -102,20 +99,20 @@
                     android:layout_weight="2"
                     android:hint="Telefone"
                     android:inputType="phone"
-                    android:padding="12dp" />
+                    android:minHeight="48dp" />
             </LinearLayout>
 
-            <!-- Botão: Cadastrar Cliente -->
+            <!-- Botões -->
             <Button
                 android:id="@+id/btnCadastrar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cadastrar Cliente"
-                android:textAllCaps="false"
-                android:textSize="18sp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="#2F8E85"
+                android:text="Cadastrar Cliente"
                 android:textColor="@android:color/white"
-                android:onClick="cadastrarCliente" />
+                android:textAllCaps="false"
+                android:textSize="18sp" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

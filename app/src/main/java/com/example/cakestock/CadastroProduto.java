@@ -3,6 +3,7 @@ package com.example.cakestock;
 import android.content.Intent; // Adicione esta importação
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ public class CadastroProduto extends AppCompatActivity {
 
         editNomeProduto = findViewById(R.id.editNomeProduto);
         editQuantidadeProduto = findViewById(R.id.editQuantidadeProduto);
-        ImageButton btnSalvar = findViewById(R.id.btnSalvar);
+        Button btnSalvar = findViewById(R.id.btnSalvar);
         ImageButton btnVoltar = findViewById(R.id.btn_voltar); // Inicializa o botão de voltar
 
         db = FirebaseFirestore.getInstance();

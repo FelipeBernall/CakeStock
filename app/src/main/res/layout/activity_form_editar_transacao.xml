@@ -23,8 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_before"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Voltar"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp" />
 
         <!-- Título -->
@@ -38,7 +38,6 @@
             android:textSize="25sp"
             android:textStyle="bold"
             android:gravity="center_vertical" />
-
     </LinearLayout>
 
     <!-- ScrollView para rolar o conteúdo -->
@@ -60,7 +59,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_data"
@@ -80,14 +80,14 @@
                     android:focusable="false"
                     android:hint="@string/data_hint"
                     android:minHeight="48dp" />
-
             </LinearLayout>
 
             <!-- Campo para valor -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_valor"
@@ -106,14 +106,14 @@
                     android:hint="@string/valor_hint"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp" />
-
             </LinearLayout>
 
             <!-- Campo para categoria -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_categoria"
@@ -124,7 +124,6 @@
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <!-- Campo de texto para seleção da categoria -->
                 <EditText
                     android:id="@+id/et_categoria"
                     android:layout_width="0dp"
@@ -136,14 +135,14 @@
                     android:minHeight="48dp"
                     android:focusable="false"
                     android:clickable="true" />
-
             </LinearLayout>
 
             <!-- Campo para descrição -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_descricao"
@@ -162,31 +161,30 @@
                     android:hint="@string/descricao"
                     android:inputType="text"
                     android:minHeight="48dp" />
-
             </LinearLayout>
 
-            <!-- Botão para salvar -->
+            <!-- Botões -->
             <Button
                 android:id="@+id/btn_salvar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="#2F8E85"
-                android:text="@string/btn_salvar" />
+                android:text="@string/btn_salvar"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
 
-            <!-- Botão para excluir -->
-            <ImageButton
+            <Button
                 android:id="@+id/btn_excluir"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/excluir_transacao"
-                android:src="@drawable/ic_apagar" />
-
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#B00020"
+                android:text="@string/excluir_transacao"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-

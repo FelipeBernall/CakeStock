@@ -1,20 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    tools:context=".t1_NomeReceita">
 
-    <EditText
-        android:id="@+id/editNomeReceita"
+    <!-- Layout para o botão de voltar e o título -->
+    <LinearLayout
+        android:id="@+id/layout_voltar_titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nome da Receita"
-        android:inputType="text" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/btnProsseguir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/editNomeReceita"
-        android:text="Prosseguir" />
-</RelativeLayout>
+        <!-- Botão de voltar -->
+        <ImageButton
+            android:id="@+id/btn_voltar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_before"
+            android:contentDescription="Voltar"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp" />
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/txt_titulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cadastro de Receita"
+            android:textColor="#2F8E85"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:gravity="center_vertical" />
+    </LinearLayout>
+
+    <!-- ScrollView para o conteúdo principal -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/layout_voltar_titulo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Campo para Nome da Receita -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Nome da Receita"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/editNomeReceita"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:hint="Nome da Receita"
+                    android:inputType="text"
+                    android:minHeight="48dp" />
+            </LinearLayout>
+
+            <!-- Botões -->
+            <Button
+                android:id="@+id/btnProsseguir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#2F8E85"
+                android:text="Prosseguir"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

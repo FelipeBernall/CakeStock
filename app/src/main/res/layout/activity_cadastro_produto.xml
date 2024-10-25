@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".CadastroProduto">
 
-    <!-- Layout para o botão de voltar e o título -->
+    <!-- Layout para o botão de voltar e título -->
     <LinearLayout
         android:id="@+id/layout_voltar_titulo"
         android:layout_width="match_parent"
@@ -38,7 +38,6 @@
             android:textSize="25sp"
             android:textStyle="bold"
             android:gravity="center_vertical" />
-
     </LinearLayout>
 
     <!-- ScrollView para rolar o conteúdo -->
@@ -60,7 +59,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_nome_produto"
@@ -77,15 +77,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:hint="@string/nome_produto_hint"
+                    android:inputType="text"
                     android:minHeight="48dp" />
-
             </LinearLayout>
 
             <!-- Campo para Quantidade -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:id="@+id/tv_quantidade"
@@ -102,24 +103,32 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:hint="@string/quantidade_hint"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:minHeight="48dp" />
-
             </LinearLayout>
 
-            <!-- Botão para salvar -->
-            <ImageButton
+            <!-- Botões -->
+            <Button
                 android:id="@+id/btnSalvar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:contentDescription="Salvar Produto"
-                android:src="@android:drawable/ic_menu_save"
-                android:background="@null"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#2F8E85"
+                android:text="Salvar"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
 
+            <Button
+                android:id="@+id/btnCancelar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#B00020"
+                android:text="Cancelar"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

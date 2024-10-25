@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -27,13 +26,13 @@ public class ListaReceitas extends AppCompatActivity {
 
     private ListView lvListaReceitas;
     private FloatingActionButton fabAdicionarReceita;
-    private ArrayList<String> listaReceitas;
+    private ArrayList<Receita> listaReceitas;
     private ArrayList<String> listaReceitasIds;
-    private ArrayAdapter<String> adapterReceitas;
+    private ReceitaAdapter adapterReceitas;
     private FirebaseFirestore db;
     private String userId;
-    private boolean controleEstoque = false; // Variável para controlar se é controle de estoque
-    private ControleEstoque controleEstoqueClass; // Instância da classe ControleEstoque
+    private boolean controleEstoque = false; // Variável para controle de estoque
+    private ControleEstoque controleEstoqueClass; // Instância de ControleEstoque
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +63,9 @@ public class ListaReceitas extends AppCompatActivity {
 
         listaReceitas = new ArrayList<>();
         listaReceitasIds = new ArrayList<>();
-        adapterReceitas = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaReceitas);
+
+        // Configura o adapter personalizado
+        adapterReceitas = new ReceitaAdapter(this, R.layout.item_receita, listaReceitas);
         lvListaReceitas.setAdapter(adapterReceitas);
 
         // Inicializa a classe de controle de estoque
@@ -77,16 +78,16 @@ public class ListaReceitas extends AppCompatActivity {
         lvListaReceitas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String receitaSelecionada = listaReceitas.get(position);
+                Receita receitaSelecionada = listaReceitas.get(position);
                 String idReceitaSelecionada = listaReceitasIds.get(position);
 
                 if (controleEstoque) {
                     // Se for controle de estoque, abrir o AlertDialog
-                    abrirDialogoProducao(receitaSelecionada, idReceitaSelecionada);
+                    abrirDialogoProducao(receitaSelecionada.getNome(), idReceitaSelecionada);
                 } else {
                     // Se não for controle de estoque, abrir a tela de detalhes
                     Intent intent = new Intent(ListaReceitas.this, DetalhesReceita.class);
-                    intent.putExtra("nome_receita", receitaSelecionada);
+                    intent.putExtra("nome_receita", receitaSelecionada.getNome());
                     intent.putExtra("id_receita", idReceitaSelecionada);
                     startActivity(intent);
                 }
@@ -113,7 +114,9 @@ public class ListaReceitas extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String nomeReceita = document.getString("nomeReceita");
                             if (nomeReceita != null) {
-                                listaReceitas.add(nomeReceita);
+                                // Adiciona uma nova instância de Receita com os dados do documento
+                                Receita receita = new Receita(document.getId(), nomeReceita, "", "", 0);
+                                listaReceitas.add(receita);
                                 listaReceitasIds.add(document.getId());
                             }
                         }
@@ -126,7 +129,6 @@ public class ListaReceitas extends AppCompatActivity {
     }
 
     private void abrirDialogoProducao(String receitaSelecionada, String idReceitaSelecionada) {
-        // Criar AlertDialog para inserção da quantidade produzida
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Produção de " + receitaSelecionada);
 
@@ -134,15 +136,12 @@ public class ListaReceitas extends AppCompatActivity {
         input.setHint("Quantidade produzida");
         builder.setView(input);
 
-        // Botão de confirmação
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String quantidadeStr = input.getText().toString();
                 if (!quantidadeStr.isEmpty()) {
                     int quantidadeProduzida = Integer.parseInt(quantidadeStr);
-
-                    // Atualizar estoque e registrar produção
                     controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida);
 
                     Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
@@ -152,7 +151,6 @@ public class ListaReceitas extends AppCompatActivity {
             }
         });
 
-        // Botão de cancelar
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
