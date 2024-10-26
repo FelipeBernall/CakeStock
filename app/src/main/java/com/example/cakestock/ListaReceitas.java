@@ -142,13 +142,20 @@ public class ListaReceitas extends AppCompatActivity {
                 int quantidadeProduzida = Integer.parseInt(quantidadeStr);
 
                 // Chama o método para atualizar o estoque e salvar o histórico
-                controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida);
+                controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida, new ControleEstoque.OnEstoqueUpdateListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
+                        // Redireciona para a tela de histórico após confirmar a produção
+                        Intent intent = new Intent(ListaReceitas.this, HistoricoProducoes.class);
+                        startActivity(intent);
+                    }
 
-                Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
-
-                // Redireciona para a tela de histórico após confirmar a produção
-                Intent intent = new Intent(ListaReceitas.this, HistoricoProducoes.class);
-                startActivity(intent);
+                    @Override
+                    public void onFailure(String mensagem) {
+                        Toast.makeText(ListaReceitas.this, mensagem, Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 Toast.makeText(ListaReceitas.this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
             }
@@ -157,8 +164,6 @@ public class ListaReceitas extends AppCompatActivity {
         builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
         builder.show();
     }
-
-
 
     @Override
     protected void onResume() {
