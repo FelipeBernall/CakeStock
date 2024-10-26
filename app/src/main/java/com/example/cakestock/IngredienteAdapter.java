@@ -70,8 +70,10 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
             double unidadeMedida = ingrediente.getUnidadeMedida();
             String quantidadeText;
 
-            if (tipoMedida.equals("Unidade")) {
-                quantidadeText = String.format("%.0f uni", quantidade);
+            if (quantidade == 0) {
+                quantidadeText = "Sem estoque";
+            } else if (tipoMedida.equals("Unidades")) {
+                quantidadeText = String.format("%.0f Unidades", quantidade);
             } else {
                 double totalQuantidade = quantidade * unidadeMedida;
                 DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -106,5 +108,6 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             });
         }
+
     }
 }
