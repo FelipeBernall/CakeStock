@@ -136,30 +136,29 @@ public class ListaReceitas extends AppCompatActivity {
         input.setHint("Quantidade produzida");
         builder.setView(input);
 
-        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String quantidadeStr = input.getText().toString();
-                if (!quantidadeStr.isEmpty()) {
-                    int quantidadeProduzida = Integer.parseInt(quantidadeStr);
-                    controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida);
+        builder.setPositiveButton("Confirmar", (dialog, which) -> {
+            String quantidadeStr = input.getText().toString();
+            if (!quantidadeStr.isEmpty()) {
+                int quantidadeProduzida = Integer.parseInt(quantidadeStr);
 
-                    Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ListaReceitas.this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
-                }
+                // Chama o método para atualizar o estoque e salvar o histórico
+                controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida);
+
+                Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
+
+                // Redireciona para a tela de histórico após confirmar a produção
+                Intent intent = new Intent(ListaReceitas.this, HistoricoProducoes.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(ListaReceitas.this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
         builder.show();
     }
+
+
 
     @Override
     protected void onResume() {

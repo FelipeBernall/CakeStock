@@ -7,9 +7,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ControleEstoque {
 
@@ -25,6 +30,29 @@ public class ControleEstoque {
         } else {
             Log.e("ControleEstoque", "Erro: Usuário não autenticado.");
         }
+    }
+
+    // Salva o registro de produção no Firestore
+    private void salvarRegistroProducao(String idReceita, String nomeReceita, int quantidadeProduzida) {
+        // Gera a data atual
+        String dataProducao = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+
+        // Cria o mapa com os dados da produção
+        Map<String, Object> registro = new HashMap<>();
+        registro.put("nomeReceita", nomeReceita);
+        registro.put("quantidadeProduzida", quantidadeProduzida);
+        registro.put("dataProducao", dataProducao);
+
+        // Salva o registro na subcoleção HistoricoProducoes
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Usuarios").document(userId)
+                .collection("HistoricoProducoes").add(registro)
+                .addOnSuccessListener(documentReference ->
+                        Log.d("ControleEstoque", "Produção registrada com sucesso.")
+                )
+                .addOnFailureListener(e ->
+                        Log.e("ControleEstoque", "Erro ao registrar produção: ", e)
+                );
     }
 
     // Método principal para atualizar o estoque
@@ -57,6 +85,35 @@ public class ControleEstoque {
                     verificarEstoque(ingredientesUsados);
                 } else {
                     Log.e("ControleEstoque", "Nenhum ingrediente encontrado para a receita.");
+                }
+            } else {
+                Log.e("ControleEstoque", "Erro ao recuperar ingredientes: ", task.getException());
+            }
+        });
+
+        ingredientesRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<DocumentSnapshot> ingredientes = task.getResult().getDocuments();
+                if (!ingredientes.isEmpty()) {
+                    // Carrega os ingredientes e verifica estoque
+                    List<Ingrediente> ingredientesUsados = new ArrayList<>();
+                    for (DocumentSnapshot document : ingredientes) {
+                        String nomeIngrediente = document.getString("nomeIngrediente");
+                        double quantidadeUsadaPorReceita = document.getDouble("quantidadeUsada");
+                        double quantidadeTotalUsada = quantidadeUsadaPorReceita * quantidadeProduzida;
+
+                        ingredientesUsados.add(new Ingrediente(nomeIngrediente, quantidadeTotalUsada));
+                    }
+
+                    verificarEstoque(ingredientesUsados);
+
+                    // Obtém o nome da receita e salva o registro de produção
+                    db.collection("Usuarios").document(userId)
+                            .collection("Receitas").document(idReceita).get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                String nomeReceita = documentSnapshot.getString("nomeReceita");
+                                salvarRegistroProducao(idReceita, nomeReceita, quantidadeProduzida);
+                            });
                 }
             } else {
                 Log.e("ControleEstoque", "Erro ao recuperar ingredientes: ", task.getException());
