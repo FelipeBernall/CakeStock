@@ -1,6 +1,7 @@
 package com.example.cakestock;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,10 +71,8 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
             double unidadeMedida = ingrediente.getUnidadeMedida();
             String quantidadeText;
 
-            if (quantidade == 0) {
-                quantidadeText = "Sem estoque";
-            } else if (tipoMedida.equals("Unidades")) {
-                quantidadeText = String.format("%.0f Unidades", quantidade);
+            if (tipoMedida.equals("Unidades")) {
+                quantidadeText = String.format("%.0f uni", quantidade);
             } else {
                 double totalQuantidade = quantidade * unidadeMedida;
                 DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -94,6 +93,8 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             }
 
+            Log.d("DebugAdapter", "Ingrediente: " + ingrediente.getNome() + ", Quantidade exibida: " + quantidadeText);
+
             textQuantidade.setText(quantidadeText);
 
             btnEditar.setOnClickListener(v -> {
@@ -108,6 +109,5 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             });
         }
-
     }
 }

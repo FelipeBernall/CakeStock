@@ -92,6 +92,9 @@ public class EstoqueIngrediente extends AppCompatActivity {
                             // Converte cada documento em um objeto Ingrediente
                             Ingrediente ingrediente = document.toObject(Ingrediente.class);
                             // Define o ID do ingrediente
+
+                            Log.d("DebugEstoque", "Ingrediente: " + ingrediente.getNome() + ", Quantidade: " + ingrediente.getQuantidade() + ", TipoMedida: " + ingrediente.getTipoMedida());
+
                             ingrediente.setId(document.getId());
                             // Adiciona o ingrediente à lista
                             ingredientes.add(ingrediente);
