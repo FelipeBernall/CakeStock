@@ -30,7 +30,7 @@ public class ListaClientes extends AppCompatActivity {
     private List<Cliente> clienteList;
     private List<Cliente> allClientes;
     private EditText searchField;
-    private boolean fromRegistroVenda = false; // Novo campo para controlar a origem
+    private boolean fromRegistroVenda = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,24 +65,19 @@ public class ListaClientes extends AppCompatActivity {
         adapter = new ClienteAdapter(this, clienteList);
         listView.setAdapter(adapter);
 
-        // Recebe a flag indicando se foi aberto pelo RegistroVenda
         fromRegistroVenda = getIntent().getBooleanExtra("fromRegistroVenda", false);
 
         listarClientes();
 
-        // Ajuste para seleção de cliente
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Cliente cliente = clienteList.get(position);
-
             if (fromRegistroVenda) {
-                // Retorna o cliente selecionado para RegistroVenda
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("clienteId", cliente.getId());
                 returnIntent.putExtra("clienteNome", cliente.getNome());
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {
-                // Comportamento original
                 Toast.makeText(ListaClientes.this, "Cliente selecionado: " + cliente.getNome(), Toast.LENGTH_SHORT).show();
             }
         });

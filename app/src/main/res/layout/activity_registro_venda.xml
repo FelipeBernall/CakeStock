@@ -198,6 +198,14 @@
                     android:focusable="false" /> <!-- Campo não editável -->
             </LinearLayout>
 
+            <EditText
+                android:id="@+id/et_desconto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Desconto"
+                android:inputType="numberDecimal"/>
+
+
             <!-- Botão para salvar -->
             <Button
                 android:id="@+id/btn_salvar"

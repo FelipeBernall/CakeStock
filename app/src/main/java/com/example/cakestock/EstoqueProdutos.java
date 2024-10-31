@@ -1,9 +1,8 @@
 package com.example.cakestock;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -12,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,10 +33,12 @@ public class EstoqueProdutos extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lista_produtos);
+        setContentView(R.layout.activity_estoque_produtos);
 
         searchField = findViewById(R.id.searchField);
-        ImageButton fabAdicionarProduto = findViewById(R.id.fabAdicionarProduto);
+        ImageButton searchButton = findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(v -> searchProdutos());
 
         searchField.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -51,10 +53,11 @@ public class EstoqueProdutos extends AppCompatActivity {
             public void afterTextChanged(android.text.Editable s) {}
         });
 
+        FloatingActionButton fabAdicionarProduto = findViewById(R.id.fab_adicionar_produto);
         fabAdicionarProduto.setOnClickListener(v -> startActivity(new Intent(EstoqueProdutos.this, CadastroProduto.class)));
 
         db = FirebaseFirestore.getInstance();
-        listView = findViewById(R.id.listViewProdutos);
+        listView = findViewById(R.id.lv_lista_produtos);
         produtoList = new ArrayList<>();
         allProdutos = new ArrayList<>();
         adapter = new ProdutoAdapter(this, produtoList);
@@ -62,10 +65,13 @@ public class EstoqueProdutos extends AppCompatActivity {
 
         listarProdutos();
 
-        // Remover o listener de clique longo e adicionar um clique normal
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Produto produto = produtoList.get(position);
-            mostrarDialogQuantidade(produto);
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("produtoNome", produto.getNome());
+            returnIntent.putExtra("quantidade", 1); // Aqui você pode permitir que o usuário escolha a quantidade
+            setResult(RESULT_OK, returnIntent);
+            finish();
         });
     }
 
@@ -120,39 +126,5 @@ public class EstoqueProdutos extends AppCompatActivity {
         produtoList.clear();
         produtoList.addAll(filteredList);
         adapter.notifyDataSetChanged();
-    }
-
-    private void mostrarDialogQuantidade(Produto produto) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Quantidade de " + produto.getNome());
-
-        final EditText input = new EditText(this);
-        input.setHint("Digite a quantidade");
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String quantidadeStr = input.getText().toString();
-                if (!quantidadeStr.isEmpty()) {
-                    int quantidade = Integer.parseInt(quantidadeStr);
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("produtoNome", produto.getNome());
-                    returnIntent.putExtra("quantidade", quantidade);
-                    setResult(RESULT_OK, returnIntent);
-                    finish();
-                } else {
-                    Toast.makeText(EstoqueProdutos.this, "Quantidade não pode ser vazia.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 }

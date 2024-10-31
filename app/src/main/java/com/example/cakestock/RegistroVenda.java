@@ -40,18 +40,16 @@ public class RegistroVenda extends AppCompatActivity {
         editTextData = findViewById(R.id.et_data);
         tvData = findViewById(R.id.tv_data);
 
-        // Tornando o campo de valor total editável
         editTextValorTotal.setFocusable(true);
         editTextValorTotal.setFocusableInTouchMode(true);
 
         db = FirebaseFirestore.getInstance();
 
-        // Configurando o DatePicker
         editTextData.setOnClickListener(v -> showDatePickerDialog());
 
         textViewCliente.setOnClickListener(v -> {
             Intent intent = new Intent(RegistroVenda.this, ListaClientes.class);
-            intent.putExtra("fromRegistroVenda", true); // Passa a flag para diferenciar o acesso
+            intent.putExtra("fromRegistroVenda", true);
             startActivityForResult(intent, 1);
         });
 
@@ -92,7 +90,7 @@ public class RegistroVenda extends AppCompatActivity {
         venda.put("produtos", produtosSelecionados);
         venda.put("descricao", descricao);
         venda.put("valorTotal", Double.parseDouble(valor));
-        venda.put("data", data);  // Usar a data do EditText
+        venda.put("data", data);
 
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         CollectionReference vendasRef = db.collection("Usuarios").document(userId).collection("Vendas");
@@ -110,14 +108,15 @@ public class RegistroVenda extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == 1) { // Cliente
                 clienteId = data.getStringExtra("clienteId");
                 String clienteNome = data.getStringExtra("clienteNome");
                 textViewCliente.setText(clienteNome);
             } else if (requestCode == 2) { // Produtos
-                produtosSelecionados = data.getStringExtra("produtosSelecionados");
+                String produto = data.getStringExtra("produtoNome");
+                int quantidade = data.getIntExtra("quantidade", 0);
+                produtosSelecionados += produto + " (x" + quantidade + "), ";
                 textViewProdutos.setText(produtosSelecionados);
             }
         }

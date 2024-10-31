@@ -64,9 +64,11 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
         }
 
         public void bind(final Ingrediente ingrediente, final OnIngredienteClickListener listener) {
-            textNome.setText(ingrediente.getNome());
+            // Verificação se o nome é nulo e definição de um valor padrão
+            textNome.setText(ingrediente.getNome() != null ? ingrediente.getNome() : "Nome indisponível");
 
-            String tipoMedida = ingrediente.getTipoMedida();
+            // Tratamento para garantir valores padrão para quantidade, tipoMedida e unidadeMedida
+            String tipoMedida = ingrediente.getTipoMedida() != null ? ingrediente.getTipoMedida() : "";
             double quantidade = ingrediente.getQuantidade();
             double unidadeMedida = ingrediente.getUnidadeMedida();
             String quantidadeText;
@@ -109,5 +111,6 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             });
         }
+
     }
 }

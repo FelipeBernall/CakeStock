@@ -5,23 +5,43 @@
 
     <!-- Floating Action Button for Adding Product -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdicionarProduto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_add"
-        android:contentDescription="Adicionar Produto"
-        android:tint="@android:color/white"
-        android:backgroundTint="@color/DeepSkyBlue" />
+        android:id="@+id/fab_adicionar_produto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:src="@drawable/ic_add"
+    android:contentDescription="Adicionar Produto"
+    android:tint="@android:color/white"
+    android:backgroundTint="@color/DeepSkyBlue" />
+
+    <EditText
+        android:id="@+id/searchField"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Pesquisar produtos"
+    android:layout_alignParentTop="true"
+    android:layout_marginBottom="8dp"/>
+
+    <!-- Search Button for Triggering Search -->
+    <ImageButton
+        android:id="@+id/searchButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_toEndOf="@id/searchField"
+    android:layout_alignBaseline="@id/searchField"
+    android:background="@android:color/transparent"
+    android:src="@drawable/ic_search"
+    android:contentDescription="Buscar" />
 
     <!-- ListView for Listing Products -->
     <ListView
-        android:id="@+id/listViewProdutos"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp"
-        android:paddingTop="8dp" />
+        android:id="@+id/lv_lista_produtos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@id/searchField"
+    android:layout_marginTop="8dp"
+    android:paddingTop="8dp" />
 </RelativeLayout>

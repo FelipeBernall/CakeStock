@@ -137,6 +137,7 @@
         </LinearLayout>
 
         <!-- Lista de transações -->
+        <!-- Botões inferiores -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
@@ -145,7 +146,7 @@
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
             android:paddingVertical="16dp" />
-        <!-- Botões inferiores -->
+
         <LinearLayout
             android:id="@+id/ll_botoes"
             android:layout_width="match_parent"
