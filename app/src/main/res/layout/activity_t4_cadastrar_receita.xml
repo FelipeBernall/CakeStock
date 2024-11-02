@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".t4_CadastrarReceita">
+    tools:context=".view.t4_CadastrarReceita">
 
     <!-- Layout para o botão de voltar e o título -->
     <LinearLayout

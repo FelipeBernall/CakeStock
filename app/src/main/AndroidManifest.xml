@@ -16,34 +16,34 @@
         android:theme="@style/Theme.CakeStock"
         tools:targetApi="31">
 
-        <activity android:name=".ListaReceitas" android:exported="false" />
-        <activity android:name=".FormLogin" android:exported="true">
+        <activity android:name=".view.ListaReceitas" android:exported="false" />
+        <activity android:name=".view.FormLogin" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" android:exported="false" />
-        <activity android:name=".PerfilUsuario" android:exported="false" />
-        <activity android:name=".FormCadastro" android:exported="false" />
-        <activity android:name=".CadastroIngrediente" android:exported="false" />
-        <activity android:name=".EstoqueIngrediente" android:exported="false" />
-        <activity android:name=".t1_NomeReceita" android:exported="false" />
-        <activity android:name=".t2_AdicionarIngredientes" android:exported="false" />
-        <activity android:name=".t3_SelecionarIngrediente" android:exported="false" />
-        <activity android:name=".t4_CadastrarReceita" android:exported="false" />
-        <activity android:name=".DetalhesReceita" android:exported="false" />
-        <activity android:name=".HistoricoProducoes" android:exported="false" />
+        <activity android:name=".view.MainActivity" android:exported="false" />
+        <activity android:name=".view.PerfilUsuario" android:exported="false" />
+        <activity android:name=".view.FormCadastro" android:exported="false" />
+        <activity android:name=".controller.CadastroIngrediente" android:exported="false" />
+        <activity android:name=".controller.EstoqueIngrediente" android:exported="false" />
+        <activity android:name=".view.t1_NomeReceita" android:exported="false" />
+        <activity android:name=".view.t2_AdicionarIngredientes" android:exported="false" />
+        <activity android:name=".view.t3_SelecionarIngrediente" android:exported="false" />
+        <activity android:name=".view.t4_CadastrarReceita" android:exported="false" />
+        <activity android:name=".view.DetalhesReceita" android:exported="false" />
+        <activity android:name=".view.HistoricoProducoes" android:exported="false" />
 
-        <activity android:name=".CadastroCliente" android:exported="false" />
-        <activity android:name=".ListaClientes" android:exported="false" />
-        <activity android:name=".CadastroProduto" android:exported="false" />
-        <activity android:name=".EstoqueProdutos" android:exported="false" />
-        <activity android:name=".Transacoes" android:exported="false" />
+        <activity android:name=".controller.CadastroCliente" android:exported="false" />
+        <activity android:name=".view.ListaClientes" android:exported="false" />
+        <activity android:name=".controller.CadastroProduto" android:exported="false" />
+        <activity android:name=".controller.EstoqueProdutos" android:exported="false" />
+        <activity android:name=".view.Transacoes" android:exported="false" />
 
 
-        <activity android:name=".RegistroVenda"/>
-        <activity android:name=".RegistroDespesa"/>
+        <activity android:name=".view.RegistroVenda"/>
+        <activity android:name=".view.RegistroDespesa"/>
 
     </application>
 </manifest>
