@@ -14,6 +14,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.controller.ControleEstoque;
+import com.example.cakestock.controller.activity.FormLogin;
+import com.example.cakestock.controller.activity.t1_NomeReceita;
 import com.example.cakestock.model.Receita;
 import com.example.cakestock.R;
 import com.example.cakestock.adapter.ReceitaAdapter;
@@ -107,6 +109,7 @@ public class ListaReceitas extends AppCompatActivity {
         });
     }
 
+    // Método para carregar as Receitas do Firestore
     private void carregarReceitas() {
         db.collection("Usuarios").document(userId).collection("Receitas")
                 .get()

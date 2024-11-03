@@ -11,6 +11,7 @@ import com.example.cakestock.controller.CadastroProduto;
 import com.example.cakestock.controller.EstoqueIngrediente;
 import com.example.cakestock.controller.EstoqueProdutos;
 import com.example.cakestock.R;
+import com.example.cakestock.controller.activity.t1_NomeReceita;
 
 public class MainActivity extends AppCompatActivity {
 
