@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Nome da Receita, alinhado ao topo -->
+    <TextView
+        android:id="@+id/nomeReceita"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nome da Receita"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <!-- Data de Produção, alinhada com a receita no canto superior direito -->
+    <TextView
+        android:id="@+id/dataProducao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01/01/2024"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignBaseline="@id/nomeReceita"
+        android:layout_alignTop="@id/nomeReceita" />
+
+    <!-- Rótulo 'Qtd Produzida:' -->
+    <TextView
+        android:id="@+id/labelQuantidadeProduzida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Qtd Produzida: "
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/nomeReceita"
+        android:layout_marginTop="8dp"
+    android:layout_alignStart="@id/nomeReceita" />
+
+    <!-- Quantidade Produzida (Valor Real) -->
+    <TextView
+        android:id="@+id/quantidadeProduzida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 unidades"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:layout_toEndOf="@id/labelQuantidadeProduzida"
+    android:layout_alignBaseline="@id/labelQuantidadeProduzida" />
+
+</RelativeLayout>

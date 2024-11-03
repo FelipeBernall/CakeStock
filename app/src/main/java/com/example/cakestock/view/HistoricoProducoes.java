@@ -3,13 +3,14 @@ package com.example.cakestock.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
 import com.example.cakestock.controller.activity.FormLogin;
+import com.example.cakestock.model.Producao;
+import com.example.cakestock.adapter.HistoricoAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,12 +24,11 @@ public class HistoricoProducoes extends AppCompatActivity {
 
     private ListView lvHistoricoProducoes;
     private FloatingActionButton fabAdicionarProducao;
-    private ArrayList<String> listaHistorico;
-    private ArrayAdapter<String> adapterHistorico;
+    private ArrayList<Producao> listaHistorico;  // Usando o model 'Producao'
+    private HistoricoAdapter adapterHistorico;  // Usando o adapter customizado 'HistoricoAdapter'
     private FirebaseFirestore db;
     private String userId;
     private ListenerRegistration listenerRegistration; // Listener para atualizações em tempo real
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +53,10 @@ public class HistoricoProducoes extends AppCompatActivity {
             return;
         }
 
-        // Inicializa a lista de histórico de produções
+        // Inicializa a lista de histórico de produções com 'Producao'
         listaHistorico = new ArrayList<>();
-        adapterHistorico = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listaHistorico);
-        lvHistoricoProducoes.setAdapter(adapterHistorico);
+        adapterHistorico = new HistoricoAdapter(this, listaHistorico);
+        lvHistoricoProducoes.setAdapter(adapterHistorico);  // Usa o adapter customizado
 
         // Inicia o listener para carregar o histórico de produções em tempo real
         iniciarListenerHistorico();
@@ -69,6 +69,9 @@ public class HistoricoProducoes extends AppCompatActivity {
             intent.putExtra("controle_estoque", true); // Passa a flag indicando que é para controle de estoque
             startActivity(intent);
         });
+
+        // Não há necessidade de adicionar um listener para cliques nos itens do histórico
+        // Ao clicar em um item da lista de histórico, nada acontecerá
     }
 
     // Método para iniciar o listener do Firestore em tempo real
@@ -85,22 +88,18 @@ public class HistoricoProducoes extends AppCompatActivity {
                     listaHistorico.clear(); // Limpa a lista antes de atualizar
                     if (snapshots != null) {
                         for (QueryDocumentSnapshot document : snapshots) {
-                            // Recupera os campos do documento
-                            String nomeReceita = document.getString("nomeReceita");
-                            Long quantidadeProduzida = document.getLong("quantidadeProduzida");
-                            String dataProducao = document.getString("dataProducao");
-
-                            if (nomeReceita != null && quantidadeProduzida != null && dataProducao != null) {
-                                // Cria o item de exibição
-                                String item = nomeReceita + " - " + quantidadeProduzida + " unidades - " + dataProducao;
-                                listaHistorico.add(item); // Adiciona na lista (agora em ordem correta)
-                            }
+                            // Cria um objeto 'Producao' a partir do documento
+                            Producao producao = new Producao(
+                                    document.getString("nomeReceita"),
+                                    document.getLong("quantidadeProduzida").intValue(),
+                                    document.getString("dataProducao")
+                            );
+                            listaHistorico.add(producao); // Adiciona na lista (usando 'Producao')
                         }
                         adapterHistorico.notifyDataSetChanged(); // Atualiza o adapter
                     }
                 });
     }
-
 
     @Override
     protected void onDestroy() {
