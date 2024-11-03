@@ -1,5 +1,6 @@
 package com.example.cakestock.controller;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -70,11 +71,7 @@ public class EstoqueProdutos extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Produto produto = produtoList.get(position);
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("produtoNome", produto.getNome());
-            returnIntent.putExtra("quantidade", 1); // Aqui você pode permitir que o usuário escolha a quantidade
-            setResult(RESULT_OK, returnIntent);
-            finish();
+            showQuantityDialog(produto);
         });
     }
 
@@ -129,5 +126,40 @@ public class EstoqueProdutos extends AppCompatActivity {
         produtoList.clear();
         produtoList.addAll(filteredList);
         adapter.notifyDataSetChanged();
+    }
+
+    private void showQuantityDialog(Produto produto) {
+        // Cria um AlertDialog para inserir a quantidade
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Selecione a quantidade");
+
+        // Cria um EditText para o usuário inserir a quantidade
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER); // Aceita apenas números inteiros
+        builder.setView(input);
+
+        // Define as ações do AlertDialog
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String quantidadeStr = input.getText().toString();
+            int quantidade;
+            try {
+                quantidade = Integer.parseInt(quantidadeStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(EstoqueProdutos.this, "Quantidade inválida.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Retorna os dados do produto e a quantidade selecionada para a tela anterior
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("produtoNome", produto.getNome());
+            returnIntent.putExtra("quantidade", quantidade);
+            returnIntent.putExtra("precoProduto", produto.getValor()); // Passa o valor do produto
+            setResult(RESULT_OK, returnIntent);
+            finish();
+        });
+
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 }

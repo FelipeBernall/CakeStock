@@ -3,6 +3,7 @@ package com.example.cakestock.view;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -72,7 +73,10 @@ public class RegistroVenda extends AppCompatActivity {
 
         editTextData.setOnClickListener(v -> showDatePickerDialog());
 
-        textViewProdutos.setOnClickListener(v -> startActivityForResult(new Intent(RegistroVenda.this, EstoqueProdutos.class), 2));
+        textViewProdutos.setOnClickListener(v -> {
+            Intent intent = new Intent(RegistroVenda.this, EstoqueProdutos.class);
+            startActivityForResult(intent, 2);
+        });
 
         btnRegistrarVenda.setOnClickListener(v -> registrarVenda());
     }
@@ -155,9 +159,20 @@ public class RegistroVenda extends AppCompatActivity {
             if (requestCode == 2) { // Produtos
                 String produto = data.getStringExtra("produtoNome");
                 int quantidade = data.getIntExtra("quantidade", 0);
+                double precoProduto = data.getDoubleExtra("precoProduto", 0.0);
+
+                // Adicione o log aqui para verificar os dados recebidos
+                Log.d("RegistroVenda", "Produto: " + produto + ", Quantidade: " + quantidade + ", Preço: " + precoProduto);
+
                 produtosSelecionados += produto + " (x" + quantidade + "), ";
                 textViewProdutos.setText(produtosSelecionados);
+
+                // Atualizar o valor total com base no preço do produto
+                valorTotal += precoProduto * quantidade;
+                editTextValorTotal.setText(String.valueOf(valorTotal));
             }
         }
     }
+
+
 }

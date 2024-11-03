@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class CadastroProduto extends AppCompatActivity {
     private EditText editNomeProduto;
     private EditText editQuantidadeProduto;
+    private EditText editValorProduto; // Novo campo para o valor do produto
     private String produtoId;
     private FirebaseFirestore db;
 
@@ -29,6 +30,8 @@ public class CadastroProduto extends AppCompatActivity {
 
         editNomeProduto = findViewById(R.id.editNomeProduto);
         editQuantidadeProduto = findViewById(R.id.editQuantidadeProduto);
+        editValorProduto = findViewById(R.id.editValorProduto); // Inicializa o campo de valor
+
         Button btnSalvar = findViewById(R.id.btnSalvar);
         ImageButton btnVoltar = findViewById(R.id.btn_voltar); // Inicializa o botão de voltar
 
@@ -60,6 +63,7 @@ public class CadastroProduto extends AppCompatActivity {
                             Produto produto = task.getResult().toObject(Produto.class);
                             editNomeProduto.setText(produto.getNome());
                             editQuantidadeProduto.setText(String.valueOf(produto.getQuantidade()));
+                            editValorProduto.setText(String.valueOf(produto.getValor())); // Exibe o valor do produto
                         } else {
                             Toast.makeText(CadastroProduto.this, "Erro ao carregar produto.", Toast.LENGTH_SHORT).show();
                         }
@@ -70,6 +74,8 @@ public class CadastroProduto extends AppCompatActivity {
     private void salvarProduto() {
         String nome = editNomeProduto.getText().toString().trim();
         int quantidade;
+        double valor;
+
         try {
             quantidade = Integer.parseInt(editQuantidadeProduto.getText().toString().trim());
         } catch (NumberFormatException e) {
@@ -77,11 +83,18 @@ public class CadastroProduto extends AppCompatActivity {
             return;
         }
 
+        try {
+            valor = Double.parseDouble(editValorProduto.getText().toString().trim()); // Captura o valor do produto
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Valor inválido.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Obtém o ID do usuário logado
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if (produtoId == null) {
             // Cadastrar novo produto
-            Produto novoProduto = new Produto(nome, quantidade);
+            Produto novoProduto = new Produto(nome, quantidade, valor);
             db.collection("Usuarios").document(userId).collection("Produtos")
                     .add(novoProduto)
                     .addOnCompleteListener(task -> {
@@ -109,7 +122,7 @@ public class CadastroProduto extends AppCompatActivity {
         } else {
             // Editar produto existente
             db.collection("Usuarios").document(userId).collection("Produtos").document(produtoId)
-                    .update("nome", nome, "quantidade", quantidade)
+                    .update("nome", nome, "quantidade", quantidade, "valor", valor) // Atualiza o valor do produto
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "Produto atualizado com sucesso.", Toast.LENGTH_SHORT).show();
