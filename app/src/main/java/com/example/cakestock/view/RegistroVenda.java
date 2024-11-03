@@ -3,29 +3,39 @@ package com.example.cakestock.view;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cakestock.controller.EstoqueProdutos;
 import com.example.cakestock.R;
+import com.example.cakestock.controller.EstoqueProdutos;
+import com.example.cakestock.model.Cliente;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class RegistroVenda extends AppCompatActivity {
-    private TextView textViewCliente, textViewProdutos, tvData;
+    private AutoCompleteTextView autoCompleteCliente;
+    private TextView textViewProdutos, tvData;
     private EditText editTextDescricao, editTextValorTotal, editTextData;
     private Button btnRegistrarVenda;
     private FirebaseFirestore db;
+    private List<Cliente> clientesList;
+    private ArrayAdapter<String> clienteAdapter;
     private String clienteId;
     private String produtosSelecionados = "";
     private double valorTotal;
@@ -35,7 +45,7 @@ public class RegistroVenda extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_venda);
 
-        textViewCliente = findViewById(R.id.et_cliente);
+        autoCompleteCliente = findViewById(R.id.autoCompleteCliente); // Substituído por AutoCompleteTextView
         textViewProdutos = findViewById(R.id.et_produto);
         editTextDescricao = findViewById(R.id.et_descricao);
         editTextValorTotal = findViewById(R.id.et_valor_total);
@@ -43,18 +53,24 @@ public class RegistroVenda extends AppCompatActivity {
         editTextData = findViewById(R.id.et_data);
         tvData = findViewById(R.id.tv_data);
 
+        db = FirebaseFirestore.getInstance();
+        clientesList = new ArrayList<>();
+
         editTextValorTotal.setFocusable(true);
         editTextValorTotal.setFocusableInTouchMode(true);
 
-        db = FirebaseFirestore.getInstance();
+        // Método para carregar os clientes do Firestore
+        carregarClientes();
+
+        // Configurar comportamento para o AutoCompleteTextView
+        autoCompleteCliente.setOnItemClickListener((parent, view, position, id) -> {
+            // Obter o cliente selecionado
+            String clienteNome = clienteAdapter.getItem(position);
+            autoCompleteCliente.setText(clienteNome); // Atualiza o campo com o nome do cliente
+            clienteId = clientesList.get(position).getId(); // Salva o ID do cliente selecionado
+        });
 
         editTextData.setOnClickListener(v -> showDatePickerDialog());
-
-        textViewCliente.setOnClickListener(v -> {
-            Intent intent = new Intent(RegistroVenda.this, ListaClientes.class);
-            intent.putExtra("fromRegistroVenda", true);
-            startActivityForResult(intent, 1);
-        });
 
         textViewProdutos.setOnClickListener(v -> startActivityForResult(new Intent(RegistroVenda.this, EstoqueProdutos.class), 2));
 
@@ -108,15 +124,35 @@ public class RegistroVenda extends AppCompatActivity {
         });
     }
 
+    // Método para carregar os clientes do Firestore
+    private void carregarClientes() {
+        db.collection("Usuarios")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .collection("Clientes")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<String> clienteNomes = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Cliente cliente = document.toObject(Cliente.class);
+                            clientesList.add(cliente); // Adiciona à lista de clientes
+                            clienteNomes.add(cliente.getNome()); // Adiciona o nome à lista de nomes para o adapter
+                        }
+
+                        // Configura o adapter para o AutoCompleteTextView
+                        clienteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, clienteNomes);
+                        autoCompleteCliente.setAdapter(clienteAdapter);
+                    } else {
+                        Toast.makeText(this, "Erro ao carregar clientes.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1) { // Cliente
-                clienteId = data.getStringExtra("clienteId");
-                String clienteNome = data.getStringExtra("clienteNome");
-                textViewCliente.setText(clienteNome);
-            } else if (requestCode == 2) { // Produtos
+            if (requestCode == 2) { // Produtos
                 String produto = data.getStringExtra("produtoNome");
                 int quantidade = data.getIntExtra("quantidade", 0);
                 produtosSelecionados += produto + " (x" + quantidade + "), ";

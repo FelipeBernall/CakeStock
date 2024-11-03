@@ -59,7 +59,7 @@ public class HistoricoProducoes extends AppCompatActivity {
         lvHistoricoProducoes.setAdapter(adapterHistorico);  // Usa o adapter customizado
 
         // Inicia o listener para carregar o histórico de produções em tempo real
-        iniciarListenerHistorico();
+        listarHistorico();
 
         // Configura o FAB para adicionar nova produção
         fabAdicionarProducao.setOnClickListener(v -> {
@@ -70,12 +70,10 @@ public class HistoricoProducoes extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Não há necessidade de adicionar um listener para cliques nos itens do histórico
-        // Ao clicar em um item da lista de histórico, nada acontecerá
     }
 
     // Método para iniciar o listener do Firestore em tempo real
-    private void iniciarListenerHistorico() {
+    private void listarHistorico() {
         listenerRegistration = db.collection("Usuarios").document(userId)
                 .collection("HistoricoProducoes")
                 .orderBy("dataProducao", com.google.firebase.firestore.Query.Direction.DESCENDING) // Ordena por data
