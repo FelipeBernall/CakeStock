@@ -131,7 +131,6 @@
                     android:inputType="text" />
             </LinearLayout>
 
-            <!-- Campo para selecionar o produto -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,25 +141,67 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/produto"
+                    android:text="Produto"
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <EditText
-                    android:id="@+id/et_produto"
+                <!-- Spinner com hint "Selecionar" -->
+                <Spinner
+                    android:id="@+id/spinner_produto"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:drawableEnd="@drawable/ic_arrow_down"
-                    android:focusable="false"
-                    android:hint="@string/adicionar"
-                    android:minHeight="48dp"
-                    android:clickable="true" />
+                    android:spinnerMode="dropdown"
+                    android:padding="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp" />
             </LinearLayout>
+
+            <!-- Campo de quantidade com botão "Adicionar" -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tv_quantidade"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Quantidade"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical" />
+
+                <!-- Campo de quantidade reduzido -->
+
+                <!-- Botão de adicionar produto -->
+
+                <EditText
+                    android:id="@+id/et_quantidade"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Qtd"
+                    android:inputType="number"
+                    android:minHeight="48dp"
+                    android:padding="8dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_adicionar_produto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add"
+                android:contentDescription="Adicionar produto"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp" />
+            </LinearLayout>
+
+
 
             <!-- Lista de produtos adicionados -->
             <ListView
-                android:id="@+id/lv_produtos_adicionados"
+                android:id="@+id/lv_produtos_disponiveis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

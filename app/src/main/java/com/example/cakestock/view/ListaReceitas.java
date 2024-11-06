@@ -14,8 +14,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.controller.ControleEstoque;
-import com.example.cakestock.controller.activity.FormLogin;
-import com.example.cakestock.controller.activity.t1_NomeReceita;
 import com.example.cakestock.model.Receita;
 import com.example.cakestock.R;
 import com.example.cakestock.adapter.ReceitaAdapter;

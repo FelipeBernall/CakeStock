@@ -6,7 +6,6 @@ public class EstoqueUtil {
 
     // Calcula a quantidade total de ingrediente necessária
     public static long calcularQuantidadeTotal(Ingrediente ingrediente, int quantidadeProduzida) {
-        // Como getQuantidade() pode ser double, multiplicamos e convertemos o resultado para long
         return (long) (ingrediente.getQuantidade() * quantidadeProduzida);
     }
 

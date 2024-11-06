@@ -46,7 +46,7 @@
     <string name="quantidade_hint">insira a quantidade</string>
     <string name="novo_registro_venda">Registrar Venda</string>
     <string name="descricao_hint">insira a descrição</string>
-    <string name="cliente">selecione o cliente</string>
+    <string name="cliente">Cliente</string>
     <string name="valor_total">Valor total</string>
     <string name="valor_total_hint">insira o valor</string>
     <string name="produto">Produto</string>
