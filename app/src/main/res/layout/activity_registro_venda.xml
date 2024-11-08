@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.RegistroVenda">
+    tools:context=".financeiro.RegistroVenda">
 
     <!-- Layout para o botão de voltar e o título -->
     <LinearLayout
@@ -221,16 +221,6 @@
                     android:text="@string/valor_total"
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
-
-                <EditText
-                    android:id="@+id/et_valor_total"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:hint="@string/valor_total_hint"
-                    android:inputType="numberDecimal"
-                    android:minHeight="48dp"
-                    android:focusable="false" /> <!-- Campo não editável -->
             </LinearLayout>
 
             <EditText
