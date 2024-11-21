@@ -105,7 +105,10 @@
         android:backgroundTint="@color/DeepSkyBlue"
         android:textColor="@android:color/white" />
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e
     <Button
         android:id="@+id/btnCadastroPedido"
         android:layout_width="match_parent"

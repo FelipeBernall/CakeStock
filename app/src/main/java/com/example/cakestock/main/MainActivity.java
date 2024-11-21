@@ -11,7 +11,10 @@ import com.example.cakestock.cliente.CadastroCliente;
 import com.example.cakestock.financeiro.Transacoes;
 import com.example.cakestock.ingrediente.CadastroIngrediente;
 import com.example.cakestock.pedido.CadastroPedido;
+<<<<<<< HEAD:app/src/main/java/com/example/cakestock/main/MainActivity.java
 import com.example.cakestock.pedido.ListaPedidos;
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e:app/src/main/java/com/example/cakestock/view/MainActivity.java
 import com.example.cakestock.produto.CadastroProduto;
 import com.example.cakestock.estoque.EstoqueIngrediente;
 import com.example.cakestock.estoque.EstoqueProdutos;
@@ -40,8 +43,11 @@ public class MainActivity extends AppCompatActivity {
         Button btnListaClientes = findViewById(R.id.btnListaClientes);
         Button btnControleFinanceiro = findViewById(R.id.btnControleFinanceiro);
         Button btnCadastroPedido = findViewById(R.id.btnCadastroPedido);
+<<<<<<< HEAD:app/src/main/java/com/example/cakestock/main/MainActivity.java
         Button btnPedidos = findViewById(R.id.btnPedidos);
 
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e:app/src/main/java/com/example/cakestock/view/MainActivity.java
 
         // Configurando ouvintes de clique
         btnPerfilUsuario.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, PerfilUsuario.class)));
@@ -56,7 +62,10 @@ public class MainActivity extends AppCompatActivity {
         btnListaClientes.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaClientes.class)));
         btnControleFinanceiro.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Transacoes.class)));
         btnCadastroPedido.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CadastroPedido.class)));
+<<<<<<< HEAD:app/src/main/java/com/example/cakestock/main/MainActivity.java
         btnPedidos.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaPedidos.class)));
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e:app/src/main/java/com/example/cakestock/view/MainActivity.java
 
 
     }

@@ -5,10 +5,13 @@ public class Pedido {
     private String data;
     private String cliente;
 
+<<<<<<< HEAD
     public Pedido() {
         // Construtor vazio necessário para o Firestore
     }
 
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e
     public Pedido(String descricao, String data, String cliente) {
         this.descricao = descricao;
         this.data = data;

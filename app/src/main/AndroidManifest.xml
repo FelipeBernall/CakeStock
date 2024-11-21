@@ -46,8 +46,11 @@
         <activity android:name=".financeiro.RegistroDespesa"/>
 
         <activity android:name=".pedido.CadastroPedido" android:exported="false" />
+<<<<<<< HEAD
         <activity android:name=".pedido.ListaPedidos" android:exported="false"/>
 
+=======
+>>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e
 
 
     </application>
