@@ -132,10 +132,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:backgroundTint="#2F8E85"
-                android:text="Cadastrar Pedido"
+                android:text="Salvar"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
             />
+
+            <!-- Botão Excluir Pedido-->
+            <Button
+                android:id="@+id/btnExcluirPedido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#B00020"
+                android:text="Excluir Pedido"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:visibility="gone"
+            />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

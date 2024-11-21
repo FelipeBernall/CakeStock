@@ -1,14 +1,28 @@
 package com.example.cakestock.pedido;
 
 public class Pedido {
+    private String pedidoId;  // Novo atributo pedidoId
     private String descricao;
     private String data;
     private String cliente;
 
-    public Pedido(String descricao, String data, String cliente) {
+    public Pedido() {
+        // Construtor vazio necessário para o Firestore
+    }
+
+    public Pedido(String pedidoId, String descricao, String data, String cliente) {
+        this.pedidoId = pedidoId;
         this.descricao = descricao;
         this.data = data;
         this.cliente = cliente;
+    }
+
+    public String getPedidoId() {
+        return pedidoId;
+    }
+
+    public void setPedidoId(String pedidoId) {
+        this.pedidoId = pedidoId;
     }
 
     public String getDescricao() {

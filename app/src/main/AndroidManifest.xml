@@ -47,6 +47,7 @@
 
         <activity android:name=".pedido.CadastroPedido" android:exported="false" />
 
+        <activity android:name=".pedido.ListaPedidos" android:exported="false"/>
 
     </application>
 </manifest>
