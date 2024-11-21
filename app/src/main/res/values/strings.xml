@@ -53,6 +53,7 @@
     <string name="novo_registro_despesa">Registrar Despesa</string>
     <string name="adicionar">Adicionar</string>
     <string name="selecionar_cliente">Selecionar</string>
+    <string name="text_cadatro_pedido">Cadastro de Pedido</string>
 
 
 </resources>

@@ -105,4 +105,13 @@
         android:backgroundTint="@color/DeepSkyBlue"
         android:textColor="@android:color/white" />
 
+    <Button
+        android:id="@+id/btnCadastroPedido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cadastro de Pedidos"
+        android:backgroundTint="@color/DeepSkyBlue"
+        android:textColor="@android:color/white" />
+
+
 </LinearLayout>

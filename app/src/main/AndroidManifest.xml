@@ -45,5 +45,8 @@
         <activity android:name=".financeiro.RegistroVenda"/>
         <activity android:name=".financeiro.RegistroDespesa"/>
 
+        <activity android:name=".pedido.CadastroPedido" android:exported="false" />
+
+
     </application>
 </manifest>

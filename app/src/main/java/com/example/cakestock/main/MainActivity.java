@@ -10,6 +10,7 @@ import com.example.cakestock.cliente.ListaClientes;
 import com.example.cakestock.cliente.CadastroCliente;
 import com.example.cakestock.financeiro.Transacoes;
 import com.example.cakestock.ingrediente.CadastroIngrediente;
+import com.example.cakestock.pedido.CadastroPedido;
 import com.example.cakestock.produto.CadastroProduto;
 import com.example.cakestock.estoque.EstoqueIngrediente;
 import com.example.cakestock.estoque.EstoqueProdutos;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnCadastroCliente = findViewById(R.id.btnCadastroCliente);
         Button btnListaClientes = findViewById(R.id.btnListaClientes);
         Button btnControleFinanceiro = findViewById(R.id.btnControleFinanceiro);
-        Button btnControlePedidos = findViewById(R.id.btnControlePedidos);
+        Button btnCadastroPedido = findViewById(R.id.btnCadastroPedido);
 
         // Configurando ouvintes de clique
         btnPerfilUsuario.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, PerfilUsuario.class)));
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         btnCadastroCliente.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CadastroCliente.class)));
         btnListaClientes.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaClientes.class)));
         btnControleFinanceiro.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Transacoes.class)));
+        btnCadastroPedido.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CadastroPedido.class)));
+
 
     }
 }
