@@ -15,27 +15,10 @@
         android:textColor="@android:color/white" />
 
     <Button
-        android:id="@+id/btnCadastroIngredientes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cadastro de Ingredientes"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
-
-
-    <Button
         android:id="@+id/btnControleEstoqueIngredientes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Estoque de Ingredientes"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
-
-    <Button
-        android:id="@+id/btnCadastroReceitas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cadastro de Receitas"
         android:backgroundTint="@color/DeepSkyBlue"
         android:textColor="@android:color/white" />
 
@@ -57,28 +40,12 @@
         android:textColor="@android:color/white" />
 
     <Button
-        android:id="@+id/btnCadastroProduto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cadastro de Produtos"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
-
-    <Button
         android:id="@+id/btnListaProdutos"
         android:layout_width="match_parent"
         android:backgroundTint="@color/DeepSkyBlue"
         android:textColor="@android:color/white"
         android:layout_height="wrap_content"
         android:text="Lista de Produtos" />
-
-    <Button
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white"
-        android:id="@+id/btnCadastroCliente"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cadastrar Clientes" />
 
     <Button
         android:backgroundTint="@color/DeepSkyBlue"
@@ -105,17 +72,6 @@
         android:backgroundTint="@color/DeepSkyBlue"
         android:textColor="@android:color/white" />
 
-<<<<<<< HEAD
-
-=======
->>>>>>> ed5652af40b377ea25bdfd91684cfd4e584e010e
-    <Button
-        android:id="@+id/btnCadastroPedido"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cadastro de Pedidos"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
 
 
 </LinearLayout>
