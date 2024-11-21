@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.RegistroVenda">
+    tools:context=".financeiro.RegistroVenda">
 
     <!-- Layout para o botão de voltar e o título -->
     <LinearLayout
@@ -148,13 +148,13 @@
                 <!-- Spinner com hint "Selecionar" -->
                 <Spinner
                     android:id="@+id/spinner_produto"
-                    android:layout_width="0dp"
+                    android:layout_width="42dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:spinnerMode="dropdown"
-                    android:padding="8dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="2"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown" />
             </LinearLayout>
 
             <!-- Campo de quantidade com botão "Adicionar" -->
@@ -173,13 +173,11 @@
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <!-- Campo de quantidade reduzido -->
-
                 <!-- Botão de adicionar produto -->
 
                 <EditText
                     android:id="@+id/et_quantidade"
-                    android:layout_width="0dp"
+                    android:layout_width="82dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Qtd"
@@ -192,9 +190,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_add"
-                android:contentDescription="Adicionar produto"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp" />
+                    android:contentDescription="Adicionar produto"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp" />
             </LinearLayout>
 
 
@@ -223,16 +221,6 @@
                     android:text="@string/valor_total"
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
-
-                <EditText
-                    android:id="@+id/et_valor_total"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:hint="@string/valor_total_hint"
-                    android:inputType="numberDecimal"
-                    android:minHeight="48dp"
-                    android:focusable="false" /> <!-- Campo não editável -->
             </LinearLayout>
 
             <EditText
