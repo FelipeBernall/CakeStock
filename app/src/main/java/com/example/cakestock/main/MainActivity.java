@@ -7,17 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
 import com.example.cakestock.cliente.ListaClientes;
-import com.example.cakestock.cliente.CadastroCliente;
-import com.example.cakestock.financeiro.Transacoes;
-import com.example.cakestock.ingrediente.CadastroIngrediente;
-import com.example.cakestock.pedido.CadastroPedido;
+import com.example.cakestock.financeiro.ListaTransacoes;
 import com.example.cakestock.pedido.ListaPedidos;
-import com.example.cakestock.produto.CadastroProduto;
 import com.example.cakestock.estoque.EstoqueIngrediente;
 import com.example.cakestock.estoque.EstoqueProdutos;
 import com.example.cakestock.produto.HistoricoProducoes;
 import com.example.cakestock.receita.ListaReceitas;
-import com.example.cakestock.receita.t1_NomeReceita;
 import com.example.cakestock.usuario.PerfilUsuario;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         btnListaReceitas.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaReceitas.class)));
         btnHistoricoProducao.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoricoProducoes.class)));
         btnListaClientes.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaClientes.class)));
-        btnControleFinanceiro.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, Transacoes.class)));
+        btnControleFinanceiro.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaTransacoes.class)));
         btnPedidos.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, ListaPedidos.class)));
     }
 }

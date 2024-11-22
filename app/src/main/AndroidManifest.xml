@@ -39,7 +39,7 @@
         <activity android:name=".cliente.ListaClientes" android:exported="false" />
         <activity android:name=".produto.CadastroProduto" android:exported="false" />
         <activity android:name=".estoque.EstoqueProdutos" android:exported="false" />
-        <activity android:name=".financeiro.Transacoes" android:exported="false" />
+        <activity android:name=".financeiro.ListaTransacoes" android:exported="false" />
 
 
         <activity android:name=".financeiro.RegistroVenda"/>
