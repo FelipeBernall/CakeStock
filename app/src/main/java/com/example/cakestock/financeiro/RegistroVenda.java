@@ -3,10 +3,10 @@ package com.example.cakestock.financeiro;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,75 +28,97 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import android.view.View;
 
 public class RegistroVenda extends AppCompatActivity {
-    private AutoCompleteTextView autoCompleteCliente;
-    private TextView tvData;
-    private EditText editTextDescricao, editTextValorTotal, editTextData;
+    private Spinner spinnerCliente, spinnerProduto;
+    private TextView tvData, tvValorTotal;
+    private EditText editTextDescricao, editTextData, editTextQuantidade, editTextDesconto;
     private Button btnRegistrarVenda;
-    private FirebaseFirestore db;
-    private List<Cliente> clientesList;
-    private ArrayAdapter<String> clienteAdapter;
-    private String clienteId;
-    private String produtosSelecionados = "";
-    private double valorTotal;
-    private Spinner spinnerProduto;
-    private EditText editTextQuantidade;
     private ImageButton btnAdicionarProduto;
     private ListView listViewProdutos;
+    private FirebaseFirestore db;
+
+    private List<Cliente> clientesList;
+    private List<Produto> produtosList;
+    private List<String> produtosAdicionados;
+    private double valorTotal;
+    private TextView tvValorComDesconto;
+    private LinearLayout layoutValorComDesconto;
+    private ImageButton btnAdicionarDesconto;
+    private TextView tvDesconto, tvDescontoLabel;
+    private LinearLayout layoutDesconto;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_venda);
 
-        autoCompleteCliente = findViewById(R.id.autoCompleteCliente);
+        spinnerCliente = findViewById(R.id.spinner_cliente);
         spinnerProduto = findViewById(R.id.spinner_produto);
         editTextDescricao = findViewById(R.id.et_descricao);
-        btnRegistrarVenda = findViewById(R.id.btn_salvar);
         editTextData = findViewById(R.id.et_data);
-        tvData = findViewById(R.id.tv_data);
         editTextQuantidade = findViewById(R.id.et_quantidade);
+        editTextDesconto = findViewById(R.id.et_desconto);
+        tvData = findViewById(R.id.tv_data);
+        tvValorTotal = findViewById(R.id.tv_valor_total);
         btnAdicionarProduto = findViewById(R.id.btn_adicionar_produto);
         listViewProdutos = findViewById(R.id.lv_produtos_disponiveis);
+        btnRegistrarVenda = findViewById(R.id.btn_salvar);
+
+        tvValorComDesconto = findViewById(R.id.tv_valor_com_desconto);
+        layoutValorComDesconto = findViewById(R.id.layout_valor_com_desconto);
+        btnAdicionarDesconto = findViewById(R.id.btn_adicionar_desconto);
+        ImageButton btnAdicionarDesconto = findViewById(R.id.btn_adicionar_desconto);
+        ImageButton btnRemoverDesconto = findViewById(R.id.btn_remover_desconto);
+        tvDesconto = findViewById(R.id.tv_desconto);
+        tvDescontoLabel = findViewById(R.id.tv_desconto_label);
+        layoutDesconto = findViewById(R.id.layout_desconto);
+
+
 
         db = FirebaseFirestore.getInstance();
         clientesList = new ArrayList<>();
+        produtosList = new ArrayList<>();
+        produtosAdicionados = new ArrayList<>();
+        valorTotal = 0.0;
 
-        // Carregar dados dos clientes e produtos
         carregarClientes();
-        carregarProdutos(); // Configurar o spinner com hint "Selecionar"
-
-        // Configurar comportamento para o AutoCompleteTextView
-        autoCompleteCliente.setOnItemClickListener((parent, view, position, id) -> {
-            String clienteNome = clienteAdapter.getItem(position);
-            autoCompleteCliente.setText(clienteNome);
-            clienteId = clientesList.get(position).getId();
-        });
-
-        // Configurar o botão "Adicionar" para adicionar o produto na lista
-        btnAdicionarProduto.setOnClickListener(v -> {
-            String produtoSelecionado = spinnerProduto.getSelectedItem().toString();
-            String quantidadeText = editTextQuantidade.getText().toString();
-
-            if (produtoSelecionado.equals("Selecionar") || quantidadeText.isEmpty()) {
-                Toast.makeText(this, "Selecione um produto e insira a quantidade.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            int quantidade = Integer.parseInt(quantidadeText);
-
-            // Adicionar produto à lista
-            produtosSelecionados += produtoSelecionado + " (x" + quantidade + "), ";
-            listViewProdutos.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosSelecionados.split(", ")));
-
-            // Limpar os campos de seleção e quantidade
-            spinnerProduto.setSelection(0);
-            editTextQuantidade.setText("");
-        });
+        carregarProdutos();
 
         editTextData.setOnClickListener(v -> showDatePickerDialog());
+        btnAdicionarProduto.setOnClickListener(v -> adicionarProduto());
         btnRegistrarVenda.setOnClickListener(v -> registrarVenda());
+
+        // Configura o botão de adicionar desconto
+        btnAdicionarDesconto.setOnClickListener(v -> {
+            String descontoTexto = editTextDesconto.getText().toString();
+            if (!descontoTexto.isEmpty()) {
+                double desconto = Double.parseDouble(descontoTexto);
+                if (desconto <= valorTotal) {
+                    atualizarValorTotal(); // Atualiza valores
+                    editTextDesconto.setText(""); // Limpa o campo
+                    Toast.makeText(this, "Desconto aplicado.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "O desconto não pode ser maior que o valor total.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Insira um valor de desconto.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        // Lógica para remover o desconto
+        btnRemoverDesconto.setOnClickListener(v -> {
+            editTextDesconto.setText(""); // Limpa o campo de desconto
+            layoutDesconto.setVisibility(View.GONE); // Oculta o layout de desconto
+            layoutValorComDesconto.setVisibility(View.GONE); // Oculta o layout de valor com desconto
+            atualizarValorTotal(); // Atualiza os valores
+            Toast.makeText(this, "Desconto removido.", Toast.LENGTH_SHORT).show();
+        });
+
+
     }
 
     private void showDatePickerDialog() {
@@ -116,37 +138,6 @@ public class RegistroVenda extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void registrarVenda() {
-        String descricao = editTextDescricao.getText().toString();
-        String valor = editTextValorTotal.getText().toString();
-        String data = editTextData.getText().toString();
-
-        if (clienteId == null || produtosSelecionados.isEmpty() || descricao.isEmpty() || valor.isEmpty() || data.isEmpty()) {
-            Toast.makeText(this, "Por favor, preencha todos os campos.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String, Object> venda = new HashMap<>();
-        venda.put("clienteId", clienteId);
-        venda.put("produtos", produtosSelecionados);
-        venda.put("descricao", descricao);
-        venda.put("valorTotal", Double.parseDouble(valor));
-        venda.put("data", data);
-
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        CollectionReference vendasRef = db.collection("Usuarios").document(userId).collection("Vendas");
-
-        vendasRef.add(venda).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(RegistroVenda.this, "Venda registrada com sucesso.", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(RegistroVenda.this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Método para carregar os clientes do Firestore
     private void carregarClientes() {
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -155,21 +146,21 @@ public class RegistroVenda extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<String> clienteNomes = new ArrayList<>();
+                        clienteNomes.add("Selecionar");
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Cliente cliente = document.toObject(Cliente.class);
                             clientesList.add(cliente);
                             clienteNomes.add(cliente.getNome());
                         }
-
-                        clienteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, clienteNomes);
-                        autoCompleteCliente.setAdapter(clienteAdapter);
+                        ArrayAdapter<String> clienteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, clienteNomes);
+                        clienteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerCliente.setAdapter(clienteAdapter);
                     } else {
                         Toast.makeText(this, "Erro ao carregar clientes.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    // Novo método para carregar produtos do Firestore e configurar o spinner
     private void carregarProdutos() {
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -178,12 +169,12 @@ public class RegistroVenda extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<String> produtoNomes = new ArrayList<>();
-                        produtoNomes.add("Selecionar"); // Adiciona a opção de hint
+                        produtoNomes.add("Selecionar");
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Produto produto = document.toObject(Produto.class);
+                            produtosList.add(produto);
                             produtoNomes.add(produto.getNome());
                         }
-
                         ArrayAdapter<String> produtoAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, produtoNomes);
                         produtoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerProduto.setAdapter(produtoAdapter);
@@ -192,4 +183,148 @@ public class RegistroVenda extends AppCompatActivity {
                     }
                 });
     }
+
+    private void adicionarProduto() {
+        String produtoSelecionado = spinnerProduto.getSelectedItem().toString();
+        String quantidadeText = editTextQuantidade.getText().toString();
+
+        if (produtoSelecionado.equals("Selecionar") || quantidadeText.isEmpty()) {
+            Toast.makeText(this, "Selecione um produto e insira a quantidade.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int quantidade = Integer.parseInt(quantidadeText);
+        Produto produto = produtosList.get(spinnerProduto.getSelectedItemPosition() - 1); // Ajusta o índice
+        double subtotal = produto.getValor() * quantidade;
+
+        produtosAdicionados.add(produto.getNome() + " (x" + quantidade + ") : R$ " + String.format(Locale.getDefault(), "%.2f", subtotal));
+        valorTotal += subtotal;
+
+        atualizarValorTotal();
+
+        // Atualiza a ListView
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosAdicionados);
+        listViewProdutos.setAdapter(adapter);
+
+        // Ajusta a altura da ListView com base no número de itens
+        ajustarAlturaListView();
+
+        // Limpa os campos de input
+        spinnerProduto.setSelection(0);
+        editTextQuantidade.setText("");
+    }
+
+    private void ajustarAlturaListView() {
+        int numItems = produtosAdicionados.size();
+        int maxItems = 3;
+
+        // Calcula a altura dependendo do número de itens
+        int height = (numItems <= maxItems) ? numItems * getItemHeight() : maxItems * getItemHeight();
+        listViewProdutos.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                height
+        ));
+        listViewProdutos.requestLayout();
+    }
+
+    private int getItemHeight() {
+        // Criamos uma nova instância do item de lista para medir sua altura
+        View itemView = getLayoutInflater().inflate(android.R.layout.simple_list_item_1, null);
+        itemView.measure(0, 0); // Mede o item
+        return itemView.getMeasuredHeight();
+    }
+
+
+
+
+    private void atualizarValorTotal() {
+        double desconto = 0.0;
+        if (!editTextDesconto.getText().toString().isEmpty()) {
+            desconto = Double.parseDouble(editTextDesconto.getText().toString());
+        }
+
+        double valorComDesconto = valorTotal - desconto;
+        if (valorComDesconto < 0) valorComDesconto = 0;
+
+        // Atualiza o valor total
+        tvValorTotal.setText(String.format(Locale.getDefault(), "R$ %.2f", valorTotal));
+
+        // Atualiza o campo de desconto
+        tvDesconto.setText(String.format(Locale.getDefault(), "- R$ %.2f", desconto));
+
+        // Atualiza o campo de valor com desconto
+        tvValorComDesconto.setText(String.format(Locale.getDefault(), "R$ %.2f", valorComDesconto));
+
+        // Controla a visibilidade dos layouts
+        if (desconto > 0) {
+            layoutDesconto.setVisibility(View.VISIBLE); // Torna visível o desconto
+            layoutValorComDesconto.setVisibility(View.VISIBLE); // Torna visível o valor com desconto
+        } else {
+            layoutDesconto.setVisibility(View.GONE); // Oculta o desconto
+            layoutValorComDesconto.setVisibility(View.GONE); // Oculta o valor com desconto
+        }
+    }
+
+
+
+    private void registrarVenda() {
+        String descricao = editTextDescricao.getText().toString();
+        String data = editTextData.getText().toString();
+        String clienteId = clientesList.get(spinnerCliente.getSelectedItemPosition() - 1).getId();
+
+        if (descricao.isEmpty() || data.isEmpty() || produtosAdicionados.isEmpty()) {
+            Toast.makeText(this, "Preencha todos os campos obrigatórios.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> venda = new HashMap<>();
+        venda.put("descricao", descricao);
+        venda.put("data", data);
+        venda.put("clienteId", clienteId);
+        venda.put("produtos", produtosAdicionados);
+        venda.put("valorTotal", valorTotal);
+
+        db.collection("Usuarios")
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .collection("Vendas")
+                .add(venda)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Venda registrada com sucesso!", Toast.LENGTH_SHORT).show();
+                        atualizarTransacoes();
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void atualizarTransacoes() {
+        // Atualize sua `ListView` na tela de transações conforme necessário
+        // Aqui você pode enviar um broadcast ou usar outro método para atualizar a lista
+    }
+
+    private void aplicarDesconto() {
+        String descontoText = editTextDesconto.getText().toString();
+
+        if (descontoText.isEmpty()) {
+            Toast.makeText(this, "Insira um valor de desconto.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double desconto = Double.parseDouble(descontoText);
+        if (desconto > valorTotal) {
+            Toast.makeText(this, "O desconto não pode ser maior que o valor total.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double valorComDesconto = valorTotal - desconto;
+        tvValorComDesconto.setText(String.format(Locale.getDefault(), "R$ %.2f", valorComDesconto));
+
+        // Exibe o layout do valor com desconto
+        layoutValorComDesconto.setVisibility(View.VISIBLE);
+
+        Toast.makeText(this, "Desconto aplicado.", Toast.LENGTH_SHORT).show();
+    }
+
 }

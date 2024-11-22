@@ -20,12 +20,12 @@
         <!-- Botão de voltar -->
         <ImageButton
             android:id="@+id/btn_voltar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_before"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Voltar"
-            android:padding="16dp" />
+            android:padding="8dp" />
 
         <!-- Título -->
         <TextView
@@ -36,9 +36,7 @@
             android:text="@string/novo_registro_venda"
             android:textColor="#2F8E85"
             android:textSize="25sp"
-            android:textStyle="bold"
-            android:gravity="center_vertical" />
-
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- ScrollView para rolar o conteúdo -->
@@ -60,7 +58,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tv_descricao"
@@ -84,7 +84,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tv_data"
@@ -106,11 +108,13 @@
                     android:minHeight="48dp" />
             </LinearLayout>
 
-            <!-- Campo para selecionar o cliente (AutoCompleteTextView) -->
+            <!-- Campo para selecionar o cliente -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tv_cliente"
@@ -121,20 +125,22 @@
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/autoCompleteCliente"
+                <Spinner
+                    android:id="@+id/spinner_cliente"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_weight="2"
-                    android:hint="@string/selecionar_cliente"
-                    android:minHeight="48dp"
-                    android:inputType="text" />
+                    android:spinnerMode="dropdown"
+                    android:prompt="@string/selecionar_cliente" />
             </LinearLayout>
 
+            <!-- Campo para selecionar o produto -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tv_produto"
@@ -145,24 +151,21 @@
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <!-- Spinner com hint "Selecionar" -->
                 <Spinner
                     android:id="@+id/spinner_produto"
-                    android:layout_width="42dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
                     android:layout_weight="2"
-                    android:padding="8dp"
                     android:spinnerMode="dropdown" />
             </LinearLayout>
 
-            <!-- Campo de quantidade com botão "Adicionar" -->
+            <!-- Campo para quantidade e botão de adicionar produto -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="70dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/tv_quantidade"
@@ -173,74 +176,158 @@
                     android:textStyle="bold"
                     android:gravity="center_vertical" />
 
-                <!-- Botão de adicionar produto -->
-
                 <EditText
                     android:id="@+id/et_quantidade"
-                    android:layout_width="82dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:hint="Qtd"
                     android:inputType="number"
-                    android:minHeight="48dp"
-                    android:padding="8dp" />
+                    android:minHeight="48dp" />
 
                 <ImageButton
                     android:id="@+id/btn_adicionar_produto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:src="@drawable/ic_add"
                     android:contentDescription="Adicionar produto"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="8dp" />
             </LinearLayout>
 
-
-
             <!-- Lista de produtos adicionados -->
             <ListView
                 android:id="@+id/lv_produtos_disponiveis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:dividerHeight="1dp"
-                android:visibility="visible"/>
+                android:visibility="visible"
+                />
 
-            <!-- Campo para valor total -->
+            <!-- Valor total -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tv_valor_total_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Valor total: "
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_valor_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:id="@+id/layout_desconto">
 
                 <TextView
-                    android:id="@+id/tv_valor_total"
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_desconto_label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/valor_total"
+                    android:text="Desconto: "
                     android:textStyle="bold"
-                    android:gravity="center_vertical" />
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_desconto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="- R$ 0,00"
+                    android:textSize="16sp" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/et_desconto"
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Desconto"
-                android:inputType="numberDecimal"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                android:id="@+id/layout_valor_com_desconto">
+
+                <TextView
+                    android:id="@+id/tv_valor_com_desconto_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total com desconto: "
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_valor_com_desconto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="R$ 0,00"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+
+            <!-- Campo para desconto com botão de adicionar e remover desconto -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/et_desconto"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1.8"
+                    android:hint="Desconto"
+                    android:inputType="numberDecimal"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_adicionar_desconto"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_add"
+                    android:contentDescription="Adicionar desconto"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_remover_desconto"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_remove"
+                    android:contentDescription="Remover desconto"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp" />
+            </LinearLayout>
+
 
             <!-- Botão para salvar -->
             <Button
                 android:id="@+id/btn_salvar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:text="Salvar"
                 android:backgroundTint="#2F8E85"
-                android:text="@string/btn_salvar" />
+                android:textColor="@android:color/white"
+                android:layout_marginTop="16dp" />
 
         </LinearLayout>
-
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

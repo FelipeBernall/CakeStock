@@ -1,0 +1,4 @@
+<resources>
+    <!-- Define a altura fixa para os itens da ListView -->
+    <dimen name="list_item_height">80dp</dimen>
+</resources>

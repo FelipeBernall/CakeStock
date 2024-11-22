@@ -61,7 +61,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:paddingVertical="8dp">
 
             <!-- Saldo -->
             <LinearLayout
@@ -87,7 +88,7 @@
                     android:textColor="@android:color/holo_green_dark" />
             </LinearLayout>
 
-            <!-- Gastos -->
+            <!-- Despesas -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -136,12 +137,13 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Lista de transações -->
+        <!-- ListView para transações -->
+
         <!-- Botões inferiores -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <ListView
+            android:id="@+id/lv_transacoes"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
@@ -154,9 +156,7 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Botão de gasto -->
-
-            <!-- Botão de ganho -->
+            <!-- Botão de despesa -->
             <ImageButton
                 android:id="@+id/btn_despesas"
                 android:layout_width="wrap_content"
@@ -166,6 +166,7 @@
                 android:padding="16dp"
                 android:src="@drawable/ic_gasto" />
 
+            <!-- Botão de ganho -->
             <ImageButton
                 android:id="@+id/btn_vendas"
                 android:layout_width="wrap_content"
