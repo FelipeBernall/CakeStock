@@ -73,7 +73,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/tv_saldo_title"
+                    android:id="@+id/tv_saldo_titulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Saldo"
@@ -97,7 +97,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/tv_despesas"
+                    android:id="@+id/tv_despesas_titulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Despesas"
@@ -105,7 +105,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_gastos"
+                    android:id="@+id/tv_despesas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="R$ 0,00"
@@ -121,7 +121,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/tv_vendas"
+                    android:id="@+id/tv_vendas_titulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Vendas"
@@ -129,7 +129,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_ganhos"
+                    android:id="@+id/tv_vendas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="R$ 0,00"
