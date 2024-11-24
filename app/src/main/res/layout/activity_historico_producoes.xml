@@ -1,23 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
-    <!-- ListView para exibir o histórico de produções -->
+    <!-- Navegação entre meses -->
+    <LinearLayout
+        android:id="@+id/navigation_months"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="8dp"
+        android:layout_alignParentTop="true">
 
-    <!-- FAB para adicionar nova produção -->
+        <!-- Botão de mês anterior -->
+        <ImageButton
+            android:id="@+id/btn_previous_month"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_before"
+            app:tint="@android:color/black"
+            android:contentDescription="Previous Month"
+            android:padding="8dp" />
+
+        <!-- Texto do mês atual -->
+        <TextView
+            android:id="@+id/tv_current_month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Mês"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:layout_marginHorizontal="16dp"
+            android:textColor="@android:color/black" />
+
+        <!-- Botão de próximo mês -->
+        <ImageButton
+            android:id="@+id/btn_next_month"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_next"
+            app:tint="@android:color/black"
+            android:contentDescription="Next Month"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- ListView para exibir o histórico de produções -->
     <ListView
         android:id="@+id/lv_historico_producoes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="16dp"
+        android:layout_below="@id/navigation_months"
+        android:layout_marginTop="16dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp" />
 
+    <!-- FAB para adicionar nova produção -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_adicionar_producao"
         android:layout_width="wrap_content"

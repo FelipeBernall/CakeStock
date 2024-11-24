@@ -33,7 +33,7 @@
         <activity android:name=".receita.t3_SelecionarIngrediente" android:exported="false" />
         <activity android:name=".receita.t4_CadastrarReceita" android:exported="false" />
         <activity android:name=".receita.DetalhesReceita" android:exported="false" />
-        <activity android:name=".produto.HistoricoProducoes" android:exported="false" />
+        <activity android:name=".receita.HistoricoProducoes" android:exported="false" />
 
         <activity android:name=".cliente.CadastroCliente" android:exported="false" />
         <activity android:name=".cliente.ListaClientes" android:exported="false" />

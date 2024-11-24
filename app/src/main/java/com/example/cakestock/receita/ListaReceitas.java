@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cakestock.estoque.ControleEstoque;
 import com.example.cakestock.R;
 import com.example.cakestock.usuario.FormLogin;
-import com.example.cakestock.produto.HistoricoProducoes;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
