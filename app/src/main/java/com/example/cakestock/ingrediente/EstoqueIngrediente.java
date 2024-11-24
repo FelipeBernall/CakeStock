@@ -1,5 +1,6 @@
 package com.example.cakestock.ingrediente;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,9 +53,16 @@ public class EstoqueIngrediente extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(Ingrediente ingrediente) {
-                excluirIngrediente(ingrediente);
+                // Exibe o diálogo de confirmação ao pressionar por alguns segundos
+                new AlertDialog.Builder(EstoqueIngrediente.this)
+                        .setTitle("Excluir Ingrediente")
+                        .setMessage("Tem certeza de que deseja excluir o ingrediente \"" + ingrediente.getNome() + "\"?")
+                        .setPositiveButton("Sim", (dialog, which) -> excluirIngrediente(ingrediente))
+                        .setNegativeButton("Não", null)
+                        .show();
             }
         });
+
 
         recyclerViewIngredientes.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewIngredientes.setAdapter(adapter);
@@ -110,20 +118,21 @@ public class EstoqueIngrediente extends AppCompatActivity {
 
     // Método para excluir um ingrediente do Firestore
     private void excluirIngrediente(Ingrediente ingrediente) {
-        // Obtém a referência para o documento do ingrediente a ser excluído
-        db.collection("Usuarios").document(user.getUid()).collection("Ingredientes").document(ingrediente.getId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    // Mostra uma mensagem de sucesso após a exclusão
-                    Toast.makeText(EstoqueIngrediente.this, "Ingrediente excluído com sucesso.", Toast.LENGTH_SHORT).show();
-                    // Atualiza a lista de ingredientes após a exclusão
-                    carregarIngredientes();
-                })
-                .addOnFailureListener(e -> {
-                    // Mostra uma mensagem de erro caso a exclusão falhe
-                    Toast.makeText(EstoqueIngrediente.this, "Erro ao excluir ingrediente.", Toast.LENGTH_SHORT).show();
-                });
+        if (ingrediente.isEmUso()) {
+            Toast.makeText(this, "Ingrediente não pode ser excluído: está em uso", Toast.LENGTH_SHORT).show();
+        } else {
+            db.collection("Usuarios").document(user.getUid()).collection("Ingredientes").document(ingrediente.getId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Ingrediente excluído com sucesso.", Toast.LENGTH_SHORT).show();
+                        carregarIngredientes();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Erro ao excluir ingrediente.", Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
+
 
     // Método para subtrair ingredientes do estoque
     public void subtrairIngredientes(ArrayList<Ingrediente> ingredientesUsados) {

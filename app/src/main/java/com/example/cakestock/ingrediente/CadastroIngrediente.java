@@ -202,7 +202,7 @@ public class CadastroIngrediente extends AppCompatActivity {
         double valorUnitario = Double.parseDouble(editValorUnitario.getText().toString().trim().replace(',', '.'));
         double valorTotal = quantidade * valorUnitario;
 
-        Ingrediente ingrediente = new Ingrediente(ingredienteId, nome, quantidade, tipoMedida, unidadeMedida, valorUnitario, valorTotal);
+        Ingrediente ingrediente = new Ingrediente(ingredienteId, nome, quantidade, tipoMedida, unidadeMedida, valorUnitario, valorTotal, false);
 
         CollectionReference ingredientesRef = db.collection("Usuarios").document(user.getUid()).collection("Ingredientes");
 

@@ -8,13 +8,15 @@ public class Ingrediente {
     private double unidadeMedida;
     private double valorUnitario;
     private double valorTotal;
+    private boolean emUso;
 
     // Construtor vazio necessário para o Firestore
     public Ingrediente() {
+        this.emUso = false; // Valor padrão
     }
 
     // Construtor com todos os parâmetros (construtor cheio)
-    public Ingrediente(String id, String nome, double quantidade, String tipoMedida, double unidadeMedida, double valorUnitario, double valorTotal) {
+    public Ingrediente(String id, String nome, double quantidade, String tipoMedida, double unidadeMedida, double valorUnitario, double valorTotal, boolean emUso) {
         this.id = id;
         this.nome = nome;
         this.quantidade = quantidade;
@@ -22,6 +24,7 @@ public class Ingrediente {
         this.unidadeMedida = unidadeMedida;
         this.valorUnitario = valorUnitario;
         this.valorTotal = valorTotal;
+        this.emUso = emUso;
     }
 
     // Construtor com nome e quantidade
@@ -51,4 +54,8 @@ public class Ingrediente {
 
     public double getValorTotal() { return valorTotal; }
     public void setValorTotal(double valorTotal) { this.valorTotal = valorTotal; }
+
+    public boolean isEmUso() { return emUso; }
+    public void setEmUso(boolean emUso) { this.emUso = emUso; }
+
 }

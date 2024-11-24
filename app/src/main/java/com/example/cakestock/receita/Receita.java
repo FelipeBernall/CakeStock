@@ -6,18 +6,21 @@ public class Receita {
     private String modoPreparo; // Instruções de preparo
     private String rendimento; // Quantidade de porções ou volume final
     private double tempoPreparo; // Tempo de preparo em minutos
+    private boolean emUso;
 
     // Construtor vazio necessário para o Firestore
     public Receita() {
+        this.emUso = false; // Valor padrão
     }
 
     // Construtor com todos os parâmetros
-    public Receita(String idReceita, String nome, String modoPreparo, String rendimento, double tempoPreparo) {
-        this.idReceita = idReceita; // Atualizado
+    public Receita(String idReceita, String nome, String modoPreparo, String rendimento, double tempoPreparo, boolean emUso) {
+        this.idReceita = idReceita;
         this.nome = nome;
         this.modoPreparo = modoPreparo;
         this.rendimento = rendimento;
         this.tempoPreparo = tempoPreparo;
+        this.emUso = emUso;
     }
 
     // Getters e Setters
@@ -35,4 +38,8 @@ public class Receita {
 
     public double getTempoPreparo() { return tempoPreparo; }
     public void setTempoPreparo(double tempoPreparo) { this.tempoPreparo = tempoPreparo; }
+
+    public boolean isEmUso() { return emUso; }
+    public void setEmUso(boolean emUso) { this.emUso = emUso; }
+
 }

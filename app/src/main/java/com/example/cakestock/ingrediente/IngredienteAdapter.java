@@ -55,14 +55,12 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
         private TextView textNome;
         private TextView textQuantidade;
         private ImageButton btnEditar; // Alterado de Button para ImageButton
-        private ImageButton btnExcluir; // ESTAVA CAUSANDO ERRO! PRESTAR ATENÇÃO!!!
 
         public IngredienteViewHolder(@NonNull View itemView) {
             super(itemView);
             textNome = itemView.findViewById(R.id.textNome);
             textQuantidade = itemView.findViewById(R.id.textQuantidade);
             btnEditar = itemView.findViewById(R.id.btnEditar);
-            btnExcluir = itemView.findViewById(R.id.btnExcluir);
         }
 
         public void bind(final Ingrediente ingrediente, final OnIngredienteClickListener listener) {
@@ -107,11 +105,13 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             });
 
-            btnExcluir.setOnClickListener(v -> {
+            itemView.setOnLongClickListener(v -> {
                 if (listener != null) {
                     listener.onDeleteClick(ingrediente);
                 }
+                return true;
             });
+
         }
 
     }

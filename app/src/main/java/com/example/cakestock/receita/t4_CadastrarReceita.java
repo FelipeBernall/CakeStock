@@ -85,7 +85,6 @@ public class t4_CadastrarReceita extends AppCompatActivity {
     }
 
     private void salvarDados() {
-        // Obter os dados dos campos de entrada
         String tempoPreparo = edtTempoPreparo.getText().toString().trim();
         String rendimento = edtRendimento.getText().toString().trim();
         String modoPreparo = edtModoPreparo.getText().toString().trim();
@@ -95,76 +94,74 @@ public class t4_CadastrarReceita extends AppCompatActivity {
             return;
         }
 
-        // Preparar os dados para salvar no Firestore
         Map<String, Object> dadosReceita = new HashMap<>();
         dadosReceita.put("nomeReceita", nomeReceita);
         dadosReceita.put("tempoPreparo", tempoPreparo);
         dadosReceita.put("rendimento", rendimento);
         dadosReceita.put("modoPreparo", modoPreparo);
+        dadosReceita.put("emUso", false); // Define como não em uso inicialmente
 
-        // Referência à receita no Firestore
-        CollectionReference receitasRef = db.collection("Usuarios").document(userId).collection("Receitas");
-
-        receitasRef.document(receitaId).set(dadosReceita)
+        db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
+                .set(dadosReceita)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(t4_CadastrarReceita.this, "Receita salva com sucesso!", Toast.LENGTH_SHORT).show();
-                    salvarIngredientesUtilizados();  // Salvar os ingredientes utilizados após salvar a receita
-
-                    // Redirecionar para a MainActivity após salvar a receita
-                    Intent intent = new Intent(t4_CadastrarReceita.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();  // Encerrar a atividade atual
+                    salvarIngredientesUtilizados();
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(t4_CadastrarReceita.this, "Erro ao salvar a receita", Toast.LENGTH_SHORT).show();
                 });
     }
 
+
+
     private void salvarIngredientesUtilizados() {
-        // Subcoleção de IngredientesUtilizados dentro da receita
         CollectionReference ingredientesUtilizadosRef = db.collection("Usuarios").document(userId)
                 .collection("Receitas").document(receitaId).collection("IngredientesUtilizados");
 
-        // Limpar ingredientes existentes antes de adicionar os novos (para edição)
         ingredientesUtilizadosRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (QueryDocumentSnapshot documento : queryDocumentSnapshots) {
                 ingredientesUtilizadosRef.document(documento.getId()).delete();
             }
 
-            // Adicionar os novos ingredientes
             for (String ingrediente : listaIngredientes) {
-                // Extrair nome e quantidade do formato "nome: quantidade"
                 String[] partes = ingrediente.split(": ");
                 if (partes.length == 2) {
                     String nomeIngrediente = partes[0];
                     String quantidade = partes[1];
-
-                    // Converter a quantidade para número (Long)
                     long quantidadeNumerica;
+
                     try {
                         quantidadeNumerica = Long.parseLong(quantidade);
                     } catch (NumberFormatException e) {
-                        Toast.makeText(t4_CadastrarReceita.this, "Quantidade inválida para o ingrediente: " + nomeIngrediente, Toast.LENGTH_SHORT).show();
-                        continue; // Pula para o próximo ingrediente
+                        Toast.makeText(this, "Quantidade inválida para o ingrediente: " + nomeIngrediente, Toast.LENGTH_SHORT).show();
+                        continue;
                     }
 
-                    // Criar o mapa para o ingrediente utilizado
                     Map<String, Object> ingredienteUsado = new HashMap<>();
                     ingredienteUsado.put("nomeIngrediente", nomeIngrediente);
-                    ingredienteUsado.put("quantidadeUsada", quantidadeNumerica); // Armazena como número
+                    ingredienteUsado.put("quantidadeUsada", quantidadeNumerica);
 
                     ingredientesUtilizadosRef.add(ingredienteUsado)
                             .addOnSuccessListener(documentReference -> {
-                                // Ingrediente salvo com sucesso
+                                // Atualiza o campo emUso do ingrediente correspondente
+                                db.collection("Usuarios").document(userId).collection("Ingredientes")
+                                        .whereEqualTo("nome", nomeIngrediente)
+                                        .get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            for (QueryDocumentSnapshot doc : querySnapshot) {
+                                                doc.getReference().update("emUso", true);
+                                            }
+                                        });
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(t4_CadastrarReceita.this, "Erro ao salvar ingredientes utilizados", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Erro ao salvar ingredientes utilizados", Toast.LENGTH_SHORT).show();
                             });
                 }
             }
-
         }).addOnFailureListener(e -> {
-            Toast.makeText(t4_CadastrarReceita.this, "Erro ao limpar ingredientes antigos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Erro ao limpar ingredientes antigos", Toast.LENGTH_SHORT).show();
         });
     }
+
 }

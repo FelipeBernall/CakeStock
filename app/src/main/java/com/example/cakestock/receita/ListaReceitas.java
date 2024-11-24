@@ -105,6 +105,34 @@ public class ListaReceitas extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        lvListaReceitas.setOnItemLongClickListener((parent, view, position, id) -> {
+            Receita receitaSelecionada = listaReceitas.get(position);
+            String idReceitaSelecionada = listaReceitasIds.get(position);
+
+            // Exibe um diálogo de confirmação
+            new AlertDialog.Builder(this)
+                    .setTitle("Excluir Receita")
+                    .setMessage("Deseja excluir a receita \"" + receitaSelecionada.getNome() + "\"?")
+                    .setPositiveButton("Sim", (dialog, which) -> {
+                        validarExclusaoReceita(idReceitaSelecionada, new OnValidacaoListener() {
+                            @Override
+                            public void onValid() {
+                                excluirReceita(idReceitaSelecionada);
+                            }
+
+                            @Override
+                            public void onInvalid(String mensagemErro) {
+                                Toast.makeText(ListaReceitas.this, mensagemErro, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Não", null)
+                    .show();
+
+            return true;
+        });
+
     }
 
     // Método para carregar as Receitas do Firestore
@@ -119,7 +147,7 @@ public class ListaReceitas extends AppCompatActivity {
                             String nomeReceita = document.getString("nomeReceita");
                             if (nomeReceita != null) {
                                 // Adiciona uma nova instância de Receita com os dados do documento
-                                Receita receita = new Receita(document.getId(), nomeReceita, "", "", 0);
+                                Receita receita = new Receita(document.getId(), nomeReceita, "", "", 0, false);
                                 listaReceitas.add(receita);
                                 listaReceitasIds.add(document.getId());
                             }
@@ -145,14 +173,14 @@ public class ListaReceitas extends AppCompatActivity {
             if (!quantidadeStr.isEmpty()) {
                 int quantidadeProduzida = Integer.parseInt(quantidadeStr);
 
-                // Chama o método para atualizar o estoque e salvar o histórico
                 controleEstoqueClass.atualizarEstoque(idReceitaSelecionada, quantidadeProduzida, new ControleEstoque.OnEstoqueUpdateListener() {
                     @Override
                     public void onSuccess() {
-                        Toast.makeText(ListaReceitas.this, "Produção registrada e estoque atualizado.", Toast.LENGTH_SHORT).show();
-                        // Redireciona para a tela de histórico após confirmar a produção
-                        Intent intent = new Intent(ListaReceitas.this, HistoricoProducoes.class);
-                        startActivity(intent);
+                        db.collection("Usuarios").document(userId).collection("Receitas")
+                                .document(idReceitaSelecionada)
+                                .update("emUso", true); // Atualiza para em uso
+
+                        Toast.makeText(ListaReceitas.this, "Produção registrada com sucesso.", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -161,13 +189,52 @@ public class ListaReceitas extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(ListaReceitas.this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
             }
         });
 
         builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
         builder.show();
     }
+
+    private void excluirReceita(String receitaId) {
+        db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Receita excluída com sucesso!", Toast.LENGTH_SHORT).show();
+                    carregarReceitas(); // Atualiza a lista de receitas
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Erro ao excluir a receita.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    private void validarExclusaoReceita(String receitaId, OnValidacaoListener listener) {
+        db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        boolean emUso = documentSnapshot.getBoolean("emUso");
+                        if (emUso) {
+                            listener.onInvalid("Receita já foi produzida e não pode ser excluída.");
+                        } else {
+                            listener.onValid(); // Receita pode ser excluída
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Erro ao validar a exclusão da receita.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    interface OnValidacaoListener {
+        void onValid();
+        void onInvalid(String mensagemErro);
+    }
+
+
+
 
     @Override
     protected void onResume() {
