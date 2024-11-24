@@ -1,4 +1,4 @@
-package com.example.cakestock.estoque;
+package com.example.cakestock.ingrediente;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cakestock.ingrediente.IngredienteAdapter;
 import com.example.cakestock.R;
-import com.example.cakestock.ingrediente.CadastroIngrediente;
-import com.example.cakestock.ingrediente.Ingrediente;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;

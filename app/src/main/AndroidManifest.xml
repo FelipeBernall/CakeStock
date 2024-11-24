@@ -27,7 +27,7 @@
         <activity android:name=".usuario.PerfilUsuario" android:exported="false" />
         <activity android:name=".usuario.FormCadastro" android:exported="false" />
         <activity android:name=".ingrediente.CadastroIngrediente" android:exported="false" />
-        <activity android:name=".estoque.EstoqueIngrediente" android:exported="false" />
+        <activity android:name=".ingrediente.EstoqueIngrediente" android:exported="false" />
         <activity android:name=".receita.t1_NomeReceita" android:exported="false" />
         <activity android:name=".receita.t2_AdicionarIngredientes" android:exported="false" />
         <activity android:name=".receita.t3_SelecionarIngrediente" android:exported="false" />

@@ -9,7 +9,7 @@ import com.example.cakestock.R;
 import com.example.cakestock.cliente.ListaClientes;
 import com.example.cakestock.financeiro.ListaTransacoes;
 import com.example.cakestock.pedido.ListaPedidos;
-import com.example.cakestock.estoque.EstoqueIngrediente;
+import com.example.cakestock.ingrediente.EstoqueIngrediente;
 import com.example.cakestock.estoque.EstoqueProdutos;
 import com.example.cakestock.produto.HistoricoProducoes;
 import com.example.cakestock.receita.ListaReceitas;
