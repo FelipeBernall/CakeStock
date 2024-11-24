@@ -1,5 +1,6 @@
 package com.example.cakestock.financeiro;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import java.text.SimpleDateFormat;
@@ -74,73 +76,136 @@ public class ListaTransacoes extends AppCompatActivity {
 
         // Carrega todas as transações (vendas e despesas)
         carregarTransacoes();
+
+        lvTransacoes.setOnItemLongClickListener((parent, view, position, id) -> {
+            Transacao transacao = (Transacao) parent.getItemAtPosition(position);
+
+            new AlertDialog.Builder(ListaTransacoes.this)
+                    .setTitle("Confirmar Exclusão")
+                    .setMessage("Você tem certeza que deseja excluir esta transação?")
+                    .setPositiveButton("Sim", (dialog, which) -> excluirTransacao(transacao))
+                    .setNegativeButton("Não", null)
+                    .show();
+            return true;
+        });
+
+        lvTransacoes.setOnItemClickListener((parent, view, position, id) -> {
+            Transacao transacao = (Transacao) parent.getItemAtPosition(position);
+            Intent intent;
+
+            if (transacao.getValorTotal() >= 0) {
+                intent = new Intent(ListaTransacoes.this, RegistroVenda.class);
+            } else {
+                intent = new Intent(ListaTransacoes.this, RegistroDespesa.class);
+            }
+
+            intent.putExtra("transacao", transacao);
+            startActivity(intent);
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carregarTransacoes();
     }
 
 
     private void carregarTransacoes() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        int mesAtual = calendarAtual.get(Calendar.MONTH) + 1;
+        int anoAtual = calendarAtual.get(Calendar.YEAR);
 
-        // Lista para armazenar as transações
-        List<String> transacoesList = new ArrayList<>();
-
-        // Variáveis para totalizar vendas e despesas
+        List<Transacao> transacoes = new ArrayList<>();
         final double[] totalVendas = {0.0};
         final double[] totalDespesas = {0.0};
 
-        // Carregar Vendas
+        // Carrega todas as vendas
         db.collection("Usuarios")
                 .document(userId)
                 .collection("Vendas")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Toast.makeText(ListaTransacoes.this, "Erro ao carregar vendas.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                .get()
+                .addOnCompleteListener(taskVendas -> {
+                    if (taskVendas.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : taskVendas.getResult()) {
+                            String descricao = document.getString("descricao");
+                            Double valorTotal = document.getDouble("valorTotal");
+                            String data = document.getString("data");
 
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String descricao = document.getString("descricao");
-                        Double valorTotal = document.getDouble("valorTotal");
-                        if (valorTotal != null) {
-                            totalVendas[0] += valorTotal;
+                            if (data != null && pertenceAoMesEAno(data, mesAtual, anoAtual)) {
+                                totalVendas[0] += valorTotal;
+                                transacoes.add(new Transacao(descricao, data, null, null, valorTotal));
+                            }
                         }
-                        String venda = descricao + ": " + String.format("+ R$ %.2f", valorTotal);
-                        transacoesList.add(venda);
+
+                        // Após carregar vendas, carregue despesas
+                        db.collection("Usuarios")
+                                .document(userId)
+                                .collection("Despesas")
+                                .get()
+                                .addOnCompleteListener(taskDespesas -> {
+                                    if (taskDespesas.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : taskDespesas.getResult()) {
+                                            String descricao = document.getString("descricao");
+                                            Double valor = document.getDouble("valor");
+                                            String data = document.getString("data");
+
+                                            if (data != null && pertenceAoMesEAno(data, mesAtual, anoAtual)) {
+                                                totalDespesas[0] += valor;
+                                                transacoes.add(new Transacao(descricao, data, null, null, -valor));
+                                            }
+                                        }
+
+                                        // Atualiza resumo e exibição
+                                        atualizarResumo(totalVendas[0], totalDespesas[0]);
+                                        atualizarLista(transacoes); // Lista unificada
+                                    }
+                                });
                     }
-
-                    atualizarLista(transacoesList);
-                    atualizarResumo(totalVendas[0], totalDespesas[0]);
-                });
-
-        // Carregar Despesas
-        db.collection("Usuarios")
-                .document(userId)
-                .collection("Despesas")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Toast.makeText(ListaTransacoes.this, "Erro ao carregar despesas.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String descricao = document.getString("descricao");
-                        Double valor = document.getDouble("valor");
-                        if (valor != null) {
-                            totalDespesas[0] += valor;
-                        }
-                        String despesa = descricao + ": " + String.format("- R$ %.2f", valor);
-                        transacoesList.add(despesa);
-                    }
-
-                    atualizarLista(transacoesList);
-                    atualizarResumo(totalVendas[0], totalDespesas[0]);
                 });
     }
 
-    private void atualizarLista(List<String> transacoesList) {
-        // Atualiza o ListView com as transações
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(ListaTransacoes.this, android.R.layout.simple_list_item_1, transacoesList);
+
+
+
+    private boolean pertenceAoMesEAno(String data, int mesAtual, int anoAtual) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Calendar dataCalendario = Calendar.getInstance();
+            dataCalendario.setTime(dateFormat.parse(data));
+
+            int mesTransacao = dataCalendario.get(Calendar.MONTH) + 1;
+            int anoTransacao = dataCalendario.get(Calendar.YEAR);
+
+            return mesTransacao == mesAtual && anoTransacao == anoAtual;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private void atualizarLista(List<Transacao> transacoes) {
+        // Ordena as transações pela data em ordem decrescente
+        Collections.sort(transacoes, (t1, t2) -> {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                // Compare as datas para garantir que as mais recentes fiquem no topo
+                return dateFormat.parse(t2.getData()).compareTo(dateFormat.parse(t1.getData()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0; // Se houver erro na comparação, mantém a posição original
+            }
+        });
+
+        // Configura o Adapter atualizado
+        TransacaoAdapter adapter = new TransacaoAdapter(this, transacoes);
         lvTransacoes.setAdapter(adapter);
     }
+
+
+
 
     private void atualizarResumo(double totalVendas, double totalDespesas) {
         // Atualiza os valores das TextViews de resumo
@@ -174,5 +239,35 @@ public class ListaTransacoes extends AppCompatActivity {
         // Recarrega as transações para o mês atualizado
         carregarTransacoes();
     }
+
+    private void excluirTransacao(Transacao transacao) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String collection = transacao.getValorTotal() >= 0 ? "Vendas" : "Despesas";
+
+        db.collection("Usuarios")
+                .document(userId)
+                .collection(collection)
+                .whereEqualTo("descricao", transacao.getDescricao())
+                .whereEqualTo("data", transacao.getData())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        String docId = task.getResult().getDocuments().get(0).getId();
+                        db.collection("Usuarios")
+                                .document(userId)
+                                .collection(collection)
+                                .document(docId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Transação excluída com sucesso!", Toast.LENGTH_SHORT).show();
+                                    carregarTransacoes();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this, "Erro ao excluir transação: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    } else {
+                        Toast.makeText(this, "Transação não encontrada.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
 }

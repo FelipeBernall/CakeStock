@@ -6,43 +6,44 @@
     android:layout_margin="8dp"
     app:cardElevation="4dp"
     app:cardCornerRadius="8dp"
-    android:background="@color/white">
+    android:background="@android:color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Descrição do Pedido -->
+        <!-- Descrição -->
         <TextView
-            android:id="@+id/tvDescricao"
+            android:id="@+id/tv_descricao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Descrição Transação"
+            android:text="Descrição"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="@color/black" />
+            android:textColor="@android:color/black" />
 
-        <!-- Data de Entrega -->
+        <!-- Data -->
         <TextView
-            android:id="@+id/tvData"
+            android:id="@+id/tv_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvDescricao"
-            android:text="Data: 20/11/2024"
+            android:layout_below="@id/tv_descricao"
+            android:text="Data"
             android:textSize="14sp"
-            />
+            android:textColor="@android:color/darker_gray" />
 
-        <!-- Cliente -->
+        <!-- Valor -->
         <TextView
-            android:id="@+id/tvCliente"
+            android:id="@+id/tv_valor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="Nome Cliente"
+            android:text="R$ 0,00"
             android:textSize="14sp"
+            android:textColor="@android:color/holo_green_dark"
             android:gravity="end" />
 
     </RelativeLayout>

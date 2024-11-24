@@ -53,6 +53,19 @@ public class RegistroDespesa extends AppCompatActivity {
 
         // Configurar o botão de salvar
         btnSalvar.setOnClickListener(v -> registrarDespesa());
+
+        Intent intent = getIntent();
+        Transacao transacao = (Transacao) intent.getSerializableExtra("transacao");
+
+        if (transacao != null) {
+            editTextDescricao.setText(transacao.getDescricao());
+            editTextValor.setText(String.valueOf(Math.abs(transacao.getValorTotal())));
+            editTextData.setText(transacao.getData());
+
+            btnSalvar.setOnClickListener(v -> atualizarDespesa(transacao));
+        }
+
+
     }
 
     private void abrirDatePicker() {
@@ -101,4 +114,42 @@ public class RegistroDespesa extends AppCompatActivity {
                     Toast.makeText(this, "Erro ao salvar despesa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+    private void atualizarDespesa(Transacao transacao) {
+        String descricao = editTextDescricao.getText().toString();
+        double valor = Double.parseDouble(editTextValor.getText().toString());
+        String data = editTextData.getText().toString();
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        db.collection("Usuarios")
+                .document(userId)
+                .collection("Despesas")
+                .whereEqualTo("descricao", transacao.getDescricao())
+                .whereEqualTo("data", transacao.getData())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        String docId = task.getResult().getDocuments().get(0).getId();
+                        Map<String, Object> updatedData = new HashMap<>();
+                        updatedData.put("descricao", descricao);
+                        updatedData.put("valor", valor); // Deve ser positivo para despesa
+                        updatedData.put("data", data);
+
+                        db.collection("Usuarios")
+                                .document(userId)
+                                .collection("Despesas")
+                                .document(docId)
+                                .update(updatedData)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Despesa atualizada com sucesso!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this, "Erro ao atualizar despesa: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    } else {
+                        Toast.makeText(this, "Erro ao localizar despesa.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
 }

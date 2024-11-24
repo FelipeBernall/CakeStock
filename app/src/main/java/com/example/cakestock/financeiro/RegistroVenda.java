@@ -123,9 +123,7 @@ public class RegistroVenda extends AppCompatActivity {
         // Inicializa a ListView
         listViewProdutos = findViewById(R.id.lv_produtos_disponiveis);
 
-        // Configura o Adapter para a ListView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosAdicionados);
-        listViewProdutos.setAdapter(adapter);
+
 
         // Adiciona o listener para clique longo
         listViewProdutos.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -133,6 +131,23 @@ public class RegistroVenda extends AppCompatActivity {
             removerProdutoComConfirmacao(position);
             return true; // Indica que o evento foi tratado
         });
+
+        Intent intent = getIntent();
+        Transacao transacao = (Transacao) intent.getSerializableExtra("transacao");
+
+        if (transacao != null) {
+            editTextDescricao.setText(transacao.getDescricao());
+            editTextData.setText(transacao.getData());
+            valorTotal = transacao.getValorTotal(); // Valor total
+            produtosAdicionados.addAll(transacao.getProdutos()); // Produtos associados
+
+            atualizarValorTotal(); // Atualiza os valores na tela
+            // Atualiza a listView de produtos
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosAdicionados);
+            listViewProdutos.setAdapter(adapter);
+        }
+
+
     }
 
     private void showDatePickerDialog() {
@@ -292,50 +307,93 @@ public class RegistroVenda extends AppCompatActivity {
     }
 
     private void registrarVenda() {
-        String descricao = editTextDescricao.getText().toString();
-        String data = editTextData.getText().toString();
-        String clienteId = clientesList.get(spinnerCliente.getSelectedItemPosition() - 1).getId();
+        // Obtém os valores dos campos
+        String descricao = editTextDescricao.getText().toString().trim();
+        String data = editTextData.getText().toString().trim();
+        int clienteIndex = spinnerCliente.getSelectedItemPosition();
+        boolean clienteSelecionado = clienteIndex > 0; // Primeiro item é "Selecionar"
+        boolean produtosPreenchidos = !produtosAdicionados.isEmpty();
 
-        if (descricao.isEmpty() || data.isEmpty() || produtosAdicionados.isEmpty()) {
-            Toast.makeText(this, "Preencha todos os campos obrigatórios.", Toast.LENGTH_SHORT).show();
+        // Validação: Verifica se todos os campos obrigatórios foram preenchidos
+        if (descricao.isEmpty()) {
+            Toast.makeText(this, "Por favor, insira uma descrição para a venda.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Cria a Transacao
+        if (data.isEmpty()) {
+            Toast.makeText(this, "Por favor, insira uma data válida.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!clienteSelecionado) {
+            Toast.makeText(this, "Por favor, selecione um cliente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!produtosPreenchidos) {
+            Toast.makeText(this, "Por favor, adicione pelo menos um produto à venda.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Obtém o ID do cliente selecionado
+        String clienteId = clientesList.get(clienteIndex - 1).getId();
+
+        // Cria a transação
         Transacao transacao = new Transacao(descricao, data, clienteId, produtosAdicionados, valorTotal);
 
-        // Enviar dados para o Firestore
+        // Envia a transação para o Firestore
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .collection("Vendas")
                 .add(transacao)  // Adiciona a transação
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Se a transação for registrada com sucesso
+                        // Transação registrada com sucesso
                         Toast.makeText(this, "Venda registrada com sucesso!", Toast.LENGTH_SHORT).show();
 
                         // Redireciona para a tela de transações
                         Intent intent = new Intent(RegistroVenda.this, ListaTransacoes.class);
                         startActivity(intent);
-
-                        // Finaliza a atividade atual
-                        finish();
+                        finish(); // Finaliza a atividade atual
                     } else {
-                        // Se ocorrer um erro durante a gravação
+                        // Erro ao registrar a venda
                         Toast.makeText(this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    // Caso ocorra uma falha ao salvar no Firestore
+                    // Falha ao salvar no Firestore
                     Toast.makeText(this, "Erro ao salvar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
 
 
+
     private void removerProduto(int position) {
         // Verifica se a posição é válida
         if (position >= 0 && position < produtosAdicionados.size()) {
+            // Obtém o produto a ser removido
+            String produtoRemovido = produtosAdicionados.get(position);
+
+            // Extrai o nome do produto (antes do " (x")
+            String nomeProduto = produtoRemovido.split(" \\(x")[0];
+
+            // Remove o produto do mapa
+            if (produtosMap.containsKey(nomeProduto)) {
+                produtosMap.remove(nomeProduto);
+            }
+
+            // Extrai o valor do produto (assumindo que o valor está no formato "R$ X,XX" no final)
+            String[] partes = produtoRemovido.split(": R\\$ ");
+            if (partes.length > 1) {
+                try {
+                    double valorProduto = Double.parseDouble(partes[1].replace(",", "."));
+                    valorTotal -= valorProduto; // Atualiza o valor total
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Erro ao calcular o valor do produto removido.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
             // Remove o produto da lista
             produtosAdicionados.remove(position);
 
@@ -343,7 +401,7 @@ public class RegistroVenda extends AppCompatActivity {
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) listViewProdutos.getAdapter();
             adapter.notifyDataSetChanged(); // Notifica o adapter para atualizar a exibição
 
-            // Recalcula o valor total
+            // Atualiza o valor total no TextView
             atualizarValorTotal();
 
             // Exibe uma mensagem de sucesso
@@ -352,6 +410,8 @@ public class RegistroVenda extends AppCompatActivity {
             Toast.makeText(this, "Erro ao remover produto.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
     private void removerProdutoComConfirmacao(int position) {

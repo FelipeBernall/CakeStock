@@ -5,14 +5,19 @@
     android:padding="16dp">
 
     <!-- ListView para exibir o histórico de produções -->
+
+    <!-- FAB para adicionar nova produção -->
     <ListView
         android:id="@+id/lv_historico_producoes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="1dp" />
 
-    <!-- FAB para adicionar nova produção -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_adicionar_producao"
         android:layout_width="wrap_content"

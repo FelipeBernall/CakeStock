@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -148,7 +148,8 @@
             android:layout_weight="1"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"
-            android:paddingVertical="16dp" />
+            android:paddingVertical="16dp"
+            android:scrollbars="vertical" />
 
         <LinearLayout
             android:id="@+id/ll_botoes"
@@ -188,4 +189,4 @@
                 android:padding="16dp" />
         </LinearLayout>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>
