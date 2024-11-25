@@ -5,15 +5,37 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Nome da Receita -->
-    <TextView
-        android:id="@+id/tv_nome_receita_detalhe"
-        android:layout_width="wrap_content"
+    <!-- Cabeçalho com botão de voltar e nome da receita -->
+    <LinearLayout
+        android:id="@+id/layout_cabecalho"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nome da Receita"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:paddingBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Botão de voltar -->
+        <ImageButton
+            android:id="@+id/btn_voltar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_before"
+            android:contentDescription="Voltar"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+
+        <!-- Nome da receita -->
+        <TextView
+            android:id="@+id/tv_nome_receita_detalhe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Nome da Receita"
+            android:textColor="@color/DeepSkyBlue"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
 
     <!-- Tempo de Preparo -->
     <TextView
@@ -21,9 +43,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tempo de Preparo: "
+        android:textStyle="bold"
         android:textSize="16sp"
-        android:paddingBottom="8dp"
-        android:layout_below="@id/tv_nome_receita_detalhe" />
+        android:paddingTop="16dp"
+        android:layout_below="@id/layout_cabecalho" />
 
     <!-- Rendimento -->
     <TextView
@@ -31,8 +54,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Rendimento: "
+        android:textStyle="bold"
         android:textSize="16sp"
-        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
         android:layout_below="@id/tv_tempo_preparo" />
 
     <!-- Ingredientes Utilizados -->
@@ -43,37 +67,18 @@
         android:text="Ingredientes Utilizados:"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp"
+        android:paddingTop="16dp"
         android:layout_below="@id/tv_rendimento" />
 
     <!-- Lista de Ingredientes -->
     <ListView
         android:id="@+id/lv_ingredientes_utilizados"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_below="@id/tv_ingredientes_utilizados_label"
         android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
-
-    <!-- Modo de Preparo -->
-    <TextView
-        android:id="@+id/tv_modo_preparo_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Modo de Preparo:"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"
-        android:layout_below="@id/lv_ingredientes_utilizados" />
-
-    <TextView
-        android:id="@+id/tv_modo_preparo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Descreva o modo de preparo aqui."
-        android:textSize="16sp"
-        android:layout_below="@id/tv_modo_preparo_label" />
+        android:dividerHeight="1dp"
+        android:paddingVertical="8dp" />
 
     <!-- Floating Action Button para Editar Receita -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -86,4 +91,17 @@
         android:contentDescription="Editar Receita"
         android:src="@drawable/ic_edit"
         android:backgroundTint="@color/DeepSkyBlue" />
+
+    <!-- Floating Action Button para Abrir Modo de Preparo -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_modo_preparo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/fab_editar_receita"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:contentDescription="Modo de Preparo"
+        android:src="@drawable/ic_modo_preparo"
+        android:backgroundTint="@color/DeepSkyBlue" />
+
 </RelativeLayout>

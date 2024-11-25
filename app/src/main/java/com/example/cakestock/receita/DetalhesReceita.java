@@ -8,6 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
@@ -23,14 +24,15 @@ public class DetalhesReceita extends AppCompatActivity {
     private TextView tvNomeReceitaDetalhe;
     private TextView tvTempoPreparo;
     private TextView tvRendimento;
-    private TextView tvModoPreparo;
     private ListView lvIngredientesUtilizados;
     private FloatingActionButton fabEditarReceita;
+    private FloatingActionButton fabModoPreparo;
 
     private FirebaseFirestore db;
     private String userId;
     private String idReceita;
     private String nomeReceita;
+    private String modoPreparo;
 
     private ArrayList<String> listaIngredientesUtilizados;
     private ArrayAdapter<String> adapterIngredientes;
@@ -44,9 +46,9 @@ public class DetalhesReceita extends AppCompatActivity {
         tvNomeReceitaDetalhe = findViewById(R.id.tv_nome_receita_detalhe);
         tvTempoPreparo = findViewById(R.id.tv_tempo_preparo);
         tvRendimento = findViewById(R.id.tv_rendimento);
-        tvModoPreparo = findViewById(R.id.tv_modo_preparo);
         lvIngredientesUtilizados = findViewById(R.id.lv_ingredientes_utilizados);
         fabEditarReceita = findViewById(R.id.fab_editar_receita);
+        fabModoPreparo = findViewById(R.id.fab_modo_preparo);
 
         // Inicializa o Firestore e autenticação
         db = FirebaseFirestore.getInstance();
@@ -76,7 +78,7 @@ public class DetalhesReceita extends AppCompatActivity {
 
         // Inicializa a lista e o adapter customizado para os ingredientes
         listaIngredientesUtilizados = new ArrayList<>();
-        adapterIngredientes = new ArrayAdapter<>(this, R.layout.item_ingrediente, R.id.textNome, listaIngredientesUtilizados);
+        adapterIngredientes = new ArrayAdapter<>(this, R.layout.item_detalhes_receita, R.id.tv_nome_ingrediente, listaIngredientesUtilizados);
         lvIngredientesUtilizados.setAdapter(adapterIngredientes);
 
         // Carrega os detalhes da receita
@@ -89,9 +91,18 @@ public class DetalhesReceita extends AppCompatActivity {
             editarIntent.putExtra("id_receita", idReceita);
             editarIntent.putExtra("tempo_preparo", tvTempoPreparo.getText().toString().replace("Tempo de Preparo: ", "").replace(" minutos", ""));
             editarIntent.putExtra("rendimento", tvRendimento.getText().toString().replace("Rendimento: ", "").replace(" porções", ""));
-            editarIntent.putExtra("modo_preparo", tvModoPreparo.getText().toString());
+            editarIntent.putExtra("modo_preparo", modoPreparo);
             editarIntent.putStringArrayListExtra("ingredientes_lista", listaIngredientesUtilizados);
             startActivity(editarIntent);
+        });
+
+        // Configura o FAB para mostrar o modo de preparo
+        fabModoPreparo.setOnClickListener(v -> {
+            new AlertDialog.Builder(DetalhesReceita.this)
+                    .setTitle("Modo de Preparo")
+                    .setMessage(modoPreparo)
+                    .setPositiveButton("Fechar", null)
+                    .show();
         });
     }
 
@@ -103,11 +114,10 @@ public class DetalhesReceita extends AppCompatActivity {
                         // Obter os campos principais
                         String tempoPreparo = documentSnapshot.getString("tempoPreparo");
                         String rendimento = documentSnapshot.getString("rendimento");
-                        String modoPreparo = documentSnapshot.getString("modoPreparo");
+                        modoPreparo = documentSnapshot.getString("modoPreparo");
 
                         tvTempoPreparo.setText("Tempo de Preparo: " + tempoPreparo + " minutos");
                         tvRendimento.setText("Rendimento: " + rendimento + " porções");
-                        tvModoPreparo.setText(modoPreparo);
 
                         // Obter a subcoleção IngredientesUtilizados
                         db.collection("Usuarios").document(userId).collection("Receitas").document(idReceita)

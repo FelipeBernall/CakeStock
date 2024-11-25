@@ -67,7 +67,7 @@ public class ListaReceitas extends AppCompatActivity {
         listaReceitasIds = new ArrayList<>();
 
         // Configura o adapter personalizado
-        adapterReceitas = new ReceitaAdapter(this, R.layout.item_receita, listaReceitas);
+        adapterReceitas = new ReceitaAdapter(this, R.layout.item_lista_receitas, listaReceitas);
         lvListaReceitas.setAdapter(adapterReceitas);
 
         // Inicializa a classe de controle de estoque
