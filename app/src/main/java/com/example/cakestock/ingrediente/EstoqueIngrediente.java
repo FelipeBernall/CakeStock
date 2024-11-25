@@ -131,6 +131,7 @@ public class EstoqueIngrediente extends AppCompatActivity {
         EditText editQuantidade = dialogView.findViewById(R.id.editQuantidade);
         EditText editUnidadeMedida = dialogView.findViewById(R.id.editUnidadeMedida);
 
+        // Exibe ou oculta o campo de unidade de medida conforme o tipo de medida
         if (ingrediente.getTipoMedida().equals("Gramas") || ingrediente.getTipoMedida().equals("Mililitros")) {
             editUnidadeMedida.setVisibility(View.VISIBLE);
         } else {
@@ -141,16 +142,27 @@ public class EstoqueIngrediente extends AppCompatActivity {
             double quantidadeAdicional = Double.parseDouble(editQuantidade.getText().toString().trim());
             double novaQuantidade;
 
-            if (ingrediente.getTipoMedida().equals("Unidades")) {
-                novaQuantidade = ingrediente.getQuantidade() + quantidadeAdicional;
-            } else {
+            // Verifica o tipo de medida e aplica a lógica correspondente
+            if (ingrediente.getTipoMedida().equals("Gramas")) {
                 double unidadeMedida = ingrediente.getUnidadeMedida();
                 if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
                     unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
                 }
-                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 1000; // Ajustado para conversão correta
+                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 500; // Cálculo para gramas
+            } else if (ingrediente.getTipoMedida().equals("Mililitros")) {
+                double unidadeMedida = ingrediente.getUnidadeMedida();
+                if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
+                    unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
+                }
+                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 1000; // Cálculo para mililitros
+            } else if (ingrediente.getTipoMedida().equals("Unidades")) {
+                novaQuantidade = ingrediente.getQuantidade() + quantidadeAdicional; // Simples soma para unidades
+            } else {
+                Toast.makeText(this, "Tipo de medida desconhecido.", Toast.LENGTH_SHORT).show();
+                return;
             }
 
+            // Atualiza no banco de dados
             db.collection("Usuarios").document(user.getUid())
                     .collection("Ingredientes").document(ingrediente.getId())
                     .update("quantidade", novaQuantidade)
@@ -166,6 +178,7 @@ public class EstoqueIngrediente extends AppCompatActivity {
         builder.setNegativeButton("Cancelar", null);
         builder.show();
     }
+
 
     public void subtrairIngredientes(ArrayList<Ingrediente> ingredientesUsados) {
         for (Ingrediente usado : ingredientesUsados) {
