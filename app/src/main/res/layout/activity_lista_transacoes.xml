@@ -151,18 +151,19 @@
             android:paddingVertical="16dp"
             android:scrollbars="vertical" />
 
+
         <LinearLayout
             android:id="@+id/ll_botoes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:orientation="horizontal">
 
             <!-- Botão de despesa -->
             <ImageButton
                 android:id="@+id/btn_despesas"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Expense"
                 android:padding="16dp"
@@ -171,22 +172,13 @@
             <!-- Botão de ganho -->
             <ImageButton
                 android:id="@+id/btn_vendas"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_ganho"
+                android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Income"
-                android:padding="16dp" />
-
-            <!-- Botão de filtro -->
-            <ImageButton
-                android:id="@+id/btn_filtro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_filter"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Filter"
-                android:padding="16dp" />
+                android:padding="16dp"
+                android:src="@drawable/ic_ganho" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
