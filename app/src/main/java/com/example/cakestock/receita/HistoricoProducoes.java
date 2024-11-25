@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -90,7 +91,20 @@ public class HistoricoProducoes extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Erro inesperado na inicialização: ", e);
         }
+
+        if (getIntent().hasExtra("mensagem")) {
+            String mensagem = getIntent().getStringExtra("mensagem");
+            Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
+        }
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carregarProducoes(); // Atualiza a lista ao voltar para a tela
+    }
+
 
     private void atualizarMesAtual() {
         try {
@@ -140,6 +154,10 @@ public class HistoricoProducoes extends AppCompatActivity {
                                     Log.e(TAG, "Erro ao processar documento: " + document.getId(), e);
                                 }
                             }
+
+                            // Ordena a lista de produções em ordem decrescente de data
+                            producoes.sort((p1, p2) -> p2.getDataProducao().compareTo(p1.getDataProducao()));
+
                             historicoAdapter.clear();
                             historicoAdapter.addAll(producoes);
                             historicoAdapter.notifyDataSetChanged();
@@ -151,6 +169,7 @@ public class HistoricoProducoes extends AppCompatActivity {
             Log.e(TAG, "Erro ao carregar produções: ", e);
         }
     }
+
 
     private boolean pertenceAoMesEAno(String data, int mesAtual, int anoAtual) {
         try {

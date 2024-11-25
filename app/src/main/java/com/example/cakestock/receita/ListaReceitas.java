@@ -177,9 +177,15 @@ public class ListaReceitas extends AppCompatActivity {
                     public void onSuccess() {
                         db.collection("Usuarios").document(userId).collection("Receitas")
                                 .document(idReceitaSelecionada)
-                                .update("emUso", true); // Atualiza para em uso
-
-                        Toast.makeText(ListaReceitas.this, "Produção registrada com sucesso.", Toast.LENGTH_SHORT).show();
+                                .update("emUso", true) // Atualiza para "em uso"
+                                .addOnSuccessListener(unused -> {
+                                    // Redireciona para a tela de registro de produção
+                                    Intent intent = new Intent(ListaReceitas.this, HistoricoProducoes.class);
+                                    intent.putExtra("mensagem", "Produção registrada com sucesso!");
+                                    startActivity(intent);
+                                    finish(); // Finaliza a tela atual para evitar voltar
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(ListaReceitas.this, "Erro ao atualizar receita.", Toast.LENGTH_SHORT).show());
                     }
 
                     @Override
@@ -195,6 +201,7 @@ public class ListaReceitas extends AppCompatActivity {
         builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
         builder.show();
     }
+
 
     private void excluirReceita(String receitaId) {
         db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
