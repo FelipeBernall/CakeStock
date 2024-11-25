@@ -1,8 +1,10 @@
 package com.example.cakestock.receita;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -14,6 +16,7 @@ import com.example.cakestock.R;
 import com.example.cakestock.usuario.FormLogin;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -96,6 +99,12 @@ public class HistoricoProducoes extends AppCompatActivity {
             String mensagem = getIntent().getStringExtra("mensagem");
             Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
         }
+
+        lvHistoricoProducoes.setOnItemClickListener((parent, view, position, id) -> {
+            Producao producaoSelecionada = producoes.get(position);
+            abrirDialogoEdicao(producaoSelecionada);
+        });
+
 
     }
 
@@ -186,4 +195,133 @@ public class HistoricoProducoes extends AppCompatActivity {
             return false;
         }
     }
+
+    private void abrirDialogoEdicao(Producao producao) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Editar Produção de " + producao.getNomeReceita());
+
+        final EditText input = new EditText(this);
+        input.setHint("Nova quantidade produzida");
+        input.setText(String.valueOf(producao.getQuantidadeProduzida())); // Preenche com o valor atual
+        builder.setView(input);
+
+        builder.setPositiveButton("Confirmar", (dialog, which) -> {
+            String novaQuantidadeStr = input.getText().toString();
+            if (!novaQuantidadeStr.isEmpty()) {
+                int novaQuantidade = Integer.parseInt(novaQuantidadeStr);
+                int quantidadeAnterior = producao.getQuantidadeProduzida();
+                int diferenca = novaQuantidade - quantidadeAnterior;
+
+                ajustarEstoque(producao.getNomeReceita(), diferenca, () -> {
+                    // Busca o documento no Firestore para obter o ID correto
+                    db.collection("Usuarios")
+                            .document(userId)
+                            .collection("HistoricoProducoes")
+                            .whereEqualTo("dataProducao", producao.getDataProducao())
+                            .whereEqualTo("nomeReceita", producao.getNomeReceita())
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                if (!querySnapshot.isEmpty()) {
+                                    String documentId = querySnapshot.getDocuments().get(0).getId();
+                                    // Atualiza o documento com o ID correto
+                                    db.collection("Usuarios")
+                                            .document(userId)
+                                            .collection("HistoricoProducoes")
+                                            .document(documentId)
+                                            .update("quantidadeProduzida", novaQuantidade)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(this, "Produção atualizada com sucesso!", Toast.LENGTH_SHORT).show();
+                                                carregarProducoes();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(this, "Erro ao atualizar produção.", Toast.LENGTH_SHORT).show();
+                                            });
+                                } else {
+                                    Toast.makeText(this, "Produção não encontrada.", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Erro ao buscar produção.", Toast.LENGTH_SHORT).show();
+                            });
+                });
+            } else {
+                Toast.makeText(this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+
+    private void ajustarEstoque(String nomeReceita, int diferenca, Runnable callback) {
+        if (diferenca == 0) {
+            callback.run();
+            return;
+        }
+
+        // Obtém os ingredientes usados pela receita
+        db.collection("Usuarios")
+                .document(userId)
+                .collection("Receitas")
+                .whereEqualTo("nomeReceita", nomeReceita)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String idReceita = queryDocumentSnapshots.getDocuments().get(0).getId();
+
+                        db.collection("Usuarios")
+                                .document(userId)
+                                .collection("Receitas")
+                                .document(idReceita)
+                                .collection("IngredientesUtilizados")
+                                .get()
+                                .addOnSuccessListener(ingredientesSnapshot -> {
+                                    for (QueryDocumentSnapshot ingredienteDoc : ingredientesSnapshot) {
+                                        String nomeIngrediente = ingredienteDoc.getString("nomeIngrediente");
+                                        Long quantidadePorReceita = ingredienteDoc.getLong("quantidadeUsada");
+
+                                        if (nomeIngrediente != null && quantidadePorReceita != null) {
+                                            int ajusteQuantidade = quantidadePorReceita.intValue() * Math.abs(diferenca);
+
+                                            ajustarQuantidadeIngredienteFirestore(nomeIngrediente, ajusteQuantidade, diferenca > 0);
+                                        }
+                                    }
+
+                                    callback.run();
+                                })
+                                .addOnFailureListener(e -> Log.e("Estoque", "Erro ao carregar ingredientes da receita.", e));
+                    } else {
+                        Log.e("Estoque", "Receita não encontrada.");
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Estoque", "Erro ao buscar receita.", e));
+    }
+
+    private void ajustarQuantidadeIngredienteFirestore(String nomeIngrediente, int quantidade, boolean reduzir) {
+        db.collection("Usuarios")
+                .document(userId)
+                .collection("Ingredientes")
+                .whereEqualTo("nome", nomeIngrediente)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        double quantidadeAtual = doc.getDouble("quantidade");
+                        double novaQuantidade = reduzir ? (quantidadeAtual - quantidade) : (quantidadeAtual + quantidade);
+
+                        if (novaQuantidade < 0) {
+                            Log.e("Estoque", "Quantidade insuficiente para o ingrediente: " + nomeIngrediente);
+                            return;
+                        }
+
+                        doc.getReference().update("quantidade", novaQuantidade)
+                                .addOnSuccessListener(aVoid -> Log.d("Estoque", "Estoque atualizado para " + nomeIngrediente + ": " + novaQuantidade))
+                                .addOnFailureListener(e -> Log.e("Estoque", "Erro ao atualizar estoque do ingrediente: " + nomeIngrediente, e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Estoque", "Erro ao acessar o estoque do ingrediente: " + nomeIngrediente, e));
+    }
+
+
+
 }
