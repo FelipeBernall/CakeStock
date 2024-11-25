@@ -19,4 +19,12 @@
         android:hint="Peso/Volume por unidade"
         android:inputType="numberDecimal"
         android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/editValorUnitario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor unitário"
+        android:inputType="numberDecimal" />
+
 </LinearLayout>

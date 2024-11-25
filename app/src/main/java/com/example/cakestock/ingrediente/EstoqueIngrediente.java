@@ -121,15 +121,18 @@ public class EstoqueIngrediente extends AppCompatActivity {
         }
     }
 
+    // Adição no método abrirDialogAdicionarQuantidade na classe EstoqueIngrediente
+// Adição no método abrirDialogAdicionarQuantidade na classe EstoqueIngrediente
     private void abrirDialogAdicionarQuantidade(Ingrediente ingrediente) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Adicionar Quantidade");
+        builder.setTitle("Adicionar Quantidade e Valor Unitário");
 
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_quantity, null);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_quantidade, null);
         builder.setView(dialogView);
 
         EditText editQuantidade = dialogView.findViewById(R.id.editQuantidade);
         EditText editUnidadeMedida = dialogView.findViewById(R.id.editUnidadeMedida);
+        EditText editValorUnitario = dialogView.findViewById(R.id.editValorUnitario); // Novo campo
 
         // Exibe ou oculta o campo de unidade de medida conforme o tipo de medida
         if (ingrediente.getTipoMedida().equals("Gramas") || ingrediente.getTipoMedida().equals("Mililitros")) {
@@ -139,45 +142,67 @@ public class EstoqueIngrediente extends AppCompatActivity {
         }
 
         builder.setPositiveButton("Adicionar", (dialog, which) -> {
-            double quantidadeAdicional = Double.parseDouble(editQuantidade.getText().toString().trim());
-            double novaQuantidade;
+            try {
+                double quantidadeAdicional = Double.parseDouble(editQuantidade.getText().toString().trim());
+                double valorUnitarioAdicional = Double.parseDouble(editValorUnitario.getText().toString().trim()); // Captura do valor unitário
+                double novaQuantidade;
+                double novoValorUnitario;
 
-            // Verifica o tipo de medida e aplica a lógica correspondente
-            if (ingrediente.getTipoMedida().equals("Gramas")) {
-                double unidadeMedida = ingrediente.getUnidadeMedida();
-                if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
-                    unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
+                // Cálculo do valor total atual
+                double valorTotalAtual = ingrediente.getQuantidade() * ingrediente.getValorUnitario();
+                double valorTotalAdicional = quantidadeAdicional * valorUnitarioAdicional;
+
+                // Verifica o tipo de medida e aplica a lógica correspondente
+                if (ingrediente.getTipoMedida().equals("Gramas")) {
+                    double unidadeMedida = ingrediente.getUnidadeMedida();
+                    if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
+                        unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
+                    }
+                    novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 500; // Cálculo para gramas
+                } else if (ingrediente.getTipoMedida().equals("Mililitros")) {
+                    double unidadeMedida = ingrediente.getUnidadeMedida();
+                    if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
+                        unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
+                    }
+                    novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 1000; // Cálculo para mililitros
+                } else if (ingrediente.getTipoMedida().equals("Unidades")) {
+                    novaQuantidade = ingrediente.getQuantidade() + quantidadeAdicional; // Simples soma para unidades
+                } else {
+                    Toast.makeText(this, "Tipo de medida desconhecido.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 500; // Cálculo para gramas
-            } else if (ingrediente.getTipoMedida().equals("Mililitros")) {
-                double unidadeMedida = ingrediente.getUnidadeMedida();
-                if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
-                    unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
-                }
-                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 1000; // Cálculo para mililitros
-            } else if (ingrediente.getTipoMedida().equals("Unidades")) {
-                novaQuantidade = ingrediente.getQuantidade() + quantidadeAdicional; // Simples soma para unidades
-            } else {
-                Toast.makeText(this, "Tipo de medida desconhecido.", Toast.LENGTH_SHORT).show();
-                return;
+
+                // Cálculo do novo valor unitário
+                double valorTotalNovo = valorTotalAtual + valorTotalAdicional;
+                novoValorUnitario = valorTotalNovo / novaQuantidade;
+
+                // Formata os valores para 2 casas decimais
+                novaQuantidade = Math.round(novaQuantidade * 100.0) / 100.0;
+                novoValorUnitario = Math.round(novoValorUnitario * 100.0) / 100.0;
+
+                // Atualiza no banco de dados
+                db.collection("Usuarios").document(user.getUid())
+                        .collection("Ingredientes").document(ingrediente.getId())
+                        .update("quantidade", novaQuantidade, "valorUnitario", novoValorUnitario) // Atualiza quantidade e valor unitário
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Quantidade e valor unitário atualizados com sucesso!", Toast.LENGTH_SHORT).show();
+                            carregarIngredientes();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Erro ao atualizar quantidade e valor unitário.", Toast.LENGTH_SHORT).show();
+                        });
+
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Por favor, insira valores válidos.", Toast.LENGTH_SHORT).show();
             }
-
-            // Atualiza no banco de dados
-            db.collection("Usuarios").document(user.getUid())
-                    .collection("Ingredientes").document(ingrediente.getId())
-                    .update("quantidade", novaQuantidade)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Quantidade adicionada com sucesso!", Toast.LENGTH_SHORT).show();
-                        carregarIngredientes();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Erro ao atualizar quantidade.", Toast.LENGTH_SHORT).show();
-                    });
         });
 
         builder.setNegativeButton("Cancelar", null);
         builder.show();
     }
+
+
+
 
 
     public void subtrairIngredientes(ArrayList<Ingrediente> ingredientesUsados) {
