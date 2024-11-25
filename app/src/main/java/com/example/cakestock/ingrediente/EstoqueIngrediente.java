@@ -3,8 +3,10 @@ package com.example.cakestock.ingrediente;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ImageButton;  // Alterado de Button para ImageButton
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +25,6 @@ import java.util.List;
 
 public class EstoqueIngrediente extends AppCompatActivity {
 
-    // Declaração das variáveis para RecyclerView, Adapter, lista de ingredientes, FirebaseFirestore, FirebaseUser e botão
     private RecyclerView recyclerViewIngredientes;
     private IngredienteAdapter adapter;
     private List<Ingrediente> ingredientes;
@@ -53,7 +54,6 @@ public class EstoqueIngrediente extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(Ingrediente ingrediente) {
-                // Exibe o diálogo de confirmação ao pressionar por alguns segundos
                 new AlertDialog.Builder(EstoqueIngrediente.this)
                         .setTitle("Excluir Ingrediente")
                         .setMessage("Tem certeza de que deseja excluir o ingrediente \"" + ingrediente.getNome() + "\"?")
@@ -61,8 +61,12 @@ public class EstoqueIngrediente extends AppCompatActivity {
                         .setNegativeButton("Não", null)
                         .show();
             }
-        });
 
+            @Override
+            public void onAddQuantityClick(Ingrediente ingrediente) {
+                abrirDialogAdicionarQuantidade(ingrediente);
+            }
+        });
 
         recyclerViewIngredientes.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewIngredientes.setAdapter(adapter);
@@ -80,43 +84,29 @@ public class EstoqueIngrediente extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
             Toast.makeText(this, "Ingrediente adicionado com sucesso!", Toast.LENGTH_SHORT).show();
-            carregarIngredientes(); // Atualiza a lista de ingredientes
+            carregarIngredientes();
         }
     }
 
-    // Método para carregar os ingredientes do Firestore
     private void carregarIngredientes() {
-        // Obtém a referência para a coleção "Ingredientes" do usuário atual
         CollectionReference ingredientesRef = db.collection("Usuarios").document(user.getUid()).collection("Ingredientes");
 
-        // Realiza a consulta para obter todos os ingredientes
         ingredientesRef.get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Limpa a lista de ingredientes antes de adicionar novos
                         ingredientes.clear();
-                        // Itera sobre os documentos retornados
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Converte cada documento em um objeto Ingrediente
                             Ingrediente ingrediente = document.toObject(Ingrediente.class);
-                            // Define o ID do ingrediente
-
-                            Log.d("DebugEstoque", "Ingrediente: " + ingrediente.getNome() + ", Quantidade: " + ingrediente.getQuantidade() + ", TipoMedida: " + ingrediente.getTipoMedida());
-
                             ingrediente.setId(document.getId());
-                            // Adiciona o ingrediente à lista
                             ingredientes.add(ingrediente);
                         }
-                        // Notifica o Adapter que os dados mudaram
                         adapter.notifyDataSetChanged();
                     } else {
-                        // Mostra uma mensagem de erro caso a consulta falhe
                         Toast.makeText(EstoqueIngrediente.this, "Erro ao carregar ingredientes.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    // Método para excluir um ingrediente do Firestore
     private void excluirIngrediente(Ingrediente ingrediente) {
         if (ingrediente.isEmUso()) {
             Toast.makeText(this, "Ingrediente não pode ser excluído: está em uso", Toast.LENGTH_SHORT).show();
@@ -127,14 +117,56 @@ public class EstoqueIngrediente extends AppCompatActivity {
                         Toast.makeText(this, "Ingrediente excluído com sucesso.", Toast.LENGTH_SHORT).show();
                         carregarIngredientes();
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Erro ao excluir ingrediente.", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(this, "Erro ao excluir ingrediente.", Toast.LENGTH_SHORT).show());
         }
     }
 
+    private void abrirDialogAdicionarQuantidade(Ingrediente ingrediente) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Adicionar Quantidade");
 
-    // Método para subtrair ingredientes do estoque
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_quantity, null);
+        builder.setView(dialogView);
+
+        EditText editQuantidade = dialogView.findViewById(R.id.editQuantidade);
+        EditText editUnidadeMedida = dialogView.findViewById(R.id.editUnidadeMedida);
+
+        if (ingrediente.getTipoMedida().equals("Gramas") || ingrediente.getTipoMedida().equals("Mililitros")) {
+            editUnidadeMedida.setVisibility(View.VISIBLE);
+        } else {
+            editUnidadeMedida.setVisibility(View.GONE);
+        }
+
+        builder.setPositiveButton("Adicionar", (dialog, which) -> {
+            double quantidadeAdicional = Double.parseDouble(editQuantidade.getText().toString().trim());
+            double novaQuantidade;
+
+            if (ingrediente.getTipoMedida().equals("Unidades")) {
+                novaQuantidade = ingrediente.getQuantidade() + quantidadeAdicional;
+            } else {
+                double unidadeMedida = ingrediente.getUnidadeMedida();
+                if (editUnidadeMedida.getVisibility() == View.VISIBLE) {
+                    unidadeMedida = Double.parseDouble(editUnidadeMedida.getText().toString().trim());
+                }
+                novaQuantidade = ingrediente.getQuantidade() + (quantidadeAdicional * unidadeMedida) / 1000; // Ajustado para conversão correta
+            }
+
+            db.collection("Usuarios").document(user.getUid())
+                    .collection("Ingredientes").document(ingrediente.getId())
+                    .update("quantidade", novaQuantidade)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Quantidade adicionada com sucesso!", Toast.LENGTH_SHORT).show();
+                        carregarIngredientes();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Erro ao atualizar quantidade.", Toast.LENGTH_SHORT).show();
+                    });
+        });
+
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
+    }
+
     public void subtrairIngredientes(ArrayList<Ingrediente> ingredientesUsados) {
         for (Ingrediente usado : ingredientesUsados) {
             db.collection("Usuarios").document(user.getUid()).collection("Ingredientes")
@@ -145,18 +177,11 @@ public class EstoqueIngrediente extends AppCompatActivity {
                             Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
                             double novaQuantidade = estoqueIngrediente.getQuantidade() - usado.getQuantidade();
 
-                            Log.d("ControleEstoque", "Ingrediente: " + estoqueIngrediente.getNome());
-                            Log.d("ControleEstoque", "Quantidade usada: " + usado.getQuantidade());
-                            Log.d("ControleEstoque", "Quantidade atual: " + estoqueIngrediente.getQuantidade());
-                            Log.d("ControleEstoque", "Nova quantidade: " + novaQuantidade);
-
-                            // Verifica se a nova quantidade é negativa
                             if (novaQuantidade < 0) {
                                 Toast.makeText(this, "Estoque insuficiente para o ingrediente: " + usado.getNome(), Toast.LENGTH_SHORT).show();
-                                return; // Para evitar atualizar o estoque
+                                return;
                             }
 
-                            // Atualiza o estoque somente se a nova quantidade for válida
                             db.collection("Usuarios").document(user.getUid()).collection("Ingredientes")
                                     .document(doc.getId())
                                     .update("quantidade", novaQuantidade)
@@ -173,6 +198,4 @@ public class EstoqueIngrediente extends AppCompatActivity {
                     });
         }
     }
-
-
 }

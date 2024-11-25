@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton; // Alterado de Button para ImageButton
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,18 +49,21 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
     public interface OnIngredienteClickListener {
         void onEditClick(Ingrediente ingrediente);
         void onDeleteClick(Ingrediente ingrediente);
+        void onAddQuantityClick(Ingrediente ingrediente); // Novo método adicionado
     }
 
     public static class IngredienteViewHolder extends RecyclerView.ViewHolder {
         private TextView textNome;
         private TextView textQuantidade;
-        private ImageButton btnEditar; // Alterado de Button para ImageButton
+        private ImageButton btnEditar;
+        private ImageButton btnAdicionar; // Botão "+" para adicionar quantidade
 
         public IngredienteViewHolder(@NonNull View itemView) {
             super(itemView);
             textNome = itemView.findViewById(R.id.textNome);
             textQuantidade = itemView.findViewById(R.id.textQuantidade);
             btnEditar = itemView.findViewById(R.id.btnEditar);
+            btnAdicionar = itemView.findViewById(R.id.btnAdicionar);
         }
 
         public void bind(final Ingrediente ingrediente, final OnIngredienteClickListener listener) {
@@ -105,14 +108,18 @@ public class IngredienteAdapter extends RecyclerView.Adapter<IngredienteAdapter.
                 }
             });
 
+            btnAdicionar.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onAddQuantityClick(ingrediente); // Aciona o método ao clicar no botão "+"
+                }
+            });
+
             itemView.setOnLongClickListener(v -> {
                 if (listener != null) {
                     listener.onDeleteClick(ingrediente);
                 }
                 return true;
             });
-
         }
-
     }
 }
