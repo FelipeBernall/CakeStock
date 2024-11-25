@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +53,7 @@ public class ProdutoAdapter extends BaseAdapter {
             holder.textNomeProduto = convertView.findViewById(R.id.textNomeProduto);
             holder.textQuantidadeProduto = convertView.findViewById(R.id.textQuantidadeProduto);
             holder.btnEditarProduto = convertView.findViewById(R.id.btnEditarProduto);
-            holder.btnExcluir = convertView.findViewById(R.id.btnExcluir);
+            holder.btnAdicionar = convertView.findViewById(R.id.btnAdicionar);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -64,49 +65,86 @@ public class ProdutoAdapter extends BaseAdapter {
 
         // Ação do botão Editar
         holder.btnEditarProduto.setOnClickListener(v -> {
-            // Inicia a atividade de edição
             Intent intent = new Intent(context, CadastroProduto.class);
             intent.putExtra("produtoId", produto.getId());
             context.startActivity(intent);
         });
 
-        // Ação do botão Excluir
-        holder.btnExcluir.setOnClickListener(v -> {
-            excluirProduto(produto.getId());
+        // Ação do botão Adicionar
+        holder.btnAdicionar.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Adicionar Estoque");
+
+            final EditText input = new EditText(context);
+            input.setHint("Quantidade a adicionar");
+            builder.setView(input);
+
+            builder.setPositiveButton("Confirmar", (dialog, which) -> {
+                String quantidadeStr = input.getText().toString();
+                if (!quantidadeStr.isEmpty()) {
+                    int quantidadeAdicionar = Integer.parseInt(quantidadeStr);
+                    atualizarEstoque(produto, quantidadeAdicionar);
+                } else {
+                    Toast.makeText(context, "Por favor, insira uma quantidade.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            builder.setNegativeButton("Cancelar", null);
+            builder.show();
+        });
+
+        // Clique longo para excluir produto
+        convertView.setOnLongClickListener(v -> {
+            new AlertDialog.Builder(context)
+                    .setTitle("Excluir Produto")
+                    .setMessage("Você tem certeza que deseja excluir este produto?")
+                    .setPositiveButton("Sim", (dialog, which) -> excluirProduto(produto))
+                    .setNegativeButton("Não", null)
+                    .show();
+            return true;
         });
 
         return convertView;
     }
 
-    private void excluirProduto(String produtoId) {
-        // Exibe um alerta de confirmação
-        new AlertDialog.Builder(context)
-                .setTitle("Confirmação")
-                .setMessage("Você tem certeza que deseja excluir este produto?")
-                .setPositiveButton("Sim", (dialog, which) -> {
-                    // Realiza a exclusão no Firestore
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    db.collection("Usuarios").document(userId).collection("Produtos").document(produtoId)
-                            .delete()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(context, "Produto excluído com sucesso.", Toast.LENGTH_SHORT).show();
-                                    // Atualiza a lista
-                                    notifyDataSetChanged();
-                                } else {
-                                    Toast.makeText(context, "Erro ao excluir produto.", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                })
-                .setNegativeButton("Não", null)
-                .show();
+    private void atualizarEstoque(Produto produto, int quantidadeAdicionar) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        int novaQuantidade = produto.getQuantidade() + quantidadeAdicionar;
+        db.collection("Usuarios").document(userId).collection("Produtos").document(produto.getId())
+                .update("quantidade", novaQuantidade)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        produto.setQuantidade(novaQuantidade);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Estoque atualizado.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Erro ao atualizar estoque.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void excluirProduto(Produto produto) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("Usuarios").document(userId).collection("Produtos").document(produto.getId())
+                .delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        produtoList.remove(produto);
+                        notifyDataSetChanged();
+                        Toast.makeText(context, "Produto excluído com sucesso.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, "Erro ao excluir produto.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private static class ViewHolder {
         TextView textNomeProduto;
         TextView textQuantidadeProduto;
         ImageButton btnEditarProduto;
-        ImageButton btnExcluir;
+        ImageButton btnAdicionar;
     }
 }

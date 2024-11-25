@@ -41,11 +41,10 @@
 
     <!-- Botão de Excluir -->
     <ImageButton
-        android:id="@+id/btnExcluir"
+        android:id="@+id/btnAdicionar"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_delete"
-        android:contentDescription="Excluir"
+        android:src="@drawable/ic_add"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_marginStart="8dp" />
 </LinearLayout>
