@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_perfil_usuario"
+        android:icon="@drawable/ic_user"
+        android:title="Perfil Usuário" />
+    <item
+        android:id="@+id/nav_estoque_ingredientes"
+        android:icon="@drawable/ic_ingredients"
+        android:title="Estoque de Ingredientes" />
+    <item
+        android:id="@+id/nav_lista_produtos"
+        android:icon="@drawable/ic_products"
+        android:title="Lista de Produtos" />
+    <item
+        android:id="@+id/nav_lista_receitas"
+        android:icon="@drawable/ic_recipes"
+        android:title="Lista de Receitas" />
+    <item
+        android:id="@+id/nav_historico_producao"
+        android:icon="@drawable/ic_history"
+        android:title="Histórico de Produção" />
+    <item
+        android:id="@+id/nav_lista_clientes"
+        android:icon="@drawable/ic_clients"
+        android:title="Lista de Clientes" />
+    <item
+        android:id="@+id/nav_controle_financeiro"
+        android:icon="@drawable/ic_finance"
+        android:title="Controle Financeiro" />
+    <item
+        android:id="@+id/nav_pedidos"
+        android:icon="@drawable/ic_orders"
+        android:title="Pedidos" />
+</menu>
