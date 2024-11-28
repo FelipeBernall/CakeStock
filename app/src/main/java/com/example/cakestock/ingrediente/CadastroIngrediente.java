@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,8 @@ public class CadastroIngrediente extends AppCompatActivity {
         btnSalvarIngrediente = findViewById(R.id.btnSalvarIngrediente);
         btnCancelarCadastro = findViewById(R.id.btnCancelarCadastro);
         spinnerTipoMedida = findViewById(R.id.spinnerTipoMedida);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Configura o adapter para o Spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,

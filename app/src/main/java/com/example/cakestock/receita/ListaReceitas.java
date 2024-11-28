@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cakestock.estoque.ControleEstoque;
+import com.example.cakestock.ingrediente.ControleEstoque;
 import com.example.cakestock.R;
 import com.example.cakestock.usuario.FormLogin;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -44,6 +45,8 @@ public class ListaReceitas extends AppCompatActivity {
         // Inicializa componentes da tela
         lvListaReceitas = findViewById(R.id.lv_lista_receitas);
         fabAdicionarReceita = findViewById(R.id.fab_adicionar_receita);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Inicializa o Firestore e autenticação
         db = FirebaseFirestore.getInstance();

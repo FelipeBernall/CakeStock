@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,6 +36,8 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
         listViewIngredientes = findViewById(R.id.listViewIngredientes);
         btnAdicionarIngrediente = findViewById(R.id.btnAdicionarIngrediente);
         btnSalvarIngredientes = findViewById(R.id.btnSalvarIngredientes);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Obter o nome da receita e receitaId da Intent
         Intent intent = getIntent();

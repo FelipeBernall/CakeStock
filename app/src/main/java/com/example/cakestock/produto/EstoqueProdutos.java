@@ -1,4 +1,4 @@
-package com.example.cakestock.estoque;
+package com.example.cakestock.produto;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -11,9 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
-import com.example.cakestock.produto.ProdutoAdapter;
-import com.example.cakestock.produto.CadastroProduto;
-import com.example.cakestock.produto.Produto;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ public class t3_SelecionarIngrediente extends AppCompatActivity {
         spinnerIngredientes = findViewById(R.id.spinnerIngredientes);
         editQuantidade = findViewById(R.id.editQuantidade);
         btnAdicionarIngrediente = findViewById(R.id.btnAdicionarIngrediente);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         carregarIngredientes();
 

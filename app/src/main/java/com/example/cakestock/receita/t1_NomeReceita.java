@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,6 +29,8 @@ public class t1_NomeReceita extends AppCompatActivity {
 
         editNomeReceita = findViewById(R.id.editNomeReceita);
         btnProsseguir = findViewById(R.id.btnProsseguir);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Obter dados da Intent
         Intent intent = getIntent();

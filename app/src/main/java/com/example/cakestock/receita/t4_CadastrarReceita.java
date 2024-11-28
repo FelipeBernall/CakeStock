@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +41,8 @@ public class t4_CadastrarReceita extends AppCompatActivity {
         edtRendimento = findViewById(R.id.editRendimento);
         edtModoPreparo = findViewById(R.id.editModoPreparo);
         btnSalvar = findViewById(R.id.btnCadastrarReceita);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Obter o receitaId, nomeReceita e listaIngredientes da Intent
         Intent intent = getIntent();

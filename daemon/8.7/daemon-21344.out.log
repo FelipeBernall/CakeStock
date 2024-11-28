@@ -144,7 +144,7 @@ package="com.example.cakestock" found in source AndroidManifest.xml: C:\Users\Fe
 Setting the namespace via the package attribute in the source AndroidManifest.xml is no longer supported, and the value is ignored.
 Recommendation: remove package="com.example.cakestock" from the source AndroidManifest.xml: C:\Users\Felipe\AndroidStudioProjects\CakeStock\app\src\main\AndroidManifest.xml.
 C:\Users\Felipe\AndroidStudioProjects\CakeStock\app\src\main\java\com\example\cakestock\view\ListaReceitas.java:16: error: cannot find symbol
-import com.example.cakestock.estoque.ControleEstoque;
+import com.example.cakestock.ingrediente.ControleEstoque;
                                     ^
   symbol:   class ControleEstoque
   location: package com.example.cakestock.estoque

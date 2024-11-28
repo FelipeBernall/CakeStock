@@ -1,9 +1,8 @@
-package com.example.cakestock.estoque;
+package com.example.cakestock.ingrediente;
 
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.cakestock.ingrediente.Ingrediente;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

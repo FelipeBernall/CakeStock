@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,8 @@ public class DetalhesReceita extends AppCompatActivity {
         lvIngredientesUtilizados = findViewById(R.id.lv_ingredientes_utilizados);
         fabEditarReceita = findViewById(R.id.fab_editar_receita);
         fabModoPreparo = findViewById(R.id.fab_modo_preparo);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
         // Inicializa o Firestore e autenticação
         db = FirebaseFirestore.getInstance();
@@ -117,7 +120,7 @@ public class DetalhesReceita extends AppCompatActivity {
                         modoPreparo = documentSnapshot.getString("modoPreparo");
 
                         tvTempoPreparo.setText("Tempo de Preparo: " + tempoPreparo + " minutos");
-                        tvRendimento.setText("Rendimento: " + rendimento + " porções");
+                        tvRendimento.setText("Rendimento: " + rendimento);
 
                         // Obter a subcoleção IngredientesUtilizados
                         db.collection("Usuarios").document(userId).collection("Receitas").document(idReceita)

@@ -77,6 +77,8 @@ public class RegistroVenda extends AppCompatActivity {
         tvDesconto = findViewById(R.id.tv_desconto);
         tvDescontoLabel = findViewById(R.id.tv_desconto_label);
         layoutDesconto = findViewById(R.id.layout_desconto);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
 
 
 

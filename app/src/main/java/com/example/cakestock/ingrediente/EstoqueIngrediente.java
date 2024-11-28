@@ -39,6 +39,10 @@ public class EstoqueIngrediente extends AppCompatActivity {
 
         recyclerViewIngredientes = findViewById(R.id.recyclerViewIngredientes);
         fabAdicionarIngrediente = findViewById(R.id.fabAdicionarIngrediente);
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+
+        btnVoltar.setOnClickListener(v -> onBackPressed());
+
 
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();

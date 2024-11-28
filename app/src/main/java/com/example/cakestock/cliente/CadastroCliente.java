@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,9 @@ public class CadastroCliente extends AppCompatActivity {
         editTextTelefone = findViewById(R.id.editTelefone);
         btnCadastrar = findViewById(R.id.btnCadastrar);
         db = FirebaseFirestore.getInstance();
+        ImageButton btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar.setOnClickListener(v -> onBackPressed());
+
 
         // Verifica se está editando um cliente
         if (getIntent().hasExtra("clienteId")) {

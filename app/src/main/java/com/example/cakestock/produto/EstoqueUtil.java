@@ -1,4 +1,4 @@
-package com.example.cakestock.estoque;
+package com.example.cakestock.produto;
 
 import com.example.cakestock.ingrediente.Ingrediente;
 
