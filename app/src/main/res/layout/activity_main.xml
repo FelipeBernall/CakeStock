@@ -1,77 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:columnCount="2"
+    android:padding="8dp"
+    android:rowOrderPreserved="false"
+    android:background="@color/white">
 
-    <Button
+    <!-- Botão 1 -->
+    <LinearLayout
         android:id="@+id/btnPerfilUsuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Perfil Usuário"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_user"
+            android:contentDescription="@string/perfil_usuario" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Perfil Usuário"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 2 -->
+    <LinearLayout
         android:id="@+id/btnControleEstoqueIngredientes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Estoque de Ingredientes"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_ingredientes"
+            android:contentDescription="@string/estoque_ingredientes" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ingredientes"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 3 -->
+    <LinearLayout
         android:id="@+id/btnListaReceitas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lista de Receitas"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_receitas"
+            android:contentDescription="@string/lista_receitas" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Receitas"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 4 -->
+    <LinearLayout
         android:id="@+id/btnHistoricoProducao"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Histórico de Produção"
-        android:layout_centerInParent="true"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_producao3"
+            android:contentDescription="@string/historico_producao" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Produção"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 5 -->
+    <LinearLayout
         android:id="@+id/btnListaProdutos"
-        android:layout_width="match_parent"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white"
-        android:layout_height="wrap_content"
-        android:text="Lista de Produtos" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white"
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_produtos"
+            android:contentDescription="@string/lista_produtos" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Produtos"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 6 -->
+    <LinearLayout
         android:id="@+id/btnListaClientes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lista de Clientes" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
-    <Button
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_clientes"
+            android:contentDescription="@string/lista_clientes" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clientes"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 7 -->
+    <LinearLayout
         android:id="@+id/btnControleFinanceiro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Controle Financeiro"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_financeiro"
+            android:contentDescription="@string/controle_financeiro" />
 
-    <Button
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Financeiro"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <!-- Botão 8 -->
+    <LinearLayout
         android:id="@+id/btnPedidos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Pedidos"
-        android:backgroundTint="@color/DeepSkyBlue"
-        android:textColor="@android:color/white" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        android:background="@drawable/button_background">
 
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/ic_pedidos"
+            android:contentDescription="@string/pedidos" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pedidos"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
 
-</LinearLayout>
+</GridLayout>

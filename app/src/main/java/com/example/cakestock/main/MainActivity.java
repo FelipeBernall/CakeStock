@@ -2,7 +2,7 @@ package com.example.cakestock.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
@@ -22,16 +22,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inicializando botões
-        Button btnPerfilUsuario = findViewById(R.id.btnPerfilUsuario);
-        Button btnControleEstoqueIngredientes = findViewById(R.id.btnControleEstoqueIngredientes);
-        Button btnListaProdutos = findViewById(R.id.btnListaProdutos);
-        Button btnListaReceitas = findViewById(R.id.btnListaReceitas);
-        Button btnHistoricoProducao = findViewById(R.id.btnHistoricoProducao);
-        Button btnListaClientes = findViewById(R.id.btnListaClientes);
-        Button btnControleFinanceiro = findViewById(R.id.btnControleFinanceiro);
-        Button btnPedidos = findViewById(R.id.btnPedidos);
-
+        // Inicializando LinearLayouts (botões)
+        LinearLayout btnPerfilUsuario = findViewById(R.id.btnPerfilUsuario);
+        LinearLayout btnControleEstoqueIngredientes = findViewById(R.id.btnControleEstoqueIngredientes);
+        LinearLayout btnListaProdutos = findViewById(R.id.btnListaProdutos);
+        LinearLayout btnListaReceitas = findViewById(R.id.btnListaReceitas);
+        LinearLayout btnHistoricoProducao = findViewById(R.id.btnHistoricoProducao);
+        LinearLayout btnListaClientes = findViewById(R.id.btnListaClientes);
+        LinearLayout btnControleFinanceiro = findViewById(R.id.btnControleFinanceiro);
+        LinearLayout btnPedidos = findViewById(R.id.btnPedidos);
 
         // Configurando ouvintes de clique
         btnPerfilUsuario.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, PerfilUsuario.class)));

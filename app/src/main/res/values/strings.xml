@@ -54,6 +54,14 @@
     <string name="adicionar">Adicionar</string>
     <string name="selecionar_cliente">Selecionar</string>
     <string name="text_cadatro_pedido">Cadastro de Pedido</string>
+    <string name="perfil_usuario">Pedidos</string>
+    <string name="estoque_ingredientes">Ingredientes</string>
+    <string name="lista_produtos">Produtos</string>
+    <string name="lista_clientes">Clientes</string>
+    <string name="controle_financeiro">Financeiro</string>
+    <string name="pedidos">Pedidos</string>
+    <string name="lista_receitas">Receitas</string>
+    <string name="historico_producao">Produções</string>
 
 
 </resources>
