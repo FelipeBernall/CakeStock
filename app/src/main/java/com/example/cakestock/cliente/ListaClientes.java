@@ -38,9 +38,6 @@ public class ListaClientes extends AppCompatActivity {
         setContentView(R.layout.activity_lista_clientes);
 
         searchField = findViewById(R.id.searchField);
-        ImageButton searchButton = findViewById(R.id.searchButton);
-
-        searchButton.setOnClickListener(v -> searchClientes());
 
         searchField.addTextChangedListener(new android.text.TextWatcher() {
             @Override

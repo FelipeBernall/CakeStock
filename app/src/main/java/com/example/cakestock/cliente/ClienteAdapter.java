@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class ClienteAdapter extends ArrayAdapter<Cliente> {
+public class     ClienteAdapter extends ArrayAdapter<Cliente> {
     private Context context;
     private List<Cliente> clientes;
     private FirebaseFirestore db; // Para interagir com o Firebase

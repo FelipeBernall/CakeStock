@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -66,13 +67,20 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
 
         // Botão para salvar os ingredientes e ir para a próxima Activity
         btnSalvarIngredientes.setOnClickListener(v -> {
-            Intent salvarIntent = new Intent(t2_AdicionarIngredientes.this, t4_CadastrarReceita.class);
-            salvarIntent.putExtra("nome_receita", nomeReceita);
-            salvarIntent.putExtra("receita_id", receitaId); // Passar o receitaId para a próxima Activity
-            salvarIntent.putStringArrayListExtra("ingredientes_lista", listaIngredientes);
-            startActivity(salvarIntent);
-            finish(); // Encerrar a atividade atual
+            if (listaIngredientes.isEmpty()) {
+                // Exibir uma mensagem de erro se a lista estiver vazia
+                Toast.makeText(t2_AdicionarIngredientes.this, "Adicione pelo menos um ingrediente antes de salvar!", Toast.LENGTH_SHORT).show();
+            } else {
+                // Prosseguir apenas se houver itens na lista
+                Intent salvarIntent = new Intent(t2_AdicionarIngredientes.this, t4_CadastrarReceita.class);
+                salvarIntent.putExtra("nome_receita", nomeReceita);
+                salvarIntent.putExtra("receita_id", receitaId); // Passar o receitaId para a próxima Activity
+                salvarIntent.putStringArrayListExtra("ingredientes_lista", listaIngredientes);
+                startActivity(salvarIntent);
+                finish(); // Encerrar a atividade atual
+            }
         });
+
     }
 
     // Método para receber o resultado de AdicionarIngredienteReceitaActivity
@@ -85,10 +93,30 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
             String quantidade = data.getStringExtra("quantidade");
 
             if (ingrediente != null && quantidade != null) {
-                String item = ingrediente + ": " + quantidade;
-                listaIngredientes.add(item);
-                adapter.notifyDataSetChanged();
+                // Verificar se o ingrediente já existe na lista (independente da quantidade)
+                if (isIngredienteDuplicado(ingrediente)) {
+                    Toast.makeText(this, "Este ingrediente já foi adicionado à lista.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Adicionar o ingrediente à lista se não for duplicado
+                    String item = ingrediente + ": " + quantidade;
+                    listaIngredientes.add(item);
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
     }
+
+    // Método auxiliar para verificar duplicidade pelo nome do ingrediente
+    private boolean isIngredienteDuplicado(String ingrediente) {
+        for (String item : listaIngredientes) {
+            // Separar o nome do ingrediente do formato "ingrediente: quantidade"
+            String nomeExistente = item.split(":")[0].trim();
+            if (nomeExistente.equalsIgnoreCase(ingrediente.trim())) {
+                return true; // Ingrediente já existe na lista
+            }
+        }
+        return false; // Ingrediente não encontrado
+    }
+
+
 }

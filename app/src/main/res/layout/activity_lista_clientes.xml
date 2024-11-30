@@ -14,17 +14,6 @@
         android:hint="Buscar cliente"
         android:padding="10dp" />
 
-    <!-- Botão de busca -->
-    <ImageButton
-        android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/selectableItemBackground"
-        android:src="@android:drawable/ic_menu_search" />
-
     <!-- ListView para exibir os clientes cadastrados -->
     <ListView
         android:id="@+id/lv_lista_clientes"
