@@ -32,6 +32,8 @@ public class PerfilUsuario extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Ajustes de layout (padrão do Android Studio)
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_perfil_usuario);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -42,6 +44,7 @@ public class PerfilUsuario extends AppCompatActivity {
 
         IniciarComponentes();
 
+        // Listener ao clicar no botão para deslogar
         btn_deslogar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,16 +62,23 @@ public class PerfilUsuario extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        // Obtém o e-mail e ID do usuário atualmente logado
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        // Cria uma referência no documento do usuário na coleção "Usuarios"
         DocumentReference documentReference = db.collection("Usuarios").document(usuarioID);
+
+        // ouvinte para mudanças no documento do usuário em tempo real
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if(documentSnapshot != null){
+
+                    // Mostra o nome e o email do usuário na tla
                     nomeUsuario.setText(documentSnapshot.getString("nome"));
                     emailUsuario.setText(email);
+
                 }
             }
         });

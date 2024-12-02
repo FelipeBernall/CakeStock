@@ -39,7 +39,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_marginStart="8dp" />
 
-    <!-- Botão de Excluir -->
+    <!-- Botão Adicionar -->
     <ImageButton
         android:id="@+id/btnAdicionar"
         android:layout_width="50dp"

@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Cadastro de Ingredientes"
-            android:textColor="#2F8E85"
+            android:textColor="@color/DeepSkyBlue"
             android:textSize="25sp"
             android:textStyle="bold"
             android:gravity="center_vertical" />
@@ -61,7 +61,7 @@
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="55dp"
                     android:layout_weight="1"
                     android:text="Nome do Ingrediente"
                     android:textStyle="bold"
@@ -110,7 +110,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:hint="(por unidade)"
+                    android:hint="Peso/Volume por unidade"
                     android:inputType="numberDecimal" />
             </LinearLayout>
 
@@ -179,7 +179,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#2F8E85"
+                android:backgroundTint="@color/DeepSkyBlue"
                 android:text="Salvar"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"

@@ -12,7 +12,7 @@ public class Ingrediente {
 
     // Construtor vazio necessário para o Firestore
     public Ingrediente() {
-        this.emUso = false; // Valor padrão
+        this.emUso = false;
     }
 
     // Construtor com todos os parâmetros (construtor cheio)

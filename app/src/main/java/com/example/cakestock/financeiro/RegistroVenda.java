@@ -347,27 +347,65 @@ public class RegistroVenda extends AppCompatActivity {
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .collection("Vendas")
-                .add(transacao)  // Adiciona a transação
+                .add(transacao)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Transação registrada com sucesso
                         Toast.makeText(this, "Venda registrada com sucesso!", Toast.LENGTH_SHORT).show();
+
+                        // Atualiza o estoque
+                        atualizarEstoque();
 
                         // Redireciona para a tela de transações
                         Intent intent = new Intent(RegistroVenda.this, ListaTransacoes.class);
                         startActivity(intent);
                         finish(); // Finaliza a atividade atual
                     } else {
-                        // Erro ao registrar a venda
                         Toast.makeText(this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    // Falha ao salvar no Firestore
-                    Toast.makeText(this, "Erro ao salvar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Erro ao salvar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+
+    private void atualizarEstoque() {
+        for (Map.Entry<String, Integer> entry : produtosMap.entrySet()) {
+            String nomeProduto = entry.getKey();
+            int quantidadeVendida = entry.getValue();
+
+            // Localiza o produto no Firestore
+            db.collection("Usuarios")
+                    .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                    .collection("Produtos")
+                    .whereEqualTo("nome", nomeProduto)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String produtoId = document.getId();
+                                int quantidadeAtual = document.getLong("quantidade").intValue();
+                                int novaQuantidade = quantidadeAtual - quantidadeVendida;
+
+                                // Atualiza a quantidade no Firestore
+                                db.collection("Usuarios")
+                                        .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .collection("Produtos")
+                                        .document(produtoId)
+                                        .update("quantidade", novaQuantidade)
+                                        .addOnSuccessListener(aVoid -> {
+                                            // Sucesso ao atualizar estoque
+                                            Toast.makeText(this, "Estoque atualizado para " + nomeProduto, Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(this, "Erro ao atualizar estoque: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
+                            }
+                        } else {
+                            Toast.makeText(this, "Produto " + nomeProduto + " não encontrado no Firestore.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
 
 
 

@@ -28,7 +28,6 @@ public class Transacao implements Serializable {
     public String getDescricao() {
         return descricao;
     }
-
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
@@ -36,7 +35,6 @@ public class Transacao implements Serializable {
     public String getData() {
         return data;
     }
-
     public void setData(String data) {
         this.data = data;
     }
@@ -44,7 +42,6 @@ public class Transacao implements Serializable {
     public String getClienteId() {
         return clienteId;
     }
-
     public void setClienteId(String clienteId) {
         this.clienteId = clienteId;
     }
@@ -52,7 +49,6 @@ public class Transacao implements Serializable {
     public List<String> getProdutos() {
         return produtos;
     }
-
     public void setProdutos(List<String> produtos) {
         this.produtos = produtos;
     }
@@ -60,7 +56,6 @@ public class Transacao implements Serializable {
     public double getValorTotal() {
         return valorTotal;
     }
-
     public void setValorTotal(double valorTotal) {
         this.valorTotal = valorTotal;
     }

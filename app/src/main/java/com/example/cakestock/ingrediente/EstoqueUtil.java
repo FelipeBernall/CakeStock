@@ -1,6 +1,4 @@
-package com.example.cakestock.produto;
-
-import com.example.cakestock.ingrediente.Ingrediente;
+package com.example.cakestock.ingrediente;
 
 public class EstoqueUtil {
 

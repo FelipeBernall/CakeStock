@@ -53,7 +53,7 @@ public class FormCadastro extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         // Ajustes de layout (padrão do Android Studio)
-        EdgeToEdge.enable(this); // visualização de borda a borda
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_form_cadastro);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -109,36 +109,40 @@ public class FormCadastro extends AppCompatActivity {
     }
 
     private void CadastrarUsuario(View v) {
-        String email = edit_email.getText().toString(); //
+
+        // Pega os dados digitados pelo usuário
+        String email = edit_email.getText().toString();
         String senha = edit_senha.getText().toString();
 
+        // Tenta criar a conta no Firebase com e-mail e senha
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
 
-                    SalvarDadosUsuario();
+                if (task.isSuccessful()) { // Se o cadastro foi bem-sucedido
+                    SalvarDadosUsuario(); // Salva os dados no Firestore
 
+                    // Envia um e-mail de verificação para o usuário
                     FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
+                            if (task.isSuccessful()) { // E-mail enviado (sucesso)
                                 Snackbar snackbar = Snackbar.make(v, "Verifique seu e-mail para confirmar o cadastro.", Snackbar.LENGTH_LONG);
                                 snackbar.setBackgroundTint(Color.WHITE);
                                 snackbar.setTextColor(Color.BLACK);
                                 snackbar.show();
 
-                                // Redirecionar para a tela de login após um pequeno delay
+                                // Redirecionar para a tela de login
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         FirebaseAuth.getInstance().signOut();
 
                                         Intent intent = new Intent(FormCadastro.this, FormLogin.class);
-                                        startActivity(intent);
+                                        startActivity(intent); // Vai para a tela de login
                                         finish();
                                     }
-                                }, 2500); // 2,5 segundos de delay
+                                }, 2500);
                             } else {
                                 Snackbar snackbar = Snackbar.make(v, "Falha ao enviar e-mail de verificação.", Snackbar.LENGTH_SHORT);
                                 snackbar.setBackgroundTint(Color.WHITE);
@@ -148,18 +152,19 @@ public class FormCadastro extends AppCompatActivity {
                         }
                     });
 
-                } else {
+                } else { // Se o cadastro falhar
+
                     // Tratamento de exceções (FirFirebase AuthenticationAuthentication)
                     String erro = "Erro ao cadastrar usuário";
                     if (task.getException() != null) {
                         try {
                             throw task.getException();
                         } catch (FirebaseAuthWeakPasswordException e) {
-                            erro = "Digite uma senha com no mínimo 6 caracteres";
+                            erro = "Digite uma senha com no mínimo 6 caracteres";  // senha fraca
                         } catch (FirebaseAuthUserCollisionException e) {
-                            erro = "Esta conta já foi cadastrada";
+                            erro = "Esta conta já foi cadastrada";            // email já cadastrado
                         } catch (FirebaseAuthInvalidCredentialsException e) {
-                            erro = "E-mail inválido";
+                            erro = "E-mail inválido";                       // email mal formatado
                         } catch (Exception e) {
                             erro = "Erro ao cadastrar usuário";
                         }
@@ -175,17 +180,25 @@ public class FormCadastro extends AppCompatActivity {
     }
 
     private void SalvarDadosUsuario(){
+
+        // Obtém o nome digitado pelo usuário
         String nome = edit_nome.getText().toString();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // Cria um Map com os dados do usuário (chave-valor)
         Map<String,Object> usuarios = new HashMap<>();
         usuarios.put("nome", nome);
 
+        // Obtém o ID único do usuário autenticado
         usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        // Cria uma referência ao documento do usuário no Firestore
         DocumentReference documentReference = db.collection("Usuarios").document(usuarioID);
-        documentReference.set(usuarios).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        // Salva os dados no Firestore
+        documentReference.set(usuarios)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
                         Log.d("db", "Sucesso ao salvar dados");

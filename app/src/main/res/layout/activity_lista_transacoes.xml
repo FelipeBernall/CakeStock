@@ -137,14 +137,13 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- ListView para transações -->
 
         <!-- Botões inferiores -->
 
         <ListView
             android:id="@+id/lv_transacoes"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"

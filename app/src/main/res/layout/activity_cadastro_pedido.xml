@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/text_cadatro_pedido"
-            android:textColor="#2F8E85"
+            android:textColor="@color/DeepSkyBlue"
             android:textSize="25sp"
             android:textStyle="bold"
             android:gravity="center_vertical" />
@@ -131,7 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#2F8E85"
+                android:backgroundTint="@color/DeepSkyBlue"
                 android:text="Salvar"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"

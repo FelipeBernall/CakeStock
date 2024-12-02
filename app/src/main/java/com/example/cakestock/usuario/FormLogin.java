@@ -33,12 +33,14 @@ public class FormLogin extends AppCompatActivity {
     private Button btn_entrar;
     private TextView esqueceu_senha;
     private ProgressBar progressBar;
-    String[] mensagens = {"Preencha todos os campos"};
+    // String[] mensagens = {"Preencha todos os campos"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
+        // Ajustes de layout (padrão do Android Studio)
+        EdgeToEdge.enable(this); // visualização de borda a borda
         setContentView(R.layout.activity_form_login);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -68,7 +70,7 @@ public class FormLogin extends AppCompatActivity {
                 String senha = edit_senha.getText().toString();
 
                 if(email.isEmpty() || senha.isEmpty()){
-                    Snackbar snackbar = Snackbar.make(v, mensagens[0], Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(v, "Preencha todos os campos", Snackbar.LENGTH_SHORT);
                     snackbar.setBackgroundTint(Color.WHITE);
                     snackbar.setTextColor(Color.BLACK);
                     snackbar.show();
@@ -96,6 +98,7 @@ public class FormLogin extends AppCompatActivity {
         });
     }
 
+    // Redefinir senha
     private void resetPassword(View v, String email) {
         FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -116,17 +119,21 @@ public class FormLogin extends AppCompatActivity {
     }
 
     private void AutenticarUsuario(View view){
+        // Obtém o e-mail e a senha digitados pelo usuário
         String email = edit_email.getText().toString();
         String senha = edit_senha.getText().toString();
 
+        // Tenta autenticar o usuário no Firebase
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()){
+                if (task.isSuccessful()){ // Verifica se o login foi bem-sucedido -> se for bem suceddido
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                     // Verificar se o e-mail foi verificado
                     if (user != null && user.isEmailVerified()) {
+
+                        // Se email verificado/dados válidos  -> barra de progresso e redireciona para a tela principal
                         progressBar.setVisibility(View.VISIBLE);
 
                         new Handler().postDelayed(new Runnable() {
@@ -136,7 +143,7 @@ public class FormLogin extends AppCompatActivity {
                             }
                         }, 3000);
                     } else {
-                        // Desconectar o usuário e mostrar mensagem para verificar o e-mail
+                        // E-mail não verificado -> exibe mensagem para verificar o e-mail
                         FirebaseAuth.getInstance().signOut();
                         Snackbar snackbar = Snackbar.make(view, "Por favor, verifique seu e-mail antes de fazer login.", Snackbar.LENGTH_LONG);
                         snackbar.setBackgroundTint(Color.WHITE);
@@ -144,6 +151,7 @@ public class FormLogin extends AppCompatActivity {
                         snackbar.show();
                     }
                 } else {
+                    // Mensagem de erro se falhar
                     String erro;
 
                     try {
@@ -160,13 +168,17 @@ public class FormLogin extends AppCompatActivity {
         });
     }
 
+    // Chamado qnd a tela é iniciada
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Obtém o usuário atual logado no Firebase
         FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Redirecionar para o perfil se o usuário já estiver logado e o e-mail verificado
+        // Se o usuário estiver logado E o e-mail estiver confirmado
         if(usuarioAtual != null && usuarioAtual.isEmailVerified()){
+            // Redireciona para a tela principal
             irParaTelaPrincipal();
         }
     }
