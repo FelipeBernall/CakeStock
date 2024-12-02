@@ -93,7 +93,10 @@ public class RegistroVenda extends AppCompatActivity {
 
         editTextData.setOnClickListener(v -> showDatePickerDialog());
         btnAdicionarProduto.setOnClickListener(v -> adicionarProduto());
-        btnRegistrarVenda.setOnClickListener(v -> registrarVenda());
+        btnRegistrarVenda.setOnClickListener(v -> {
+            Transacao transacao = (Transacao) getIntent().getSerializableExtra("transacao");
+            registrarVenda(transacao);
+        });
 
         // Configura o botão de adicionar desconto
         btnAdicionarDesconto.setOnClickListener(v -> {
@@ -308,72 +311,89 @@ public class RegistroVenda extends AppCompatActivity {
         }
     }
 
-    private void registrarVenda() {
-        // Obtém os valores dos campos
+    private void registrarVenda(Transacao transacaoExistente) {
         String descricao = editTextDescricao.getText().toString().trim();
         String data = editTextData.getText().toString().trim();
         int clienteIndex = spinnerCliente.getSelectedItemPosition();
-        boolean clienteSelecionado = clienteIndex > 0; // Primeiro item é "Selecionar"
-        boolean produtosPreenchidos = !produtosAdicionados.isEmpty();
 
-        // Validação: Verifica se todos os campos obrigatórios foram preenchidos
-        if (descricao.isEmpty()) {
-            Toast.makeText(this, "Por favor, insira uma descrição para a venda.", Toast.LENGTH_SHORT).show();
+        if (descricao.isEmpty() || data.isEmpty() || clienteIndex <= 0 || produtosAdicionados.isEmpty()) {
+            Toast.makeText(this, "Preencha todos os campos obrigatórios.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (data.isEmpty()) {
-            Toast.makeText(this, "Por favor, insira uma data válida.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!clienteSelecionado) {
-            Toast.makeText(this, "Por favor, selecione um cliente.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (!produtosPreenchidos) {
-            Toast.makeText(this, "Por favor, adicione pelo menos um produto à venda.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Obtém o ID do cliente selecionado
         String clienteId = clientesList.get(clienteIndex - 1).getId();
+        Map<String, Object> dadosVenda = new HashMap<>();
+        dadosVenda.put("descricao", descricao);
+        dadosVenda.put("data", data);
+        dadosVenda.put("clienteId", clienteId);
+        dadosVenda.put("produtos", produtosAdicionados);
+        dadosVenda.put("valorTotal", valorTotal);
 
-        // Cria a transação
-        Transacao transacao = new Transacao(descricao, data, clienteId, produtosAdicionados, valorTotal);
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Envia a transação para o Firestore
-        db.collection("Usuarios")
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .collection("Vendas")
-                .add(transacao)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Transação registrada com sucesso
-                        Toast.makeText(this, "Venda registrada com sucesso!", Toast.LENGTH_SHORT).show();
+        if (transacaoExistente == null) {
+            // Nova venda
+            db.collection("Usuarios")
+                    .document(userId)
+                    .collection("Vendas")
+                    .add(dadosVenda)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            atualizarEstoque(() -> {
+                                // Após atualizar o estoque, redireciona
+                                Toast.makeText(this, "Venda registrada com sucesso!", Toast.LENGTH_SHORT).show();
+                                navegarParaListaTransacoes();
+                            });
+                        } else {
+                            Toast.makeText(this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // Atualização de venda existente
+            db.collection("Usuarios")
+                    .document(userId)
+                    .collection("Vendas")
+                    .whereEqualTo("descricao", transacaoExistente.getDescricao())
+                    .whereEqualTo("data", transacaoExistente.getData())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            String docId = task.getResult().getDocuments().get(0).getId();
+                            db.collection("Usuarios")
+                                    .document(userId)
+                                    .collection("Vendas")
+                                    .document(docId)
+                                    .update(dadosVenda)
+                                    .addOnSuccessListener(aVoid -> {
+                                        atualizarEstoque(() -> {
+                                            // Após atualizar o estoque, redireciona
+                                            Toast.makeText(this, "Venda atualizada com sucesso!", Toast.LENGTH_SHORT).show();
+                                            navegarParaListaTransacoes();
+                                        });
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Erro ao atualizar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        } else {
+                            Toast.makeText(this, "Erro ao localizar venda para atualizar.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
 
-                        // Atualiza o estoque
-                        atualizarEstoque();
-
-                        // Redireciona para a tela de transações
-                        Intent intent = new Intent(RegistroVenda.this, ListaTransacoes.class);
-                        startActivity(intent);
-                        finish(); // Finaliza a atividade atual
-                    } else {
-                        Toast.makeText(this, "Erro ao registrar venda.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, "Erro ao salvar venda: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    // Navegação para a tela de transações
+    private void navegarParaListaTransacoes() {
+        Intent intent = new Intent(RegistroVenda.this, ListaTransacoes.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish(); // Finaliza a atividade atual para evitar que ela permaneça na pilha
     }
 
 
-    private void atualizarEstoque() {
+    // Atualização de estoque com callback
+    private void atualizarEstoque(Runnable callback) {
         for (Map.Entry<String, Integer> entry : produtosMap.entrySet()) {
             String nomeProduto = entry.getKey();
             int quantidadeVendida = entry.getValue();
 
-            // Localiza o produto no Firestore
             db.collection("Usuarios")
                     .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                     .collection("Produtos")
@@ -386,26 +406,24 @@ public class RegistroVenda extends AppCompatActivity {
                                 int quantidadeAtual = document.getLong("quantidade").intValue();
                                 int novaQuantidade = quantidadeAtual - quantidadeVendida;
 
-                                // Atualiza a quantidade no Firestore
                                 db.collection("Usuarios")
                                         .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                         .collection("Produtos")
                                         .document(produtoId)
                                         .update("quantidade", novaQuantidade)
-                                        .addOnSuccessListener(aVoid -> {
-                                            // Sucesso ao atualizar estoque
-                                            Toast.makeText(this, "Estoque atualizado para " + nomeProduto, Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(this, "Erro ao atualizar estoque: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        .addOnCompleteListener(updateTask -> {
+                                            if (callback != null && updateTask.isSuccessful()) {
+                                                callback.run();
+                                            }
                                         });
                             }
                         } else {
-                            Toast.makeText(this, "Produto " + nomeProduto + " não encontrado no Firestore.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Erro ao localizar o produto no estoque.", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
+
 
 
 
@@ -451,9 +469,6 @@ public class RegistroVenda extends AppCompatActivity {
         }
     }
 
-
-
-
     private void removerProdutoComConfirmacao(int position) {
         // Cria o AlertDialog para confirmação
         new AlertDialog.Builder(this)
@@ -466,8 +481,6 @@ public class RegistroVenda extends AppCompatActivity {
                 .setNegativeButton("Não", null) // Se o usuário cancelar, não faz nada
                 .show(); // Exibe o AlertDialog
     }
-
-
 
 
     private void atualizarTransacoes() {

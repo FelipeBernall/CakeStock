@@ -55,12 +55,14 @@ public class ListaTransacoes extends AppCompatActivity {
         btnVendas.setOnClickListener(v -> {
             Intent intent = new Intent(ListaTransacoes.this, RegistroVenda.class);
             startActivity(intent);
+            finish();
         });
 
         // Redireciona para a tela de registro de despesa
         btnDespesas.setOnClickListener(v -> {
             Intent intent = new Intent(ListaTransacoes.this, RegistroDespesa.class);
             startActivity(intent);
+            finish();
         });
 
         // Inicializa o Calendar e exibe o mês atual
