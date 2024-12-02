@@ -151,8 +151,6 @@ public class RegistroVenda extends AppCompatActivity {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosAdicionados);
             listViewProdutos.setAdapter(adapter);
         }
-
-
     }
 
     private void showDatePickerDialog() {

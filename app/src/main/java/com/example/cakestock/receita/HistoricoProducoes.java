@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cakestock.R;
+import com.example.cakestock.main.MainActivity;
 import com.example.cakestock.usuario.FormLogin;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -85,8 +86,11 @@ public class HistoricoProducoes extends AppCompatActivity {
             fabAdicionarProducao.setOnClickListener(v -> {
                 Intent intent = new Intent(HistoricoProducoes.this, ListaReceitas.class);
                 intent.putExtra("controle_estoque", true); // Flag indicando que é para adicionar produções
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             });
+
 
             // Carrega os dados para o mês atual
             carregarProducoes();
@@ -104,6 +108,13 @@ public class HistoricoProducoes extends AppCompatActivity {
             Producao producaoSelecionada = producoes.get(position);
             abrirDialogoEdicao(producaoSelecionada);
         });
+
+        lvHistoricoProducoes.setOnItemLongClickListener((parent, view, position, id) -> {
+            Producao producaoSelecionada = producoes.get(position);
+            mostrarDialogoConfirmacao(producaoSelecionada);
+            return true;
+        });
+
 
 
     }
@@ -253,6 +264,48 @@ public class HistoricoProducoes extends AppCompatActivity {
         builder.show();
     }
 
+    private void mostrarDialogoConfirmacao(Producao producao) {
+        new AlertDialog.Builder(this)
+                .setTitle("Excluir Produção")
+                .setMessage("Tem certeza que deseja excluir esta produção? Os ingredientes serão devolvidos ao estoque.")
+                .setPositiveButton("Confirmar", (dialog, which) -> excluirProducao(producao))
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void excluirProducao(Producao producao) {
+        db.collection("Usuarios")
+                .document(userId)
+                .collection("HistoricoProducoes")
+                .whereEqualTo("dataProducao", producao.getDataProducao())
+                .whereEqualTo("nomeReceita", producao.getNomeReceita())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                         String documentId = querySnapshot.getDocuments().get(0).getId();
+
+                        // Ajustar estoque antes de excluir
+                        ajustarEstoque(producao.getNomeReceita(), -producao.getQuantidadeProduzida(), () -> {
+                            // Excluir o documento do Firestore
+                            db.collection("Usuarios")
+                                    .document(userId)
+                                    .collection("HistoricoProducoes")
+                                    .document(documentId)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Produção excluída com sucesso!", Toast.LENGTH_SHORT).show();
+                                        carregarProducoes();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Erro ao excluir produção.", Toast.LENGTH_SHORT).show());
+                        });
+                    } else {
+                        Toast.makeText(this, "Produção não encontrada.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Erro ao buscar produção.", Toast.LENGTH_SHORT).show());
+    }
+
+
 
     private void ajustarEstoque(String nomeReceita, int diferenca, Runnable callback) {
         if (diferenca == 0) {
@@ -321,7 +374,6 @@ public class HistoricoProducoes extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.e("Estoque", "Erro ao acessar o estoque do ingrediente: " + nomeIngrediente, e));
     }
-
 
 
 }
