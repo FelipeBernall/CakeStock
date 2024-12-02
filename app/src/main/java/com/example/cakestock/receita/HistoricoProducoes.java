@@ -104,10 +104,6 @@ public class HistoricoProducoes extends AppCompatActivity {
             Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
         }
 
-        lvHistoricoProducoes.setOnItemClickListener((parent, view, position, id) -> {
-            Producao producaoSelecionada = producoes.get(position);
-            abrirDialogoEdicao(producaoSelecionada);
-        });
 
         lvHistoricoProducoes.setOnItemLongClickListener((parent, view, position, id) -> {
             Producao producaoSelecionada = producoes.get(position);
@@ -207,62 +203,6 @@ public class HistoricoProducoes extends AppCompatActivity {
         }
     }
 
-    private void abrirDialogoEdicao(Producao producao) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Editar Produção de " + producao.getNomeReceita());
-
-        final EditText input = new EditText(this);
-        input.setHint("Nova quantidade produzida");
-        input.setText(String.valueOf(producao.getQuantidadeProduzida())); // Preenche com o valor atual
-        builder.setView(input);
-
-        builder.setPositiveButton("Confirmar", (dialog, which) -> {
-            String novaQuantidadeStr = input.getText().toString();
-            if (!novaQuantidadeStr.isEmpty()) {
-                int novaQuantidade = Integer.parseInt(novaQuantidadeStr);
-                int quantidadeAnterior = producao.getQuantidadeProduzida();
-                int diferenca = novaQuantidade - quantidadeAnterior;
-
-                ajustarEstoque(producao.getNomeReceita(), diferenca, () -> {
-                    // Busca o documento no Firestore para obter o ID correto
-                    db.collection("Usuarios")
-                            .document(userId)
-                            .collection("HistoricoProducoes")
-                            .whereEqualTo("dataProducao", producao.getDataProducao())
-                            .whereEqualTo("nomeReceita", producao.getNomeReceita())
-                            .get()
-                            .addOnSuccessListener(querySnapshot -> {
-                                if (!querySnapshot.isEmpty()) {
-                                    String documentId = querySnapshot.getDocuments().get(0).getId();
-                                    // Atualiza o documento com o ID correto
-                                    db.collection("Usuarios")
-                                            .document(userId)
-                                            .collection("HistoricoProducoes")
-                                            .document(documentId)
-                                            .update("quantidadeProduzida", novaQuantidade)
-                                            .addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(this, "Produção atualizada com sucesso!", Toast.LENGTH_SHORT).show();
-                                                carregarProducoes();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(this, "Erro ao atualizar produção.", Toast.LENGTH_SHORT).show();
-                                            });
-                                } else {
-                                    Toast.makeText(this, "Produção não encontrada.", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Erro ao buscar produção.", Toast.LENGTH_SHORT).show();
-                            });
-                });
-            } else {
-                Toast.makeText(this, "Por favor, insira uma quantidade válida.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
-        builder.show();
-    }
 
     private void mostrarDialogoConfirmacao(Producao producao) {
         new AlertDialog.Builder(this)
@@ -351,7 +291,8 @@ public class HistoricoProducoes extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e("Estoque", "Erro ao buscar receita.", e));
     }
 
-    private void ajustarQuantidadeIngredienteFirestore(String nomeIngrediente, int quantidade, boolean reduzir) {
+    // Ajustar quantidade de ingredientes no Firestore
+    private void ajustarQuantidadeIngredienteFirestore(String nomeIngrediente, int quantidadePorReceita, boolean reduzir) {
         db.collection("Usuarios")
                 .document(userId)
                 .collection("Ingredientes")
@@ -359,11 +300,27 @@ public class HistoricoProducoes extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        double quantidadeAtual = doc.getDouble("quantidade");
-                        double novaQuantidade = reduzir ? (quantidadeAtual - quantidade) : (quantidadeAtual + quantidade);
+                        Double quantidadeAtual = doc.getDouble("quantidade");
+                        String tipoMedida = doc.getString("tipoMedida");
+
+                        if (quantidadeAtual == null || tipoMedida == null) {
+                            Log.e("Estoque", "Dados inválidos para o ingrediente: " + nomeIngrediente);
+                            Toast.makeText(this, "Erro: dados inválidos para o ingrediente " + nomeIngrediente, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        double ajusteQuantidade = quantidadePorReceita; // Quantidade usada por produção
+                        if ("Gramas".equalsIgnoreCase(tipoMedida) || "Mililitros".equalsIgnoreCase(tipoMedida)) {
+                            ajusteQuantidade /= 1000.0; // Converter para unidade correspondente (Kg ou L)
+                        }
+
+                        double novaQuantidade = reduzir
+                                ? quantidadeAtual - ajusteQuantidade
+                                : quantidadeAtual + ajusteQuantidade;
 
                         if (novaQuantidade < 0) {
                             Log.e("Estoque", "Quantidade insuficiente para o ingrediente: " + nomeIngrediente);
+                            Toast.makeText(this, "Quantidade insuficiente para ajustar o estoque.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
