@@ -11,11 +11,13 @@ import com.example.cakestock.R;
 
 import java.util.List;
 
+// Define como cada tranação aparece na LIsta
 public class TransacaoAdapter extends BaseAdapter {
 
     private final Context context;
     private final List<Transacao> transacoes;
 
+    // Construtor para inicializar o adapter com o contexto e a lista de transações
     public TransacaoAdapter(Context context, List<Transacao> transacoes) {
         this.context = context;
         this.transacoes = transacoes;
@@ -36,6 +38,7 @@ public class TransacaoAdapter extends BaseAdapter {
         return position;
     }
 
+    // Método responsável por configurar a visualização de cada item da lista.
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -44,6 +47,7 @@ public class TransacaoAdapter extends BaseAdapter {
 
         Transacao transacao = transacoes.get(position);
 
+        // Referências aos elementos visuais do layout
         TextView tvDescricao = convertView.findViewById(R.id.tv_descricao);
         TextView tvData = convertView.findViewById(R.id.tv_data);
         TextView tvValor = convertView.findViewById(R.id.tv_valor);

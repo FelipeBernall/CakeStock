@@ -183,10 +183,9 @@ public class CadastroPedido extends AppCompatActivity {
                             Toast.makeText(CadastroPedido.this, "Pedido cadastrado com sucesso.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CadastroPedido.this, ListaPedidos.class);
                             intent.putExtra("atualizar", true);  // Adicionando o sinalizador
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  // Limpa a pilha de atividades e leva diretamente para a ListaPedidos
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);  // Limpa a pilha de atividades e leva diretamente para a ListaPedidos
                             startActivity(intent);  // Redireciona para ListaPedidos
                             finish();  // Finaliza a tela de cadastro para garantir que não permaneça na pilha
-
                         } else {
                             Toast.makeText(CadastroPedido.this, "Erro ao cadastrar pedido.", Toast.LENGTH_SHORT).show();
                         }
@@ -204,6 +203,7 @@ public class CadastroPedido extends AppCompatActivity {
                             Toast.makeText(CadastroPedido.this, "Pedido atualizado com sucesso.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(CadastroPedido.this, ListaPedidos.class);
                             intent.putExtra("atualizar", true);  // Adicionando um sinalizador
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);  // Limpa a pilha de atividades e leva diretamente para a ListaPedidos
                             startActivity(intent);  // Redirecionando para ListaPedidos
                             finish();
                         } else {
@@ -212,6 +212,7 @@ public class CadastroPedido extends AppCompatActivity {
                     });
         }
     }
+
 
     private void excluirPedido() {
         // Verifica se existe um pedidoId válido
