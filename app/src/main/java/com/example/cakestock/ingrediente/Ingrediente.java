@@ -10,12 +10,12 @@ public class Ingrediente {
     private double valorTotal;
     private boolean emUso;
 
-    // Construtor vazio necessário para o Firestore
+    // Construtor vazio necessário para o Firestore -> DISSERIALIZAÇÃO
     public Ingrediente() {
         this.emUso = false;
     }
 
-    // Construtor com todos os parâmetros (construtor cheio)
+    // Construtor com todos os parâmetros (construtor cheio) -> pra criar um ingrediente completo
     public Ingrediente(String id, String nome, double quantidade, String tipoMedida, double unidadeMedida, double valorUnitario, double valorTotal, boolean emUso) {
         this.id = id;
         this.nome = nome;
@@ -27,13 +27,13 @@ public class Ingrediente {
         this.emUso = emUso;
     }
 
-    // Construtor com nome e quantidade
+    // Construtor com nome e quantidade -> usado para simplificação
     public Ingrediente(String nome, double quantidade) {
         this.nome = nome;
         this.quantidade = quantidade;
     }
 
-    // Getters e Setters
+    // Getters e Setters (acessar e modificar os dados do ingrediente)
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

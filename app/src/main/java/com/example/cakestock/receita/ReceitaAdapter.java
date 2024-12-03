@@ -14,11 +14,14 @@ import com.example.cakestock.R;
 
 import java.util.List;
 
+// Adapter para exibir a lista de receitas
 public class ReceitaAdapter extends ArrayAdapter<Receita> {
 
+    // Layout do recurso a ser inflado e contexto da aplicação
     private int resourceLayout;
     private Context mContext;
 
+    // Construtor da classe
     public ReceitaAdapter(@NonNull Context context, int resource, @NonNull List<Receita> items) {
         super(context, resource, items);
         this.resourceLayout = resource;
@@ -36,17 +39,17 @@ public class ReceitaAdapter extends ArrayAdapter<Receita> {
             view = inflater.inflate(resourceLayout, null);
         }
 
-        // Obtém a receita atual
+        // Obtém a receita correspondente à posição atual na lista
         Receita receita = getItem(position);
 
         if (receita != null) {
             // Configura o nome da receita no TextView
             TextView tvNomeReceita = view.findViewById(R.id.tv_nome_receita);
             if (tvNomeReceita != null) {
-                tvNomeReceita.setText(receita.getNome());
+                tvNomeReceita.setText(receita.getNome()); // Define o nome da receita no TextView
             }
         }
 
-        return view;
+        return view; // Retorna a View configurada para exibição no ListView
     }
 }

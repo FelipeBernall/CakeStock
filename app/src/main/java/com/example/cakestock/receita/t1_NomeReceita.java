@@ -13,26 +13,30 @@ import com.example.cakestock.R;
 import java.util.ArrayList;
 import java.util.UUID;  // Importar para gerar um ID único
 
+// Inserir ou editar nome de receita
 public class t1_NomeReceita extends AppCompatActivity {
 
+    // Campos de entrada para o nome da receita
     private EditText editNomeReceita;
     private Button btnProsseguir;
 
-    private String receitaId; // Para edição
-    private String nomeReceita; // Para edição
-    private ArrayList<String> ingredientesLista; // Lista de ingredientes para edição
+    // Dados da receita em edição ou criação
+    private String receitaId;
+    private String nomeReceita;
+    private ArrayList<String> ingredientesLista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_t1_nome_receita);
 
+        // Inicializa componentes da interface
         editNomeReceita = findViewById(R.id.editNomeReceita);
         btnProsseguir = findViewById(R.id.btnProsseguir);
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 
-        // Obter dados da Intent
+        // Recupera dados passados pela Intent, se for edição
         Intent intent = getIntent();
         receitaId = intent.getStringExtra("id_receita");
         nomeReceita = intent.getStringExtra("nome_receita");
@@ -46,6 +50,8 @@ public class t1_NomeReceita extends AppCompatActivity {
         btnProsseguir.setOnClickListener(v -> {
             String nome = editNomeReceita.getText().toString().trim();
             if (!nome.isEmpty()) {
+
+                // Cria uma Intent para a próxima tela
                 Intent nextIntent = new Intent(t1_NomeReceita.this, t2_AdicionarIngredientes.class);
                 nextIntent.putExtra("nome_receita", nome);
 
@@ -55,12 +61,14 @@ public class t1_NomeReceita extends AppCompatActivity {
                 }
                 nextIntent.putExtra("id_receita", receitaId);
 
+                // Passa a lista de ingredientes, se houver
                 if (ingredientesLista != null) {
                     nextIntent.putStringArrayListExtra("ingredientes_lista", ingredientesLista);
                 }
                 startActivity(nextIntent);
-                finish(); // Opcional: encerra a atividade atual para evitar voltar atrás na edição
+                finish(); // Encerra a atividade atual
             } else {
+                // erro se o campo estiver vazio
                 editNomeReceita.setError("Nome da receita é obrigatório.");
             }
         });

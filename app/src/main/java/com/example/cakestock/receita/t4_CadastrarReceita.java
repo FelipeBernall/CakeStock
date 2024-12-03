@@ -20,14 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Finalizar o cadastro da receita -> registrar no Firebase
 public class t4_CadastrarReceita extends AppCompatActivity {
 
+    // Componentes da interface
     private EditText edtTempoPreparo, edtRendimento, edtModoPreparo;
     private Button btnSalvar;
     private String receitaId;  // Variável para armazenar o receitaId
     private String nomeReceita; // Variável para armazenar o nome da receita
     private List<String> listaIngredientes; // Lista de ingredientes a ser recebida
 
+
+    // Inicializa o Firestore
     private FirebaseFirestore db;
     private String userId;
 
@@ -36,7 +40,7 @@ public class t4_CadastrarReceita extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_t4_cadastrar_receita);
 
-        // Inicializar as views
+        // Inicializar componentes
         edtTempoPreparo = findViewById(R.id.editTempoPreparo);
         edtRendimento = findViewById(R.id.editRendimento);
         edtModoPreparo = findViewById(R.id.editModoPreparo);
@@ -44,7 +48,7 @@ public class t4_CadastrarReceita extends AppCompatActivity {
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 
-        // Obter o receitaId, nomeReceita e listaIngredientes da Intent
+        // Obter dados da Intent
         Intent intent = getIntent();
         receitaId = intent.getStringExtra("receita_id");
         nomeReceita = intent.getStringExtra("nome_receita");
@@ -54,7 +58,7 @@ public class t4_CadastrarReceita extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Verificar se o receitaId foi passado corretamente
+        // Validar se os dados foram passados corretamente
         if (receitaId == null || nomeReceita == null) {
             Toast.makeText(this, "Erro ao carregar dados da receita", Toast.LENGTH_SHORT).show();
             finish(); // Encerrar a atividade se o receitaId ou nomeReceita não for recebido
@@ -68,11 +72,13 @@ public class t4_CadastrarReceita extends AppCompatActivity {
     }
 
     private void prePreencherCampos() {
-        // Obter os dados atuais da receita para pré-preenchimento
+        // Recuperar dados da receita para edição
         db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+
+                        // Preencher os campos com os valores do Firestore
                         String tempoPreparo = documentSnapshot.getString("tempoPreparo");
                         String rendimento = documentSnapshot.getString("rendimento");
                         String modoPreparo = documentSnapshot.getString("modoPreparo");
@@ -88,15 +94,19 @@ public class t4_CadastrarReceita extends AppCompatActivity {
     }
 
     private void salvarDados() {
+
+        // Obter dados preenchidos pelo usuário
         String tempoPreparo = edtTempoPreparo.getText().toString().trim();
         String rendimento = edtRendimento.getText().toString().trim();
         String modoPreparo = edtModoPreparo.getText().toString().trim();
 
+        // Validar campos obrigatórios
         if (tempoPreparo.isEmpty() || rendimento.isEmpty() || modoPreparo.isEmpty()) {
             Toast.makeText(this, "Por favor, preencha todos os campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Preparar dados para salvar no Firestore
         Map<String, Object> dadosReceita = new HashMap<>();
         dadosReceita.put("nomeReceita", nomeReceita);
         dadosReceita.put("tempoPreparo", tempoPreparo);
@@ -104,6 +114,7 @@ public class t4_CadastrarReceita extends AppCompatActivity {
         dadosReceita.put("modoPreparo", modoPreparo);
         dadosReceita.put("emUso", false); // Define como não em uso inicialmente
 
+        // Salvar receita no Firestore
         db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
                 .set(dadosReceita)
                 .addOnSuccessListener(aVoid -> {
@@ -117,16 +128,18 @@ public class t4_CadastrarReceita extends AppCompatActivity {
     }
 
 
-
     private void salvarIngredientesUtilizados() {
+        // Referência para os ingredientes da receita no Firestore
         CollectionReference ingredientesUtilizadosRef = db.collection("Usuarios").document(userId)
                 .collection("Receitas").document(receitaId).collection("IngredientesUtilizados");
 
+        // Apagar ingredientes antigos para evitar duplicidades
         ingredientesUtilizadosRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             for (QueryDocumentSnapshot documento : queryDocumentSnapshots) {
                 ingredientesUtilizadosRef.document(documento.getId()).delete();
             }
 
+            // Adicionar os ingredientes da lista atual
             for (String ingrediente : listaIngredientes) {
                 String[] partes = ingrediente.split(": ");
                 if (partes.length == 2) {

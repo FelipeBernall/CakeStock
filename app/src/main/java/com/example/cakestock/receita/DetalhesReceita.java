@@ -20,8 +20,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
+// Exibir os detalhes de uma receita ou Editar
 public class DetalhesReceita extends AppCompatActivity {
 
+    // Componentes da interface
     private TextView tvNomeReceitaDetalhe;
     private TextView tvTempoPreparo;
     private TextView tvRendimento;
@@ -29,12 +31,16 @@ public class DetalhesReceita extends AppCompatActivity {
     private FloatingActionButton fabEditarReceita;
     private FloatingActionButton fabModoPreparo;
 
+    // Inicializa o Firestore
     private FirebaseFirestore db;
+
     private String userId;
     private String idReceita;
     private String nomeReceita;
     private String modoPreparo;
 
+
+    // Lista e adaptador para os ingredientes utilizados
     private ArrayList<String> listaIngredientesUtilizados;
     private ArrayAdapter<String> adapterIngredientes;
 
@@ -96,7 +102,7 @@ public class DetalhesReceita extends AppCompatActivity {
             editarIntent.putExtra("rendimento", tvRendimento.getText().toString().replace("Rendimento: ", "").replace(" porções", ""));
             editarIntent.putExtra("modo_preparo", modoPreparo);
             editarIntent.putStringArrayListExtra("ingredientes_lista", listaIngredientesUtilizados);
-            startActivity(editarIntent);
+            startActivity(editarIntent); // Abre a tela de edição da receita
         });
 
         // Configura o FAB para mostrar o modo de preparo
@@ -110,11 +116,12 @@ public class DetalhesReceita extends AppCompatActivity {
     }
 
     private void carregarDetalhesReceita() {
+        // Busca os detalhes da receita no Firestore
         db.collection("Usuarios").document(userId).collection("Receitas").document(idReceita)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Obter os campos principais
+                        // Atualiza os campos com os dados obtidos
                         String tempoPreparo = documentSnapshot.getString("tempoPreparo");
                         String rendimento = documentSnapshot.getString("rendimento");
                         modoPreparo = documentSnapshot.getString("modoPreparo");
@@ -122,7 +129,7 @@ public class DetalhesReceita extends AppCompatActivity {
                         tvTempoPreparo.setText("Tempo de Preparo: " + tempoPreparo + " minutos");
                         tvRendimento.setText("Rendimento: " + rendimento);
 
-                        // Obter a subcoleção IngredientesUtilizados
+                        // Carrega os ingredientes utilizados --> subcoleção IngredientesUtilizados
                         db.collection("Usuarios").document(userId).collection("Receitas").document(idReceita)
                                 .collection("IngredientesUtilizados")
                                 .get()
@@ -143,6 +150,7 @@ public class DetalhesReceita extends AppCompatActivity {
                                     Log.e("DetalhesReceita", "Erro ao carregar ingredientes: ", e);
                                 });
                     } else {
+                        // Caso a receita não seja encontrada
                         Toast.makeText(DetalhesReceita.this, "Receita não encontrada", Toast.LENGTH_SHORT).show();
                         finish();
                     }

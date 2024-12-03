@@ -25,8 +25,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+//  Tela principal para visualizar todas as receitas cadastradas.
 public class ListaReceitas extends AppCompatActivity {
 
+    // Componentes da interface
     private ListView lvListaReceitas;
     private FloatingActionButton fabAdicionarReceita;
     private ArrayList<Receita> listaReceitas;
@@ -55,17 +57,19 @@ public class ListaReceitas extends AppCompatActivity {
         if (currentUser != null) {
             userId = currentUser.getUid();
         } else {
+            // Redireciona para login se o usuário não estiver autenticado
             Intent intent = new Intent(ListaReceitas.this, FormLogin.class);
             startActivity(intent);
             finish();
             return;
         }
 
-        // Verifica se veio do controle de estoque
+        // Verifica se a chamada veio do controle de estoque
         if (getIntent() != null) {
             controleEstoque = getIntent().getBooleanExtra("controle_estoque", false);
         }
 
+        // Inicializa as listas e o adaptador
         listaReceitas = new ArrayList<>();
         listaReceitasIds = new ArrayList<>();
 
@@ -79,7 +83,7 @@ public class ListaReceitas extends AppCompatActivity {
         // Carrega as receitas do Firestore
         carregarReceitas();
 
-        // Configura o clique em cada item da lista
+        // Configura a ação ao clicar em um item da lista
         lvListaReceitas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -108,11 +112,12 @@ public class ListaReceitas extends AppCompatActivity {
             }
         });
 
+        // Configura a ação de exclusão ao segurar um item da lista (clique longo)
         lvListaReceitas.setOnItemLongClickListener((parent, view, position, id) -> {
             Receita receitaSelecionada = listaReceitas.get(position);
             String idReceitaSelecionada = listaReceitasIds.get(position);
 
-            // Exibe um diálogo de confirmação
+            // Exibe um diálogo de confirmação para exclusão
             new AlertDialog.Builder(this)
                     .setTitle("Excluir Receita")
                     .setMessage("Deseja excluir a receita \"" + receitaSelecionada.getNome() + "\"?")
@@ -162,6 +167,7 @@ public class ListaReceitas extends AppCompatActivity {
                 });
     }
 
+    // Método para abrir um diálogo de produção
     private void abrirDialogoProducao(String receitaSelecionada, String idReceitaSelecionada) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Produção de " + receitaSelecionada);
@@ -206,6 +212,7 @@ public class ListaReceitas extends AppCompatActivity {
     }
 
 
+    // Método para excluir receita do Firestore
     private void excluirReceita(String receitaId) {
         db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
                 .delete()
@@ -219,16 +226,20 @@ public class ListaReceitas extends AppCompatActivity {
     }
 
 
+    // Valida exclusão de receitas já utilizadas
     private void validarExclusaoReceita(String receitaId, OnValidacaoListener listener) {
         db.collection("Usuarios").document(userId).collection("Receitas").document(receitaId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
+
+                    // Receita em uso não pode ser excluida
                     if (documentSnapshot.exists()) {
                         boolean emUso = documentSnapshot.getBoolean("emUso");
                         if (emUso) {
                             listener.onInvalid("Receita já foi produzida e não pode ser excluída.");
                         } else {
-                            listener.onValid(); // Receita pode ser excluída
+                            // Receita pode ser excluída -> Ainda não foi produzida
+                            listener.onValid();
                         }
                     }
                 })
@@ -237,12 +248,11 @@ public class ListaReceitas extends AppCompatActivity {
                 });
     }
 
+    // Interface para validação de exclusão
     interface OnValidacaoListener {
         void onValid();
         void onInvalid(String mensagemErro);
     }
-
-
 
 
     @Override

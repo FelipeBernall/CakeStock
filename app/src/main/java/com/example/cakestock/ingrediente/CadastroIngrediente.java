@@ -23,22 +23,25 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
+// Gerencia o cadastro e edição de ingredientes
 public class CadastroIngrediente extends AppCompatActivity {
 
+    // Campos de entrada de dados
     private EditText editNomeIngrediente, editQuantidadeIngrediente, editUnidadeMedida, editValorUnitario;
     private Spinner spinnerTipoMedida;
     private TextView textValorTotal;
     private Button btnSalvarIngrediente, btnCancelarCadastro;
-    private FirebaseFirestore db;
-    private FirebaseUser user;
-    private String ingredienteId; // ID do ingrediente para edição
+    private FirebaseFirestore db; // Conexão com Firebase
+    private FirebaseUser user; // usuário logado
+    private String ingredienteId; // ID do ingrediente -> serve pra edição
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_ingrediente);
 
-        // Inicializa os componentes do layout
+        // Inicializa os componentes do layout -> campos de entrada
         editNomeIngrediente = findViewById(R.id.editNomeIngrediente);
         editQuantidadeIngrediente = findViewById(R.id.editQuantidadeIngrediente);
         editUnidadeMedida = findViewById(R.id.editUnidadeMedida);
@@ -50,17 +53,17 @@ public class CadastroIngrediente extends AppCompatActivity {
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 
-        // Configura o adapter para o Spinner
+        // Configura o spinner para selecionar o Tipo de Medida
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.tipo_medida_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerTipoMedida.setAdapter(adapter);
 
-        // Inicializa o Firebase Firestore e o usuário atual
+        // Conecta-se ao Firestore e pega o usuário logado
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Obtém o ID do ingrediente da Intent, se disponível
+        // Obtém o ID do ingrediente da Intent, se existir (usado para edição)
         ingredienteId = getIntent().getStringExtra("ingrediente_id");
 
         // Se um ID de ingrediente estiver disponível, carrega os dados
@@ -68,34 +71,34 @@ public class CadastroIngrediente extends AppCompatActivity {
             carregarIngrediente(ingredienteId);
         }
 
-        // Listener para o Spinner
+        // Listener para o Spinner -> Ajusta a visibilidade (Unidade de medida) com base na escolha
         spinnerTipoMedida.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selected = parent.getItemAtPosition(position).toString();
                 if (selected.equals("Gramas") || selected.equals("Mililitros")) {
-                    editUnidadeMedida.setVisibility(View.VISIBLE);
+                    editUnidadeMedida.setVisibility(View.VISIBLE); // mostra o campo unidade
                 } else {
-                    editUnidadeMedida.setVisibility(View.GONE);
+                    editUnidadeMedida.setVisibility(View.GONE); // esconde o campo unidade
                 }
-                calcularValorTotal();
+                calcularValorTotal();  // Atualiza o valor total sempre que uma medida é selecionada
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                editUnidadeMedida.setVisibility(View.GONE);
+                editUnidadeMedida.setVisibility(View.GONE);  // Caso nenhuma opção seja selecionada
             }
         });
 
-        // Listeners para os campos de texto
-        TextWatcher textWatcher = new TextWatcher() {
+        // Listeners para valor unitário e qtd -> atualiza o valor total
+        TextWatcher textWatcher = new TextWatcher() { // exibe em tempo real
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                calcularValorTotal();
+                calcularValorTotal(); // Recalcula o valor total quando o usuário digita
             }
 
             @Override
@@ -103,6 +106,7 @@ public class CadastroIngrediente extends AppCompatActivity {
             }
         };
 
+        // Adiciona o listener nos campos de valor unitário e quantidade
         editValorUnitario.addTextChangedListener(textWatcher);
         editQuantidadeIngrediente.addTextChangedListener(textWatcher);
 
@@ -116,7 +120,7 @@ public class CadastroIngrediente extends AppCompatActivity {
             }
         });
 
-        // Listener para o botão de cancelar
+        // Listener para o botão de cancelar -> volta pra tela anterior
         btnCancelarCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +129,7 @@ public class CadastroIngrediente extends AppCompatActivity {
         });
     }
 
+    // Carrega um ingrediente para edição, preenchendo os campos com os dados existentes
     private void carregarIngrediente(String id) {
         DocumentReference ingredienteRef = db.collection("Usuarios").document(user.getUid()).collection("Ingredientes").document(id);
 
@@ -144,7 +149,7 @@ public class CadastroIngrediente extends AppCompatActivity {
                                 editUnidadeMedida.setVisibility(View.GONE);
                             }
                             editValorUnitario.setText(String.valueOf(ingrediente.getValorUnitario()));
-                            calcularValorTotal();
+                            calcularValorTotal(); // Atualiza o valor total com os dados carregados
                         }
                     } else {
                         Toast.makeText(CadastroIngrediente.this, "Erro ao carregar dados do ingrediente.", Toast.LENGTH_SHORT).show();
@@ -152,6 +157,7 @@ public class CadastroIngrediente extends AppCompatActivity {
                 });
     }
 
+    // Calcula o valor total com base na quantidade e no valor unitário
     private void calcularValorTotal() {
         String strQuantidade = editQuantidadeIngrediente.getText().toString().replace(',', '.');
         String strValorUnitario = editValorUnitario.getText().toString().replace(',', '.');
@@ -162,10 +168,11 @@ public class CadastroIngrediente extends AppCompatActivity {
             double valorTotal = quantidade * valorUnitario;
             textValorTotal.setText(String.format("Valor Total: R$ %.2f", valorTotal));
         } else {
-            textValorTotal.setText("Valor Total: R$ 0,00");
+            textValorTotal.setText("Valor Total: R$ 0,00"); // Se os campos estiverem vazios
         }
     }
 
+    // Valida os campos obrigatórios do formulário antes de salvar
     private boolean validateForm() {
         boolean valid = true;
 
@@ -191,9 +198,10 @@ public class CadastroIngrediente extends AppCompatActivity {
             valid = false;
         }
 
-        return valid;
+        return valid;  // Retorna se o formulário é válido ou não
     }
 
+    // Salva ou atualiza o ingrediente no Firestore
     private void salvarIngrediente() {
         String nome = editNomeIngrediente.getText().toString().trim();
         double quantidade = Double.parseDouble(editQuantidadeIngrediente.getText().toString().trim().replace(',', '.'));
@@ -205,6 +213,7 @@ public class CadastroIngrediente extends AppCompatActivity {
         double valorUnitario = Double.parseDouble(editValorUnitario.getText().toString().trim().replace(',', '.'));
         double valorTotal = quantidade * valorUnitario;
 
+        // Cria um novo ingrediente (ou atualiza)
         Ingrediente ingrediente = new Ingrediente(ingredienteId, nome, quantidade, tipoMedida, unidadeMedida, valorUnitario, valorTotal, false);
 
         CollectionReference ingredientesRef = db.collection("Usuarios").document(user.getUid()).collection("Ingredientes");

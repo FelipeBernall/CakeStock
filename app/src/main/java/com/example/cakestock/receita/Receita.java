@@ -1,11 +1,11 @@
 package com.example.cakestock.receita;
 
 public class Receita {
-    private String idReceita; // Alterado para IdReceita
+    private String idReceita;
     private String nome;
-    private String modoPreparo; // Instruções de preparo
-    private String rendimento; // Quantidade de porções ou volume final
-    private double tempoPreparo; // Tempo de preparo em minutos
+    private String modoPreparo;
+    private String rendimento;
+    private double tempoPreparo;
     private boolean emUso;
 
     // Construtor vazio necessário para o Firestore

@@ -16,23 +16,24 @@ import com.example.cakestock.R;
 
 import java.util.ArrayList;
 
+// Adicionar e visualizar ingredientes usados na receita
 public class t2_AdicionarIngredientes extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 1;
+    private static final int REQUEST_CODE = 1; // identificar a Activity de seleção de ingredientes
     private TextView txtNomeReceita;
     private ListView listViewIngredientes;
     private Button btnAdicionarIngrediente, btnSalvarIngredientes;
     private ArrayList<String> listaIngredientes;
     private ArrayAdapter<String> adapter;
     private String nomeReceita;
-    private String receitaId; // Declarar o receitaId
+    private String receitaId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_t2_adicionar_ingredientes);
 
-        // Inicializar as views
+        // Inicializa componentes da interface
         txtNomeReceita = findViewById(R.id.txtNomeReceita);
         listViewIngredientes = findViewById(R.id.listViewIngredientes);
         btnAdicionarIngrediente = findViewById(R.id.btnAdicionarIngrediente);
@@ -40,14 +41,14 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 
-        // Obter o nome da receita e receitaId da Intent
+        // Recupera dados da Intent
         Intent intent = getIntent();
         nomeReceita = intent.getStringExtra("nome_receita");
         receitaId = intent.getStringExtra("id_receita");
 
         txtNomeReceita.setText(nomeReceita);
 
-        // Inicializar a lista de ingredientes e o adaptador
+        // Inicializa a lista e o adaptador de ingredientes
         listaIngredientes = new ArrayList<>();
         if (intent.hasExtra("ingredientes_lista")) {
             ArrayList<String> ingredientesPassados = intent.getStringArrayListExtra("ingredientes_lista");
@@ -83,7 +84,7 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
 
     }
 
-    // Método para receber o resultado de AdicionarIngredienteReceitaActivity
+    // Método para receber o resultado do ingrediente adicionado (t3)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -106,7 +107,7 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
         }
     }
 
-    // Método auxiliar para verificar duplicidade pelo nome do ingrediente
+    // Verifica se o ingrediente já está na lista
     private boolean isIngredienteDuplicado(String ingrediente) {
         for (String item : listaIngredientes) {
             // Separar o nome do ingrediente do formato "ingrediente: quantidade"

@@ -17,23 +17,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+// Gerencia o controle de estoque de ingredientes
 public class ControleEstoque {
 
-    private FirebaseFirestore db;
-    private String userId;
+    private FirebaseFirestore db; // Conexão com o Firestore
+    private String userId;      // ID do usuário autenticado
 
 
+    // Construtor que inicializa a conexão com o Firestore e verifica o usuário logado
     public ControleEstoque() {
         db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            userId = currentUser.getUid();
+            userId = currentUser.getUid(); // Obtém o ID do usuário logado
         } else {
             Log.e("ControleEstoque", "Erro: Usuário não autenticado.");
         }
     }
 
+    // Interface usada para retornar o sucesso ou falha após atualizar o estoque
     public interface OnEstoqueUpdateListener {
         void onSuccess();
         void onFailure(String mensagem);
@@ -49,17 +52,21 @@ public class ControleEstoque {
             return;
         }
 
+        // Referência aos ingredientes usados na receita
         CollectionReference ingredientesRef = db.collection("Usuarios")
                 .document(userId)
                 .collection("Receitas")
                 .document(idReceita)
                 .collection("IngredientesUtilizados");
 
+        // Obtém os ingredientes utilizados na receita
         ingredientesRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<DocumentSnapshot> ingredientes = task.getResult().getDocuments();
                 if (!ingredientes.isEmpty()) {
                     List<Ingrediente> ingredientesUsados = new ArrayList<>();
+
+                    // Calcula a quantidade de cada ingrediente necessário para a produção
                     for (DocumentSnapshot document : ingredientes) {
                         String nomeIngrediente = document.getString("nomeIngrediente");
                         double quantidadeUsadaPorReceita = document.getDouble("quantidadeUsada");
@@ -67,6 +74,7 @@ public class ControleEstoque {
 
                         ingredientesUsados.add(new Ingrediente(nomeIngrediente, quantidadeTotalUsada));
                     }
+                    // Verifica o estoque para garantir que há ingredientes suficientes
                     verificarEstoque(ingredientesUsados, idReceita, quantidadeProduzida, listener);
                 } else {
                     Log.e("ControleEstoque", "Nenhum ingrediente encontrado para a receita.");
@@ -79,13 +87,15 @@ public class ControleEstoque {
         });
     }
 
-    // Modifique o método verificarEstoque para aceitar o listener
+    // Método que verifica se o estoque tem ingredientes suficientes
     private void verificarEstoque(List<Ingrediente> ingredientesUsados, String idReceita, int quantidadeProduzida, OnEstoqueUpdateListener listener) {
         List<String> ingredientesInsuficientes = new ArrayList<>();
         List<Ingrediente> ingredientesValidos = new ArrayList<>();
 
+        // Contador para quando todos os ingredientes forem processados
         final int[] ingredientesProcessados = {0};
 
+        // Verifica o estoque de cada ingrediente utilizado
         for (Ingrediente usado : ingredientesUsados) {
             CollectionReference ingredientesRef = db.collection("Usuarios")
                     .document(userId)
@@ -97,9 +107,11 @@ public class ControleEstoque {
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                                 Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
 
+                                // Converte as quantidades de estoque para um formato comum (mililitros ou gramas)
                                 double quantidadeUsadaConvertida = calcularQuantidadeConvertida(usado, estoqueIngrediente);
                                 double quantidadeEstoqueConvertida;
 
+                                // Converte o estoque de acordo com o tipo de medida (mililitros, gramas, etc.)
                                 if (estoqueIngrediente.getTipoMedida().equalsIgnoreCase("mililitros")) {
                                     quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade() * 1000;
                                 } else if (estoqueIngrediente.getTipoMedida().equalsIgnoreCase("gramas")) {
@@ -108,6 +120,7 @@ public class ControleEstoque {
                                     quantidadeEstoqueConvertida = estoqueIngrediente.getQuantidade();
                                 }
 
+                                // Verifica se há estoque suficiente para o ingrediente
                                 if (quantidadeEstoqueConvertida < quantidadeUsadaConvertida) {
                                     ingredientesInsuficientes.add(usado.getNome());
                                 } else {
@@ -120,10 +133,12 @@ public class ControleEstoque {
 
                         ingredientesProcessados[0]++;
                         if (ingredientesProcessados[0] == ingredientesUsados.size()) {
+
+                            // Se todos os ingredientes foram processados, verifica se há estoque suficiente
                             if (ingredientesInsuficientes.isEmpty()) {
-                                atualizarEstoque(ingredientesValidos);
+                                atualizarEstoque(ingredientesValidos); // Atualiza o estoque se tudo estiver certo
                                 registrarProducaoNoHistorico(idReceita, quantidadeProduzida); // Registrar no histórico
-                                listener.onSuccess(); // Chama sucesso se tudo der certo
+                                listener.onSuccess(); // tudo certo = sucesso (retorno)
                             } else {
                                 Log.e("ControleEstoque", "Estoque insuficiente para alguns ingredientes. Produção não registrada.");
                                 listener.onFailure("Estoque insuficiente para: " + TextUtils.join(", ", ingredientesInsuficientes));
@@ -138,19 +153,21 @@ public class ControleEstoque {
     }
 
 
-    // Atualiza o estoque se todas as validações forem concluídas com sucesso
+    // Atualiza o estoque de ingredientes, subtraindo a quantidade usada
     private void atualizarEstoque(List<Ingrediente> ingredientesUsados) {
         for (Ingrediente ingredienteUsar : ingredientesUsados) {
             CollectionReference ingredientesRef = db.collection("Usuarios")
                     .document(userId)
                     .collection("Ingredientes");
 
+            // Busca o ingrediente no estoque
             ingredientesRef.whereEqualTo("nome", ingredienteUsar.getNome()).get()
                     .addOnSuccessListener(queryDocumentSnapshotsUpdate -> {
                         if (!queryDocumentSnapshotsUpdate.isEmpty()) {
                             for (QueryDocumentSnapshot doc : queryDocumentSnapshotsUpdate) {
                                 Ingrediente estoqueIngrediente = doc.toObject(Ingrediente.class);
 
+                                // Converte a quantidade usada para a unidade de medida correta
                                 double quantidadeUsadaConvertida = calcularQuantidadeConvertida(ingredienteUsar, estoqueIngrediente);
 
                                 double novaQuantidade;
@@ -165,10 +182,12 @@ public class ControleEstoque {
                                     return;
                                 }
 
+                                // Ajusta a quantidade com base na unidade de medida
                                 if (!estoqueIngrediente.getTipoMedida().equalsIgnoreCase("unidades")) {
                                     novaQuantidade /= estoqueIngrediente.getUnidadeMedida();
                                 }
 
+                                // Atualiza o estoque no Firestore
                                 ingredientesRef.document(doc.getId())
                                         .update("quantidade", novaQuantidade)
                                         .addOnSuccessListener(aVoid -> Log.d("ControleEstoque", "Estoque atualizado para o ingrediente: " + ingredienteUsar.getNome()))
@@ -180,13 +199,13 @@ public class ControleEstoque {
         }
     }
 
-    // Registro da produção no histórico
+    // Registra a produção da receita no histórico
     private void registrarProducaoNoHistorico(String idReceita, int quantidadeProduzida) {
         CollectionReference historicoRef = db.collection("Usuarios")
                 .document(userId)
                 .collection("HistoricoProducoes");
 
-        // Referência à coleção "Receitas" para obter o nome da receita
+        // Busca o nome da receita para o histórico
         db.collection("Usuarios")
                 .document(userId)
                 .collection("Receitas")
@@ -214,12 +233,12 @@ public class ControleEstoque {
     }
 
 
-    // Conversão da unidade de medida
+    // Converte a quantidade de ingrediente para a unidade de medida correta (mililitros, gramas, unidades)
     private double calcularQuantidadeConvertida(Ingrediente usado, Ingrediente estoqueIngrediente) {
         double quantidadeUsada = usado.getQuantidade();  // Quantidade usada por receita
         double estoqueAtual = estoqueIngrediente.getQuantidade();  // Quantidade atual no estoque
 
-        String tipoMedidaEstoque = estoqueIngrediente.getTipoMedida().toLowerCase(Locale.ROOT);  // Tipo de medida
+        String tipoMedidaEstoque = estoqueIngrediente.getTipoMedida().toLowerCase(Locale.ROOT);  // Tipo de medida do estoque
 
         Log.d("ControleEstoque", "Ingrediente: " + estoqueIngrediente.getNome());
         Log.d("ControleEstoque", "Quantidade usada: " + quantidadeUsada);
