@@ -182,12 +182,19 @@ public class RegistroVenda extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<String> clienteNomes = new ArrayList<>();
-                        clienteNomes.add("Selecionar");
+                        clienteNomes.add("Selecionar"); // Adiciona a opção de seleção inicial
+                        clientesList.clear(); // Limpa a lista antes de adicionar novos clientes
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Cliente cliente = document.toObject(Cliente.class);
-                            clientesList.add(cliente);
-                            clienteNomes.add(cliente.getNome());
+                            // Adiciona apenas clientes ativos
+                            if (cliente.isAtivo()) {
+                                clientesList.add(cliente); // Adiciona o cliente à lista de clientes
+                                clienteNomes.add(cliente.getNome()); // Adiciona o nome ao spinner
+                            }
                         }
+
+                        // Cria o adaptador e configura o spinner com os nomes dos clientes ativos
                         ArrayAdapter<String> clienteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, clienteNomes);
                         clienteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerCliente.setAdapter(clienteAdapter);
@@ -196,6 +203,7 @@ public class RegistroVenda extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void carregarProdutos() {
         db.collection("Usuarios")

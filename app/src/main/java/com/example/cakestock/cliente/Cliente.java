@@ -6,8 +6,8 @@ public class Cliente {
     private String telefone;
     private boolean ativo;
 
+    // Construtor vazio necessário para o Firebase
     public Cliente() {
-        // Construtor vazio necessário para o Firebase
     }
 
     public Cliente(String nome, String telefone) {
@@ -16,10 +16,10 @@ public class Cliente {
         this.ativo = true; // Por padrão, o cliente está ativo ao ser criado
     }
 
+    // Getters e setters
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -27,7 +27,6 @@ public class Cliente {
     public String getNome() {
         return nome;
     }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -35,7 +34,6 @@ public class Cliente {
     public String getTelefone() {
         return telefone;
     }
-
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
@@ -43,7 +41,6 @@ public class Cliente {
     public boolean isAtivo() {
         return ativo;
     }
-
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }

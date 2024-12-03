@@ -36,6 +36,7 @@ public class t3_SelecionarIngrediente extends AppCompatActivity {
         spinnerIngredientes = findViewById(R.id.spinnerIngredientes);
         editQuantidade = findViewById(R.id.editQuantidade);
         btnAdicionarIngrediente = findViewById(R.id.btnAdicionarIngrediente);
+
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 

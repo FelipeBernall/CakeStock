@@ -38,6 +38,7 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
         listViewIngredientes = findViewById(R.id.listViewIngredientes);
         btnAdicionarIngrediente = findViewById(R.id.btnAdicionarIngrediente);
         btnSalvarIngredientes = findViewById(R.id.btnSalvarIngredientes);
+
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
         btnVoltar.setOnClickListener(v -> onBackPressed());
 

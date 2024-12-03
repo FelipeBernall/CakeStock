@@ -26,12 +26,17 @@ import java.util.List;
 
 // Exibe e gerencia o estoque de produtos -> Visualizar , ADD , Editar , Excluir
 public class EstoqueProdutos extends AppCompatActivity {
-    private FirebaseFirestore db;
+
+    // Elementos da interface
     private ListView listView;
     private ProdutoAdapter adapter;
     private List<Produto> produtoList;
     private List<Produto> allProdutos;
     private EditText searchField;
+
+    // Inicializa o Firebase
+    private FirebaseFirestore db;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

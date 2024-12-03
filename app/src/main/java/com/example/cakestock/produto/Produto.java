@@ -21,7 +21,6 @@ public class Produto {
     public String getId() {
         return id;
     }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -29,7 +28,6 @@ public class Produto {
     public String getNome() {
         return nome;
     }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -37,7 +35,6 @@ public class Produto {
     public int getQuantidade() {
         return quantidade; // Retorna como int
     }
-
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade; // Define como int
     }
@@ -45,7 +42,6 @@ public class Produto {
     public double getValor() {
         return valor;
     }
-
     public void setValor(double valor) {
         this.valor = valor;
     }

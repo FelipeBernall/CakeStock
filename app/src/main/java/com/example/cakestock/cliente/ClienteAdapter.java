@@ -18,11 +18,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class     ClienteAdapter extends ArrayAdapter<Cliente> {
+// Define como cada cliente aparece na lista
+public class ClienteAdapter extends ArrayAdapter<Cliente> {
     private Context context;
     private List<Cliente> clientes;
     private FirebaseFirestore db; // Para interagir com o Firebase
 
+    // Construtor para inicializar o adapter com o contexto e a lista de clientes
     public ClienteAdapter(Context context, List<Cliente> clientes) {
         super(context, 0, clientes);
         this.context = context;
@@ -30,16 +32,19 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
         this.db = FirebaseFirestore.getInstance(); // Inicializa o Firestore
     }
 
+    // Método responsável por configurar a visualização de cada item da lista.
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        // Obtém o cliente correspondente à posição atual
         Cliente cliente = getItem(position);
 
+        // Infla o layout se ele ainda não foi criado
         if (convertView == null) {
             // Aqui, alteramos para utilizar o layout 'item_cliente' personalizado
             convertView = LayoutInflater.from(context).inflate(R.layout.item_cliente, parent, false);
         }
 
-        // Pegando as referências dos componentes do layout 'item_cliente.xml'
+        // Referências aos elementos visuais do layout
         TextView nomeTextView = convertView.findViewById(R.id.textViewNome);
         TextView telefoneTextView = convertView.findViewById(R.id.textViewTelefone);
         Switch switchAtivo = convertView.findViewById(R.id.switchAtivo);
@@ -49,7 +54,7 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
         nomeTextView.setText(cliente.getNome());
         telefoneTextView.setText(cliente.getTelefone());
 
-        // Evitar que alterações programáticas acionem o listener
+        // Configura o estado do switch de ativação
         switchAtivo.setOnCheckedChangeListener(null);
         switchAtivo.setChecked(cliente.isAtivo());
 
@@ -64,11 +69,10 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
             context.startActivity(intent);
         });
 
-        // Configura o listener para o Switch
-        // Dentro da classe ClienteAdapter
-
+        // Configura o listener para ativar/desativar o cliente ao clicar no switch
         switchAtivo.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!isChecked) {
+                // Confirmação antes de desativar o cliente
                 new AlertDialog.Builder(context)
                         .setTitle("Desativar Cliente")
                         .setMessage("Deseja realmente desativar este cliente? Ele não poderá ser relacionado a futuras vendas.")
@@ -85,6 +89,7 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
                         .setCancelable(false)
                         .show();
             } else {
+                // Confirmação antes de ativar o cliente
                 new AlertDialog.Builder(context)
                         .setTitle("Ativar Cliente")
                         .setMessage("Deseja realmente ativar este cliente?")
@@ -107,6 +112,7 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
         return convertView;
     }
 
+    // Atualiza o status de ativação do cliente no Firestore.
     private void atualizarStatusCliente(Cliente cliente) {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db.collection("Usuarios").document(userId).collection("Clientes").document(cliente.getId())
@@ -115,13 +121,13 @@ public class     ClienteAdapter extends ArrayAdapter<Cliente> {
                     String mensagem = cliente.isAtivo() ? "Cliente ativado com sucesso." : "Cliente desativado com sucesso.";
                     Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show();
                     // Atualizar a transparência da view
-                    notifyDataSetChanged();
+                    notifyDataSetChanged(); // Atualiza a lista
                 })
                 .addOnFailureListener(e -> {
                     String mensagem = cliente.isAtivo() ? "Erro ao ativar o cliente." : "Erro ao desativar o cliente.";
                     Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show();
                     // Reverter o estado do Switch
-                    switchAtivoRevert(cliente);
+                    switchAtivoRevert(cliente); // Reverte o estado caso ocorra um erro
                 });
     }
 
