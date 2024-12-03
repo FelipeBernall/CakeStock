@@ -32,7 +32,10 @@ import java.util.Locale;
 import java.util.Map;
 import android.view.View;
 
+// Tela para registrar ou atualizar vendas, incluindo clientes, produtos e descontos
 public class RegistroVenda extends AppCompatActivity {
+
+    // Componentes da interface
     private Spinner spinnerCliente, spinnerProduto;
     private TextView tvData, tvValorTotal;
     private EditText editTextDescricao, editTextData, editTextQuantidade, editTextDesconto;
@@ -41,6 +44,7 @@ public class RegistroVenda extends AppCompatActivity {
     private ListView listViewProdutos;
     private FirebaseFirestore db;
 
+    // Dados auxiliares
     private List<Cliente> clientesList;
     private List<Produto> produtosList;
     private List<String> produtosAdicionados;
@@ -58,6 +62,7 @@ public class RegistroVenda extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_venda);
 
+        // Inicialização de componentes visuais
         spinnerCliente = findViewById(R.id.spinner_cliente);
         spinnerProduto = findViewById(R.id.spinner_produto);
         editTextDescricao = findViewById(R.id.et_descricao);
@@ -86,15 +91,17 @@ public class RegistroVenda extends AppCompatActivity {
             finish(); // Finaliza a atividade atual
         });
 
+        // Inicializa Firestore e listas
         db = FirebaseFirestore.getInstance();
         clientesList = new ArrayList<>();
         produtosList = new ArrayList<>();
         produtosAdicionados = new ArrayList<>();
         valorTotal = 0.0;
 
-        carregarClientes();
-        carregarProdutos();
+        carregarClientes();  // Carrega clientes ativos no spinner.
+        carregarProdutos(); // Carrega produtos disponíveis no spinner
 
+        // Configura ações dos botões
         editTextData.setOnClickListener(v -> showDatePickerDialog());
         btnAdicionarProduto.setOnClickListener(v -> adicionarProduto());
         btnRegistrarVenda.setOnClickListener(v -> {
@@ -133,7 +140,6 @@ public class RegistroVenda extends AppCompatActivity {
         listViewProdutos = findViewById(R.id.lv_produtos_disponiveis);
 
 
-
         // Adiciona o listener para clique longo
         listViewProdutos.setOnItemLongClickListener((parent, view, position, id) -> {
             // Chama o método para confirmar a remoção
@@ -141,6 +147,7 @@ public class RegistroVenda extends AppCompatActivity {
             return true; // Indica que o evento foi tratado
         });
 
+        // Preenche campos caso seja uma edição
         Intent intent = getIntent();
         Transacao transacao = (Transacao) intent.getSerializableExtra("transacao");
 
@@ -157,6 +164,7 @@ public class RegistroVenda extends AppCompatActivity {
         }
     }
 
+    // Mostra um seletor de data para o campo de data.
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -174,6 +182,7 @@ public class RegistroVenda extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    // Carrega clientes ativos do banco de dados e os exibe no spinner
     private void carregarClientes() {
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -205,6 +214,7 @@ public class RegistroVenda extends AppCompatActivity {
     }
 
 
+    // Carrega produtos disponíveis do banco de dados e os exibe no spinner
     private void carregarProdutos() {
         db.collection("Usuarios")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -229,15 +239,20 @@ public class RegistroVenda extends AppCompatActivity {
     }
 
     private void adicionarProduto() {
+        // Obtém os dados informada pelo usuário.
         String produtoSelecionado = spinnerProduto.getSelectedItem().toString();
         String quantidadeText = editTextQuantidade.getText().toString();
 
+        // Verifica se um produto foi selecionado e se a quantidade foi preenchida
         if (produtoSelecionado.equals("Selecionar") || quantidadeText.isEmpty()) {
             Toast.makeText(this, "Selecione um produto e insira a quantidade.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Converte a quantidade para inteiro
         int quantidade = Integer.parseInt(quantidadeText);
+
+        // Obtém Produto correspondente ao produto selecionado no Spinner
         Produto produto = produtosList.get(spinnerProduto.getSelectedItemPosition() - 1); // Ajusta o índice
 
         if (quantidade > produto.getQuantidade()) {
@@ -245,7 +260,7 @@ public class RegistroVenda extends AppCompatActivity {
             return; // Não adiciona o produto se a quantidade for maior que a disponível
         }
 
-        // Verifica se o produto já foi adicionado
+        // Verifica se o produto já foi adicionado anteriormente
         if (produtosMap.containsKey(produto.getNome())) {
             Toast.makeText(this, "Este produto já foi adicionado.", Toast.LENGTH_SHORT).show();
             return; // Produto já foi adicionado
@@ -254,15 +269,17 @@ public class RegistroVenda extends AppCompatActivity {
         // Adiciona o produto ao mapa e lista
         produtosMap.put(produto.getNome(), quantidade);
         produtosAdicionados.add(produto.getNome() + " (x" + quantidade + ") : R$ " + String.format(Locale.getDefault(), "%.2f", produto.getValor() * quantidade));
-        valorTotal += produto.getValor() * quantidade;
 
+        // Atualiza o valor total da venda
+        valorTotal += produto.getValor() * quantidade;
         atualizarValorTotal();
 
-        // Atualiza a ListView
+
+        // Atualiza a Lista com os produtos adicionados
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, produtosAdicionados);
         listViewProdutos.setAdapter(adapter);
 
-        // Ajusta a altura da ListView com base no número de itens
+        // Ajusta a altura da Lista com base no número de itens
         ajustarAlturaListView();
 
         // Limpa os campos de input
@@ -295,10 +312,13 @@ public class RegistroVenda extends AppCompatActivity {
 
     private void atualizarValorTotal() {
         double desconto = 0.0;
+
+        // Verifica se há um desconto informado pelo usuário
         if (!editTextDesconto.getText().toString().isEmpty()) {
             desconto = Double.parseDouble(editTextDesconto.getText().toString());
         }
 
+        // Calcula o valor total com desconto, garantindo que não seja negativo
         double valorComDesconto = valorTotal - desconto;
         if (valorComDesconto < 0) valorComDesconto = 0;
 
@@ -322,15 +342,18 @@ public class RegistroVenda extends AppCompatActivity {
     }
 
     private void registrarVenda(Transacao transacaoExistente) {
+        // Obtém os valores dos campos de entrada
         String descricao = editTextDescricao.getText().toString().trim();
         String data = editTextData.getText().toString().trim();
         int clienteIndex = spinnerCliente.getSelectedItemPosition();
 
+        // Verifica se os campos obrigatórios foram preenchidos
         if (descricao.isEmpty() || data.isEmpty() || clienteIndex <= 0 || produtosAdicionados.isEmpty()) {
             Toast.makeText(this, "Preencha todos os campos obrigatórios.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Obtém o ID do cliente selecionado e cria o mapa com os dados da venda
         String clienteId = clientesList.get(clienteIndex - 1).getId();
         Map<String, Object> dadosVenda = new HashMap<>();
         dadosVenda.put("descricao", descricao);
@@ -339,10 +362,11 @@ public class RegistroVenda extends AppCompatActivity {
         dadosVenda.put("produtos", produtosAdicionados);
         dadosVenda.put("valorTotal", valorTotal);
 
+        // Obtém o ID do usuário para salvar os dados na coleção correta
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         if (transacaoExistente == null) {
-            // Nova venda
+            // Caso seja uma nova venda, adiciona os dados no Firestore
             db.collection("Usuarios")
                     .document(userId)
                     .collection("Vendas")
@@ -368,6 +392,8 @@ public class RegistroVenda extends AppCompatActivity {
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && !task.getResult().isEmpty()) {
+
+                            // Obtém o ID do documento da venda existente.
                             String docId = task.getResult().getDocuments().get(0).getId();
                             db.collection("Usuarios")
                                     .document(userId)
@@ -376,7 +402,7 @@ public class RegistroVenda extends AppCompatActivity {
                                     .update(dadosVenda)
                                     .addOnSuccessListener(aVoid -> {
                                         atualizarEstoque(() -> {
-                                            // Após atualizar o estoque, redireciona
+                                            // Após atualizar o estoque, redireciona para a lista de transações
                                             Toast.makeText(this, "Venda atualizada com sucesso!", Toast.LENGTH_SHORT).show();
                                             navegarParaListaTransacoes();
                                         });
@@ -434,9 +460,7 @@ public class RegistroVenda extends AppCompatActivity {
         }
     }
 
-
-
-
+    // Remover produto da lista
     private void removerProduto(int position) {
         // Verifica se a posição é válida
         if (position >= 0 && position < produtosAdicionados.size()) {
@@ -479,8 +503,8 @@ public class RegistroVenda extends AppCompatActivity {
         }
     }
 
+    // Cria o AlertDialog para confirmação de exclusão
     private void removerProdutoComConfirmacao(int position) {
-        // Cria o AlertDialog para confirmação
         new AlertDialog.Builder(this)
                 .setTitle("Confirmar Exclusão")
                 .setMessage("Você tem certeza que deseja remover este produto?")
@@ -492,11 +516,6 @@ public class RegistroVenda extends AppCompatActivity {
                 .show(); // Exibe o AlertDialog
     }
 
-
-    private void atualizarTransacoes() {
-        // Atualize sua `ListView` na tela de transações conforme necessário
-        // Aqui você pode enviar um broadcast ou usar outro método para atualizar a lista
-    }
 
     private void aplicarDesconto() {
         String descontoText = editTextDesconto.getText().toString();

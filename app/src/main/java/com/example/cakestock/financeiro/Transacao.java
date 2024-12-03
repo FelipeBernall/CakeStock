@@ -12,7 +12,7 @@ public class Transacao implements Serializable {
     private double valorTotal;
     private String tipo;
 
-
+    // Construtor para inicializar uma transação
     public Transacao(String descricao, String data, String clienteId, List<String> produtos, double valorTotal) {
         this.descricao = descricao != null ? descricao : "";
         this.data = data != null ? data : "";
@@ -21,7 +21,7 @@ public class Transacao implements Serializable {
         this.valorTotal = valorTotal;
     }
 
-
+    // Getters e setters
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
 

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.cakestock.R;
+import com.example.cakestock.cliente.Cliente;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -99,15 +100,20 @@ public class CadastroPedido extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<String> clienteNomes = new ArrayList<>();
-                        clienteNomes.add("Selecionar");
+                        clienteNomes.add("Selecionar"); // Adiciona a opção inicial "Selecionar"
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            clienteNomes.add(document.getString("nome"));
+                            Cliente cliente = document.toObject(Cliente.class);
+                            if (cliente.isAtivo()) { // Filtra apenas clientes ativos
+                                clienteNomes.add(cliente.getNome()); // Adiciona o nome do cliente ativo
+                            }
                         }
 
+                        // Preenche o spinner com os nomes dos clientes ativos
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, clienteNomes);
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinnerClientes.setAdapter(adapter);
 
+                        // Caso tenha um cliente passado pela Intent, seleciona no spinner
                         if (!clienteNomes.isEmpty()) {
                             String clientePassado = getIntent().getStringExtra("cliente");
                             if (clientePassado != null) {
@@ -119,6 +125,7 @@ public class CadastroPedido extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();

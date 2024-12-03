@@ -26,7 +26,7 @@ import java.util.Locale;
 
 
 public class ListaTransacoes extends AppCompatActivity {
-
+    // Componentes da interface
     private ListView lvTransacoes;
     private TextView tvVendas, tvDespesas, tvSaldo;
     private FirebaseFirestore db;
@@ -39,13 +39,14 @@ public class ListaTransacoes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_transacoes);
 
-        // Inicializa os componentes de UI
+        // Inicializa os componentes de interface
         lvTransacoes = findViewById(R.id.lv_transacoes);
         tvVendas = findViewById(R.id.tv_vendas);
         tvDespesas = findViewById(R.id.tv_despesas);
         tvSaldo = findViewById(R.id.tv_saldo);
         tvCurrentMonth = findViewById(R.id.tv_current_month);
 
+        // Botões para adicionar vendas/despesas e navegar entre meses
         ImageButton btnVendas = findViewById(R.id.btn_vendas);
         ImageButton btnDespesas = findViewById(R.id.btn_despesas);
         ImageButton btnPreviousMonth = findViewById(R.id.btn_previous_month);
@@ -79,9 +80,11 @@ public class ListaTransacoes extends AppCompatActivity {
         // Carrega todas as transações (vendas e despesas)
         carregarTransacoes();
 
+        // Configurações de interação com a lista de transações
         lvTransacoes.setOnItemLongClickListener((parent, view, position, id) -> {
             Transacao transacao = (Transacao) parent.getItemAtPosition(position);
 
+            // Confirmação para excluir uma transação
             new AlertDialog.Builder(ListaTransacoes.this)
                     .setTitle("Confirmar Exclusão")
                     .setMessage("Você tem certeza que deseja excluir esta transação?")
@@ -92,6 +95,7 @@ public class ListaTransacoes extends AppCompatActivity {
         });
 
         lvTransacoes.setOnItemClickListener((parent, view, position, id) -> {
+            // Redireciona para a tela de edição de uma transação
             Transacao transacao = (Transacao) parent.getItemAtPosition(position);
             Intent intent;
 
@@ -113,7 +117,7 @@ public class ListaTransacoes extends AppCompatActivity {
         carregarTransacoes();
     }
 
-
+    // Carrega vendas e despesas do Firestore e atualiza a interface
     private void carregarTransacoes() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         int mesAtual = calendarAtual.get(Calendar.MONTH) + 1;
@@ -141,7 +145,7 @@ public class ListaTransacoes extends AppCompatActivity {
                             }
                         }
 
-                        // Após carregar vendas, carregue despesas
+                        // Carrega despesas após as vendas
                         db.collection("Usuarios")
                                 .document(userId)
                                 .collection("Despesas")
@@ -159,7 +163,7 @@ public class ListaTransacoes extends AppCompatActivity {
                                             }
                                         }
 
-                                        // Atualiza resumo e exibição
+                                        // Atualiza lista de transações
                                         atualizarResumo(totalVendas[0], totalDespesas[0]);
                                         atualizarLista(transacoes); // Lista unificada
                                     }
@@ -170,7 +174,7 @@ public class ListaTransacoes extends AppCompatActivity {
 
 
 
-
+    // Verifica se uma data pertence ao mês e ano atuais
     private boolean pertenceAoMesEAno(String data, int mesAtual, int anoAtual) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -187,7 +191,7 @@ public class ListaTransacoes extends AppCompatActivity {
         }
     }
 
-
+    // Atualiza a lista de transações na interface
     private void atualizarLista(List<Transacao> transacoes) {
         // Ordena as transações pela data em ordem decrescente
         Collections.sort(transacoes, (t1, t2) -> {
@@ -206,11 +210,8 @@ public class ListaTransacoes extends AppCompatActivity {
         lvTransacoes.setAdapter(adapter);
     }
 
-
-
-
+    // Atualiza os valores das TextViews de resumo
     private void atualizarResumo(double totalVendas, double totalDespesas) {
-        // Atualiza os valores das TextViews de resumo
         tvVendas.setText(String.format("R$ %.2f", totalVendas));
         tvDespesas.setText(String.format("R$ %.2f", totalDespesas));
 
@@ -226,15 +227,15 @@ public class ListaTransacoes extends AppCompatActivity {
         }
     }
 
+    // Formata e exibe o mês atual no TextView
     private void atualizarMesAtual() {
-        // Formata e exibe o mês atual no TextView
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
         String mesAtual = dateFormat.format(calendarAtual.getTime());
         tvCurrentMonth.setText(mesAtual);
     }
 
+    // Altera o mês no Calendar
     private void alterarMes(int incremento) {
-        // Altera o mês no Calendar
         calendarAtual.add(Calendar.MONTH, incremento);
         atualizarMesAtual();
 
@@ -242,6 +243,7 @@ public class ListaTransacoes extends AppCompatActivity {
         carregarTransacoes();
     }
 
+    // Exclui uma transação do Firestore
     private void excluirTransacao(Transacao transacao) {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String collection = transacao.getValorTotal() >= 0 ? "Vendas" : "Despesas";
