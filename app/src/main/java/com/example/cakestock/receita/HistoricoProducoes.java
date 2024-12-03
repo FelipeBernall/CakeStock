@@ -222,7 +222,7 @@ public class HistoricoProducoes extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                         String documentId = querySnapshot.getDocuments().get(0).getId();
+                        String documentId = querySnapshot.getDocuments().get(0).getId();
 
                         // Ajustar estoque antes de excluir
                         ajustarEstoque(producao.getNomeReceita(), -producao.getQuantidadeProduzida(), () -> {
@@ -325,7 +325,7 @@ public class HistoricoProducoes extends AppCompatActivity {
                         }
 
                         doc.getReference().update("quantidade", novaQuantidade)
-                                .addOnSuccessListener(aVoid -> Log.d("Estoque", "Estoque atualizado para " + nomeIngrediente + ": " + novaQuantidade))
+                                .addOnSuccessListener(aVoid -> Log.d("Estoque", "Estoque atual izado para " + nomeIngrediente + ": " + novaQuantidade))
                                 .addOnFailureListener(e -> Log.e("Estoque", "Erro ao atualizar estoque do ingrediente: " + nomeIngrediente, e));
                     }
                 })

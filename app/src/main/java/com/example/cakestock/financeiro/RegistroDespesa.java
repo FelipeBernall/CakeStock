@@ -46,7 +46,12 @@ public class RegistroDespesa extends AppCompatActivity {
         calendario = Calendar.getInstance();
 
         // Configurar botão de voltar
-        btnVoltar.setOnClickListener(v -> onBackPressed());
+        btnVoltar.setOnClickListener(v -> {
+            Intent intent = new Intent(RegistroDespesa.this, ListaTransacoes.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Finaliza a atividade atual
+        });
 
         // Configurar o DatePicker para o campo de data
         editTextData.setOnClickListener(v -> abrirDatePicker());

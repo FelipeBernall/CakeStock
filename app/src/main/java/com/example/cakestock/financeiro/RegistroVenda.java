@@ -78,9 +78,13 @@ public class RegistroVenda extends AppCompatActivity {
         tvDescontoLabel = findViewById(R.id.tv_desconto_label);
         layoutDesconto = findViewById(R.id.layout_desconto);
         ImageButton btnVoltar = findViewById(R.id.btn_voltar);
-        btnVoltar.setOnClickListener(v -> onBackPressed());
 
-
+        btnVoltar.setOnClickListener(v -> {
+            Intent intent = new Intent(RegistroVenda.this, ListaTransacoes.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Finaliza a atividade atual
+        });
 
         db = FirebaseFirestore.getInstance();
         clientesList = new ArrayList<>();
