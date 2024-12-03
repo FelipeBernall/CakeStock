@@ -83,6 +83,24 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
             }
         });
 
+        // Configura o clique longo para excluir ingredientes com confirmação
+        listViewIngredientes.setOnItemLongClickListener((parent, view, position, id) -> {
+            String ingredienteSelecionado = listaIngredientes.get(position);
+
+            // Exibe o diálogo de confirmação
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Remover Ingrediente")
+                    .setMessage("Deseja remover o ingrediente \"" + ingredienteSelecionado.split(":")[0] + "\" da lista?")
+                    .setPositiveButton("Sim", (dialog, which) -> {
+                        listaIngredientes.remove(position); // Remove o ingrediente
+                        adapter.notifyDataSetChanged(); // Atualiza a lista
+                        Toast.makeText(this, "Ingrediente removido.", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Não", null)
+                    .show();
+
+            return true; // Indica que o evento foi consumido
+        });
     }
 
     // Método para receber o resultado do ingrediente adicionado (t3)
@@ -119,6 +137,5 @@ public class t2_AdicionarIngredientes extends AppCompatActivity {
         }
         return false; // Ingrediente não encontrado
     }
-
-
 }
+
