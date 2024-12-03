@@ -27,16 +27,20 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+// Exibe a lista das produções que
 public class HistoricoProducoes extends AppCompatActivity {
 
+    // Componentes da interface
     private TextView tvCurrentMonth;
     private ImageButton btnPreviousMonth, btnNextMonth;
     private ListView lvHistoricoProducoes;
     private FloatingActionButton fabAdicionarProducao;
 
+    // Inicializa o Firebase
     private FirebaseFirestore db;
     private String userId;
 
+    // Variávvel relacionada ao calendário
     private Calendar calendarAtual;
     private HistoricoAdapter historicoAdapter;
     private List<Producao> producoes;
@@ -49,14 +53,14 @@ public class HistoricoProducoes extends AppCompatActivity {
         setContentView(R.layout.activity_historico_producoes);
 
         try {
-            // Inicializa os componentes da UI
+            // Inicializa os componentes da interface
             tvCurrentMonth = findViewById(R.id.tv_current_month);
             btnPreviousMonth = findViewById(R.id.btn_previous_month);
             btnNextMonth = findViewById(R.id.btn_next_month);
             lvHistoricoProducoes = findViewById(R.id.lv_historico_producoes);
             fabAdicionarProducao = findViewById(R.id.fab_adicionar_producao);
 
-            // Inicializa o Firestore e o Calendar
+            // Inicializa o Firestore e o Calendario
             db = FirebaseFirestore.getInstance();
             calendarAtual = Calendar.getInstance();
 
@@ -104,14 +108,12 @@ public class HistoricoProducoes extends AppCompatActivity {
             Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show();
         }
 
-
+        // Configuração do click longo para excluir uma produção
         lvHistoricoProducoes.setOnItemLongClickListener((parent, view, position, id) -> {
             Producao producaoSelecionada = producoes.get(position);
-            mostrarDialogoConfirmacao(producaoSelecionada);
+            mostrarDialogoConfirmacao(producaoSelecionada); // Dialog de confirmação
             return true;
         });
-
-
 
     }
 
@@ -122,26 +124,29 @@ public class HistoricoProducoes extends AppCompatActivity {
     }
 
 
+    // Atualiza a exibição do mês atual
     private void atualizarMesAtual() {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
             String mesAtual = dateFormat.format(calendarAtual.getTime());
-            tvCurrentMonth.setText(mesAtual);
+            tvCurrentMonth.setText(mesAtual);  // Exibe o mês atual
         } catch (Exception e) {
             Log.e(TAG, "Erro ao atualizar o mês atual: ", e);
         }
     }
 
+    // Alterar o mês (para próximo ou anterior)
     private void alterarMes(int incremento) {
         try {
-            calendarAtual.add(Calendar.MONTH, incremento);
+            calendarAtual.add(Calendar.MONTH, incremento); // Adiciona ou subtrai um mês
             atualizarMesAtual();
-            carregarProducoes();
+            carregarProducoes(); // Atualiza as produções do novo mês
         } catch (Exception e) {
             Log.e(TAG, "Erro ao alterar o mês: ", e);
         }
     }
 
+    // Carrega as produções do Firestore para o mês atual
     private void carregarProducoes() {
         try {
             int mesAtual = calendarAtual.get(Calendar.MONTH) + 1;
@@ -175,7 +180,7 @@ public class HistoricoProducoes extends AppCompatActivity {
                             producoes.sort((p1, p2) -> p2.getDataProducao().compareTo(p1.getDataProducao()));
 
                             historicoAdapter.clear();
-                            historicoAdapter.addAll(producoes);
+                            historicoAdapter.addAll(producoes); // Atualiza o adapter com as novas produções
                             historicoAdapter.notifyDataSetChanged();
                         } else {
                             Log.e(TAG, "Erro ao carregar produções: ", task.getException());
@@ -187,6 +192,7 @@ public class HistoricoProducoes extends AppCompatActivity {
     }
 
 
+    // Verifica se a produção pertence ao mês e ano atual
     private boolean pertenceAoMesEAno(String data, int mesAtual, int anoAtual) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -196,7 +202,7 @@ public class HistoricoProducoes extends AppCompatActivity {
             int mesProducao = dataCalendario.get(Calendar.MONTH) + 1;
             int anoProducao = dataCalendario.get(Calendar.YEAR);
 
-            return mesProducao == mesAtual && anoProducao == anoAtual;
+            return mesProducao == mesAtual && anoProducao == anoAtual; // Verifica se a data corresponde ao mês e ano
         } catch (Exception e) {
             Log.e(TAG, "Erro ao verificar data: " + data, e);
             return false;
@@ -204,6 +210,7 @@ public class HistoricoProducoes extends AppCompatActivity {
     }
 
 
+    // Exibe um diálogo de confirmação para excluir a produção
     private void mostrarDialogoConfirmacao(Producao producao) {
         new AlertDialog.Builder(this)
                 .setTitle("Excluir Produção")
@@ -213,6 +220,7 @@ public class HistoricoProducoes extends AppCompatActivity {
                 .show();
     }
 
+    // Exclui uma produção do Firestore
     private void excluirProducao(Producao producao) {
         db.collection("Usuarios")
                 .document(userId)
@@ -246,7 +254,7 @@ public class HistoricoProducoes extends AppCompatActivity {
     }
 
 
-
+    // Ajusta o estoque dos ingredientes após exclusão
     private void ajustarEstoque(String nomeReceita, int diferenca, Runnable callback) {
         if (diferenca == 0) {
             callback.run();

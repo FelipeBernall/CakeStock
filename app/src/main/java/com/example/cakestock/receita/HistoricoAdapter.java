@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+// Exibe o histórico de produções na Lista
 public class HistoricoAdapter extends ArrayAdapter<Producao> {
     public HistoricoAdapter(Context context, ArrayList<Producao> producoes) {
         super(context, 0, producoes);
