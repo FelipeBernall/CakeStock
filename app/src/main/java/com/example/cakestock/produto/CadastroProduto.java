@@ -15,7 +15,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+// Responsável por Cadastrar , Editar ou ADD Produtos
 public class CadastroProduto extends AppCompatActivity {
+
+    // Campos de entrada de dados
     private EditText editNomeProduto;
     private EditText editQuantidadeProduto;
     private EditText editValorProduto; // Novo campo para o valor do produto
@@ -27,6 +30,7 @@ public class CadastroProduto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_produto);
 
+        // Inicialização dos campos de entrada
         editNomeProduto = findViewById(R.id.editNomeProduto);
         editQuantidadeProduto = findViewById(R.id.editQuantidadeProduto);
         editValorProduto = findViewById(R.id.editValorProduto); // Inicializa o campo de valor
@@ -34,6 +38,7 @@ public class CadastroProduto extends AppCompatActivity {
         Button btnSalvar = findViewById(R.id.btnSalvar);
         ImageButton btnVoltar = findViewById(R.id.btn_voltar); // Inicializa o botão de voltar
 
+        // Inicializa o Firebase
         db = FirebaseFirestore.getInstance();
 
         // Verifica se está editando um produto
@@ -52,6 +57,7 @@ public class CadastroProduto extends AppCompatActivity {
         });
     }
 
+    // Método para carregar os dados de um produto a partir do Firebase
     private void carregarDadosProduto(String id) {
         db.collection("Usuarios").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .collection("Produtos").document(id).get()
@@ -59,7 +65,10 @@ public class CadastroProduto extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful() && task.getResult() != null) {
+                            // Converte o documento recuperado em um objeto Produto
                             Produto produto = task.getResult().toObject(Produto.class);
+
+                            // Preenche os campos da tela com os dados do produto
                             editNomeProduto.setText(produto.getNome());
                             editQuantidadeProduto.setText(String.valueOf(produto.getQuantidade()));
                             editValorProduto.setText(String.valueOf(produto.getValor())); // Exibe o valor do produto
@@ -70,11 +79,15 @@ public class CadastroProduto extends AppCompatActivity {
                 });
     }
 
+    // Método para salvar ou atualizar o produto no Firebase
     private void salvarProduto() {
+
+        // Captura os valores digitados pelo usuário
         String nome = editNomeProduto.getText().toString().trim();
         int quantidade;
         double valor;
 
+        // Valida e converte o valor
         try {
             quantidade = Integer.parseInt(editQuantidadeProduto.getText().toString().trim());
         } catch (NumberFormatException e) {
@@ -92,8 +105,10 @@ public class CadastroProduto extends AppCompatActivity {
         // Obtém o ID do usuário logado
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if (produtoId == null) {
-            // Cadastrar novo produto
+            // Caso seja um novo produto, cria um objeto Produto
             Produto novoProduto = new Produto(nome, quantidade, valor);
+
+            // Adiciona o novo produto no Firebase
             db.collection("Usuarios").document(userId).collection("Produtos")
                     .add(novoProduto)
                     .addOnCompleteListener(task -> {
@@ -119,7 +134,7 @@ public class CadastroProduto extends AppCompatActivity {
                         }
                     });
         } else {
-            // Editar produto existente
+            // Caso seja uma edição, atualiza os dados do produto
             db.collection("Usuarios").document(userId).collection("Produtos").document(produtoId)
                     .update("nome", nome, "quantidade", quantidade, "valor", valor) // Atualiza o valor do produto
                     .addOnCompleteListener(task -> {

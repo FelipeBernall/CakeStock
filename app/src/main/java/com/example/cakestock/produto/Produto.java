@@ -6,9 +6,11 @@ public class Produto {
     private int quantidade;
     private double valor;
 
+    // Construtor vazio necessário para o Firebase
     public Produto() {
     }
 
+    // Construtor que inicializa os atributos do produto
     public Produto(String nome, int quantidade, double valor) {
         this.nome = nome;
         this.quantidade = quantidade;

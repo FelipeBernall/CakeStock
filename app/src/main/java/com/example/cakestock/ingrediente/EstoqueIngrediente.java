@@ -23,7 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-// Exibe e gerencia o estoque de ingredientes no aplicativo
+// Exibe e gerencia o estoque de ingredientes
 public class EstoqueIngrediente extends AppCompatActivity {
 
     // Campos de entrada de dados
