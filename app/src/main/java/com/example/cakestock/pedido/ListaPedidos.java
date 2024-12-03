@@ -24,6 +24,7 @@ import java.util.Locale;
 
 public class ListaPedidos extends AppCompatActivity {
 
+    // Declaração das variáveis de interface e banco de dados
     private ListView listViewPedidos;
     private ImageButton btnVoltar;
     private FloatingActionButton fabAdicionarPedido;
@@ -37,6 +38,7 @@ public class ListaPedidos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_pedidos);
 
+        // Inicialização dos componentes da interface
         listViewPedidos = findViewById(R.id.lv_lista_pedidos);
         btnVoltar = findViewById(R.id.btn_voltar);
         fabAdicionarPedido = findViewById(R.id.fab_adicionar_pedido);
@@ -44,6 +46,7 @@ public class ListaPedidos extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Inicializa lista e adapter
         listaPedidos = new ArrayList<>();
         pedidoAdapter = new PedidoAdapter(this, listaPedidos);
         listViewPedidos.setAdapter(pedidoAdapter);
@@ -53,20 +56,25 @@ public class ListaPedidos extends AppCompatActivity {
             carregarPedidos();  // Recarrega a lista
         }
 
+        // Carrega os pedidos ao abrir a tela
         carregarPedidos();
 
+        // Configura o botão de voltar
         btnVoltar.setOnClickListener(v -> finish());
 
+        // Configura o botão de adicionar novo pedido
         fabAdicionarPedido.setOnClickListener(v -> {
             Intent intent = new Intent(ListaPedidos.this, CadastroPedido.class);
             startActivity(intent);
         });
 
+        // Listener para editar um pedido (clique simples)
         listViewPedidos.setOnItemClickListener((parent, view, position, id) -> {
             Pedido pedidoSelecionado = listaPedidos.get(position);
 
-            // Cria a intent para abrir a tela CadastroPedido
+            // Redireciona para a tela de cadastro com os dados do pedido
             Intent intent = new Intent(ListaPedidos.this, CadastroPedido.class);
+
             // Passa os dados do pedido e o pedidoId
             intent.putExtra("pedidoId", pedidoSelecionado.getPedidoId());
             intent.putExtra("descricao", pedidoSelecionado.getDescricao());
@@ -76,10 +84,11 @@ public class ListaPedidos extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Clique longo para concluir/remover um pedido
         listViewPedidos.setOnItemLongClickListener((parent, view, position, id) -> {
             Pedido pedidoSelecionado = listaPedidos.get(position);
 
-            // Cria o AlertDialog
+            // Mostra um alerta para confirmação de exclusão
             new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Concluir Pedido")
                     .setMessage("Deseja concluir este pedido? Isso resultará na exclusão permanente.")
@@ -108,7 +117,7 @@ public class ListaPedidos extends AppCompatActivity {
 
     }
 
-
+    // Carrega pedidos do Firestore
     private void carregarPedidos() {
         if (user != null) {
             db.collection("Usuarios")
@@ -120,13 +129,14 @@ public class ListaPedidos extends AppCompatActivity {
                             listaPedidos.clear();  // Limpa a lista antes de recarregar
                             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
+                            // Adiciona cada pedido retornado do banco
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Pedido pedido = document.toObject(Pedido.class);
                                 pedido.setPedidoId(document.getId());  // Definindo o pedidoId
                                 listaPedidos.add(pedido);
                             }
 
-                            // Ordena por data e descrição
+                            // Ordena a liste por data (prioridade)
                             Collections.sort(listaPedidos, (p1, p2) -> {
                                 try {
                                     Date data1 = dateFormat.parse(p1.getData());
@@ -135,7 +145,7 @@ public class ListaPedidos extends AppCompatActivity {
                                     if (data1 != null && data2 != null) {
                                         int dateComparison = data1.compareTo(data2);
                                         if (dateComparison != 0) {
-                                            return dateComparison;  // Se as datas forem diferentes, retorna a comparação
+                                            return dateComparison;  // Ordena por data
                                         }
                                     }
                                 } catch (ParseException e) {
@@ -146,7 +156,7 @@ public class ListaPedidos extends AppCompatActivity {
                                 return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
                             });
 
-                            pedidoAdapter.notifyDataSetChanged();
+                            pedidoAdapter.notifyDataSetChanged(); // Atualiza a lista na interface
                         } else {
                             Toast.makeText(this, "Erro ao carregar pedidos.", Toast.LENGTH_SHORT).show();
                         }
@@ -155,6 +165,5 @@ public class ListaPedidos extends AppCompatActivity {
             Toast.makeText(this, "Usuário não autenticado.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 }

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class CadastroPedido extends AppCompatActivity {
-
+    // Declaração dos componentes de interface
     private EditText editDescricao, editData;
     private Spinner spinnerClientes;
     private Button btnCadastrarPedido, btnExcluirPedido;  // Adicionando o botão de exclusão
@@ -40,6 +40,7 @@ public class CadastroPedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_pedido);
 
+        // Inicialização dos componentes da interface
         editDescricao = findViewById(R.id.editDescricao);
         editData = findViewById(R.id.et_data);
         spinnerClientes = findViewById(R.id.spinnerClientes);
@@ -50,6 +51,7 @@ public class CadastroPedido extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Ação do botão voltar
         btnVoltar.setOnClickListener(v -> finish());
 
         configurarSpinnerClientes();
@@ -61,15 +63,17 @@ public class CadastroPedido extends AppCompatActivity {
         String data = intent.getStringExtra("data");
         String cliente = intent.getStringExtra("cliente");
 
+        // Preenche os campos com dados passados
         editDescricao.setText(descricao);
         editData.setText(data);
-
         if (cliente != null) {
             spinnerClientes.setSelection(getIndex(spinnerClientes, cliente));
         }
 
+        // Configura o DatePicker para seleção da data
         editData.setOnClickListener(v -> showDatePickerDialog());
 
+        // Ação do botão de cadastrar pedido
         btnCadastrarPedido.setOnClickListener(v -> {
             if (validarCampos()) {
                 salvarPedido();
@@ -83,6 +87,7 @@ public class CadastroPedido extends AppCompatActivity {
         }
     }
 
+    // Retorna o índice de um cliente no Spinner
     private int getIndex(Spinner spinner, String clienteNome) {
         for (int i = 0; i < spinner.getCount(); i++) {
             if (spinner.getItemAtPosition(i).toString().equals(clienteNome)) {
@@ -92,6 +97,7 @@ public class CadastroPedido extends AppCompatActivity {
         return 0;
     }
 
+    // Carrega os clientes ativos no Spinner
     private void configurarSpinnerClientes() {
         db.collection("Usuarios")
                 .document(user.getUid())
@@ -126,7 +132,7 @@ public class CadastroPedido extends AppCompatActivity {
                 });
     }
 
-
+    // Exibe o DatePicker para selecionar a data
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -144,6 +150,7 @@ public class CadastroPedido extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    // Valida se todos os campos estão preenchidos corretamente
     private boolean validarCampos() {
         boolean valid = true;
 
@@ -160,17 +167,19 @@ public class CadastroPedido extends AppCompatActivity {
         return valid;
     }
 
+    // Salva ou atualiza um pedido no banco de dados
     private void salvarPedido() {
         String descricao = editDescricao.getText().toString().trim();
         String data = editData.getText().toString().trim();
         String cliente = spinnerClientes.getSelectedItem().toString();
 
-        // Verifica se o cliente selecionado é "Selecionar"
-        if (cliente.equals("Selecionar")) {
+        // Verifica se o cliente foi selecionado
+        if (cliente.equals("Selecionar")) { // Se for "Selecionar" -> significa que não foi selecionado
             Toast.makeText(CadastroPedido.this, "Por favor, selecione um cliente válido.", Toast.LENGTH_SHORT).show();
             return;  // Impede o salvamento e retorna
         }
 
+        // Se pedidoId for nulo, cria um novo pedido
         if (pedidoId == null) {
             // Se o pedidoId for nulo, significa que é um novo pedido
             Pedido pedido = new Pedido(null, descricao, data, cliente);
@@ -185,7 +194,7 @@ public class CadastroPedido extends AppCompatActivity {
                             intent.putExtra("atualizar", true);  // Adicionando o sinalizador
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);  // Limpa a pilha de atividades e leva diretamente para a ListaPedidos
                             startActivity(intent);  // Redireciona para ListaPedidos
-                            finish();  // Finaliza a tela de cadastro para garantir que não permaneça na pilha
+                            finish();  // Finaliza a tela de cadastro
                         } else {
                             Toast.makeText(CadastroPedido.this, "Erro ao cadastrar pedido.", Toast.LENGTH_SHORT).show();
                         }
